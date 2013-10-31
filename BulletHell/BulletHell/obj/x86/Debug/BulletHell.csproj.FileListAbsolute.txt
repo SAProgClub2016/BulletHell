@@ -1,0 +1,8 @@
+H:\code\GitHub\BulletHell\BulletHell\BulletHell\bin\Debug\BulletHell.exe
+H:\code\GitHub\BulletHell\BulletHell\BulletHell\bin\Debug\BulletHell.pdb
+H:\code\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.csprojResolveAssemblyReference.cache
+H:\code\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.Properties.Resources.resources
+H:\code\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.csproj.GenerateResource.Cache
+H:\code\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.exe
+H:\code\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.pdb
+H:\code\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.MainForm.resources
