@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasicPhysicsLib.cs" />
     <Compile Include="HiResTimer.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -56,8 +57,10 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Math.cs" />
-    <Compile Include="Particle.cs" />
+    <Compile Include="Math\Math.cs" />
+    <Compile Include="Math\Vector.cs" />
+    <Compile Include="OldFiles\Particle.cs" />
+    <Compile Include="OldFiles\Physics.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Timer.cs" />
