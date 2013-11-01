@@ -122,8 +122,8 @@ namespace BulletHell.PhysicsLibOld
         }
         public static PolyVFunc operator +(PolyVFunc f1, PolyVFunc f2)
         {
-            int newDim = Math.Max(f1.Dimension, f2.Dimension);
-            int d = Math.Max(f1.Degree,f2.Degree);
+            int newDim = MathLib.Max(f1.Dimension, f2.Dimension);
+            int d = MathLib.Max(f1.Degree,f2.Degree);
             Vector[] cs = new Vector[d];
             int i = 0;
             for (; i < f1.Degree && i < f2.Degree; i++)
@@ -177,7 +177,7 @@ namespace BulletHell.PhysicsLibOld
         {
             int dim = Math.Max(Math.Max(a.Dimension, v0.Dimension), x0.Dimension);
             Pos = new PolyVFunc(dim, x0, v0, a / 2);
-        } */
+        } */ /*
 
         public PolyVFunc Pos
         {

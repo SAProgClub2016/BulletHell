@@ -18,27 +18,8 @@ namespace BulletHell.MathLib
             DimF=df;
         }
     }
-    public struct Pair<T> 
-    {
-        public T x, y;
-        public Pair(T x1, T y1)
-        {
-            x = x1;
-            y = y1;
-        }
-    }
 
-    public interface Mappable<M>
-    {
-        M Map(Func<double,double> f, M res);
-    }
-
-    public interface Mappable2<M> : Mappable<M>
-    {
-        M Map(Func<double,double,double> f, M m2, M res);
-    }
-
-    public class Matrix : Mappable2<Matrix>
+    public class Matrix : Mappable2D<Matrix>
     {
         // Data
         private double[,] mat;

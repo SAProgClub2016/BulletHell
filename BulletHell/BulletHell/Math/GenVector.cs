@@ -4,20 +4,20 @@ using System.Text;
 
 namespace BulletHell.MathLib
 {
-    public struct Vector : Mappable2D<Vector>
+    public struct Vector<T> : Mappable2<T>
     {
-        double[] vec;
+        T[] vec;
 
         public Vector(int dim)
         {
-            vec = new double[dim];
+            vec = new T[dim];
         }
-        public Vector(double[] v, int offset = 0, int dim = -1)
+        public Vector(T[] v, int offset = 0, int dim = -1)
         {
             int indmax = 0;
             if (dim > 0)
             {
-                vec = new double[dim];
+                vec = new T[dim];
                 indmax = MathLib.Min(dim, MathLib.Max(v.Length - offset, 0));
             }
             else
@@ -30,13 +30,13 @@ namespace BulletHell.MathLib
                 this[i] = v[i + offset];
             }
         }
-        public Vector(Vector o, int offset = 0, int dim = -1)
+        public Vector(Vector<T> o, int offset = 0, int dim = -1)
             : this(o.vec, offset, dim)
         {
         }
-        public Vector MakeDim(int dim)
+        public Vector<T> MakeDim(int dim)
         {
-            Vector ans = new Vector(dim);
+            Vector<T> ans = new Vector<T>(dim);
             int i = 0;
             for (; i < dim && i < this.Dimension; i++)
             {
@@ -44,21 +44,21 @@ namespace BulletHell.MathLib
             }
             return ans;
         }
-        public Vector(params double[] v)
+        public Vector(params T[] v)
             : this(v, (int)0)
         {
         }
 
-        public static Vector MakeStandardBasisVector(int dimension, int basisDim)
+        public static Vector<T> MakeStandardBasisVector<T>(int dimension, int basisDim)
         {
-            Vector ans = new Vector(dimension);
+            Vector<T> ans = new Vector<T>(dimension);
             ans[basisDim] = 1;
             return ans;
         }
 
-        public double Dot(Vector v2)
+        public double Dot(Vector<T> v2)
         {
-            ValidateDimensions(this, v2, "Dot(Vector v2)", "this", "v2");
+            ValidateDimensions(this, v2, "Dot(Vector<T> v2)", "this", "v2");
             double sum = 0;
             for (int i = 0; i < this.Dimension; i++)
             {
@@ -66,7 +66,7 @@ namespace BulletHell.MathLib
             }
             return sum;
         }
-        public Vector Negate(Vector res = default(Vector))
+        public Vector<T> Negate(Vector<T> res = default(Vector<T>))
         {
             MakeOrValidate(ref res, this.Dimension);
             for (int i = 0; i < this.Dimension; i++)
@@ -75,7 +75,7 @@ namespace BulletHell.MathLib
             }
             return res;
         }
-        public Vector Multiply(double d, Vector res = default(Vector))
+        public Vector<T> Multiply(double d, Vector<T> res = default(Vector<T>))
         {
             MakeOrValidate(ref res, this.Dimension);
             for (int i = 0; i < this.Dimension; i++)
@@ -84,42 +84,63 @@ namespace BulletHell.MathLib
             }
             return res;
         }
-        public Vector Add(Vector v2, Vector res = default(Vector))
+        public Vector<T> Add(Vector<T> v2, Vector<T> res = default(Vector<T>))
         {
             MakeOrValidate(ref res, this.Dimension);
-            ValidateDimensions(this, v2, "Vector.Add(Vector v2, Vector res = default(Vector))", "this", "v2");
+            ValidateDimensions(this, v2, "Vector.Add(Vector<T> v2, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
                 res[i] = v2[i] + this[i];
             }
             return res;
         }
-        public Vector Subtract(Vector v2, Vector res = default(Vector))
+        public Vector<T> Subtract(Vector<T> v2, Vector<T> res = default(Vector<T>))
         {
             MakeOrValidate(ref res, this.Dimension);
-            ValidateDimensions(this, v2, "Vector.Subtract(Vector v2, Vector res = default(Vector))", "this", "v2");
+            ValidateDimensions(this, v2, "Vector.Subtract(Vector<T> v2, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
                 res[i] = v2[i] - this[i];
             }
             return res;
         }
-        public Vector LComb(double a, Vector v2, double b, Vector res = default(Vector))
+        public Vector<T> LComb(double a, Vector<T> v2, double b, Vector<T> res = default(Vector<T>))
         {
             MakeOrValidate(ref res, this.Dimension);
-            ValidateDimensions(this, v2, "Vector.LComb(double a, Vector v2, double b, Vector res = default(Vector))", "this", "v2");
+            ValidateDimensions(this, v2, "Vector.LComb(double a, Vector<T> v2, double b, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
                 res[i] = b * v2[i] + a * this[i];
             }
             return res;
         }
-        public Vector Divide(double d, Vector res = default(Vector))
+        public Vector<T> Divide(double d, Vector<T> res = default(Vector<T>))
         {
             return Multiply(1 / d, res);
         }
 
-        public Vector Map(Func<double,double> f, Vector res = default(Vector))
+
+        public S Map<Q, S>(Func<T, Q> f, ref S res)
+        {
+            Vector<Q>? rn = res as Vector<Q>?;
+            if (rn == null)
+            {
+                throw new ArgumentException("Res is not of correct type");
+            }
+            Vector<Q> r = rn.Value;
+            bool reassign = false;
+            if (r.vec == null)
+            {
+                r = new Vector<Q>(Dimension);
+                reassign = true;
+            }
+
+
+            res = r as S;
+            return res;
+        }
+
+        public Vector<T> Map(Func<double,double> f, Vector<T> res = default(Vector<T>))
         {
             MakeOrValidate(ref res, this.Dimension);
             for (int i = 0; i < this.Dimension; i++)
@@ -128,10 +149,10 @@ namespace BulletHell.MathLib
             }
             return res;
         }
-        public Vector Map(Func<double,double,double> f, Vector v2, Vector res = default(Vector))
+        public Vector<T> Map(Func<double,double,double> f, Vector<T> v2, Vector<T> res = default(Vector<T>))
         {
             MakeOrValidate(ref res, this.Dimension);
-            ValidateDimensions(this, v2, "Vector.Map(Function2 f, Vector v2, Vector res = default(Vector))", "this", "v2");
+            ValidateDimensions(this, v2, "Vector.Map(Function2 f, Vector<T> v2, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
                 res[i] = f(this[i], v2[i]);
@@ -139,7 +160,7 @@ namespace BulletHell.MathLib
             return res;
         }
 
-        public Vector Multiply(Matrix m, Vector res = default(Vector))
+        public Vector<T> Multiply(Matrix m, Vector<T> res = default(Vector<T>))
         {
             if (m.Rows != Dimension)
                 throw new InvalidOperationException(string.Format("Vector.Multiply(Matrix m) - Dimension Mismatch - m.Rows[{0}] != this.Dimension[{1}]", m.Rows, this.Dimension));
@@ -158,7 +179,7 @@ namespace BulletHell.MathLib
 
             return res;
         }
-        public Vector MultiplyL(Matrix m, Vector res = default(Vector))
+        public Vector<T> MultiplyL(Matrix m, Vector<T> res = default(Vector<T>))
         {
             if (m.Cols != Dimension)
                 throw new InvalidOperationException(string.Format("Vector.Multiply(Matrix m) - Dimension Mismatch - m.Rows[{0}] != this.Dimension[{1}]", m.Rows, this.Dimension));
@@ -178,44 +199,44 @@ namespace BulletHell.MathLib
             return res;
         }
 
-        public static Vector operator -(Vector v1)
+        public static Vector<T> operator -(Vector<T> v1)
         {
             return v1.Negate();
         }
-        public static Vector operator *(Vector v1, double d)
+        public static Vector<T> operator *(Vector<T> v1, double d)
         {
             return v1.Multiply(d);
         }
-        public static Vector operator *(double d, Vector v1)
+        public static Vector<T> operator *(double d, Vector<T> v1)
         {
             return v1.Multiply(d);
         }
-        public static Vector operator /(Vector v1, double d)
+        public static Vector<T> operator /(Vector<T> v1, double d)
         {
             return v1.Divide(d);
         }
-        public static Vector operator -(Vector v1, Vector v2)
+        public static Vector<T> operator -(Vector<T> v1, Vector<T> v2)
         {
             return v1.Subtract(v2);
         }
-        public static Vector operator +(Vector v1, Vector v2)
+        public static Vector<T> operator +(Vector<T> v1, Vector<T> v2)
         {
             return v1.Add(v2);
         }
-        public static double operator *(Vector v1, Vector v2)
+        public static double operator *(Vector<T> v1, Vector<T> v2)
         {
             return v1.Dot(v2);
         }
-        public static Vector operator *(Matrix m, Vector v)
+        public static Vector<T> operator *(Matrix m, Vector<T> v)
         {
             return v.MultiplyL(m);
         }
-        public static Vector operator *(Vector v, Matrix m)
+        public static Vector<T> operator *(Vector<T> v, Matrix m)
         {
             return v.Multiply(m);
         }
 
-        private static void MakeOrValidate(ref Vector v1, int dimension)
+        private static void MakeOrValidate(ref Vector<T> v1, int dimension)
         {
             if (v1.vec == null)
             {
@@ -223,17 +244,17 @@ namespace BulletHell.MathLib
             }
             else
             {
-                ValidateDimensions(v1, dimension, "MakeOrValidate(Vector v1, int dimension)", "v1");
+                ValidateDimensions(v1, dimension, "MakeOrValidate(Vector<T> v1, int dimension)", "v1");
             }
         }
-        private static void ValidateDimensions(Vector v1, Vector v2, string method, string pName1, string pName2)
+        private static void ValidateDimensions(Vector<T> v1, Vector<T> v2, string method, string pName1, string pName2)
         {
             if (v1.Dimension != v2.Dimension)
             {
                 throw new InvalidOperationException(string.Format("Error - {0} - Dimension mismatch: {1}({2}) {3}({4})", method, pName1, v1.Dimension, pName2, v2.Dimension));
             }
         }
-        private static void ValidateDimensions(Vector v1, int dim, string method, string pName1)
+        private static void ValidateDimensions(Vector<T> v1, int dim, string method, string pName1)
         {
             if (v1.Dimension != dim)
             {
@@ -241,7 +262,7 @@ namespace BulletHell.MathLib
             }
         }
 
-        public Vector Unit
+        public Vector<T> Unit
         {
             get
             {
