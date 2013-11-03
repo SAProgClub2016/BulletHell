@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BulletHell.MathLib
 {
-    public struct Vector<T> : Mappable2<T>
+    public struct Vector<T> //: Mappable<T>
     {
         T[] vec;
 
@@ -18,12 +18,12 @@ namespace BulletHell.MathLib
             if (dim > 0)
             {
                 vec = new T[dim];
-                indmax = MathLib.Min(dim, MathLib.Max(v.Length - offset, 0));
+                indmax = Math.Min(dim, Math.Max(v.Length - offset, 0));
             }
             else
             {
-                vec = new double[MathLib.Max(v.Length - offset, 0)];
-                indmax = MathLib.Max(v.Length - offset, 0);
+                vec = new T[Math.Max(v.Length - offset, 0)];
+                indmax = Math.Max(v.Length - offset, 0);
             }
             for (int i = 0; i < indmax; i++)
             {
@@ -52,17 +52,17 @@ namespace BulletHell.MathLib
         public static Vector<T> MakeStandardBasisVector<T>(int dimension, int basisDim)
         {
             Vector<T> ans = new Vector<T>(dimension);
-            ans[basisDim] = 1;
+            ans[basisDim] = (dynamic)1;
             return ans;
         }
 
-        public double Dot(Vector<T> v2)
+        public T Dot(Vector<T> v2)
         {
             ValidateDimensions(this, v2, "Dot(Vector<T> v2)", "this", "v2");
-            double sum = 0;
+            T sum = default(T);
             for (int i = 0; i < this.Dimension; i++)
             {
-                sum += this[i] * v2[i];
+                sum += (dynamic) this[i] * v2[i];
             }
             return sum;
         }
@@ -71,16 +71,16 @@ namespace BulletHell.MathLib
             MakeOrValidate(ref res, this.Dimension);
             for (int i = 0; i < this.Dimension; i++)
             {
-                res[i] = -this[i];
+                res[i] = -(dynamic)this[i];
             }
             return res;
         }
-        public Vector<T> Multiply(double d, Vector<T> res = default(Vector<T>))
+        public Vector<T> Multiply(T d, Vector<T> res = default(Vector<T>))
         {
             MakeOrValidate(ref res, this.Dimension);
             for (int i = 0; i < this.Dimension; i++)
             {
-                res[i] = d * this[i];
+                res[i] = (dynamic) d * this[i];
             }
             return res;
         }
@@ -90,7 +90,7 @@ namespace BulletHell.MathLib
             ValidateDimensions(this, v2, "Vector.Add(Vector<T> v2, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
-                res[i] = v2[i] + this[i];
+                res[i] = (dynamic) v2[i] + this[i];
             }
             return res;
         }
@@ -100,27 +100,25 @@ namespace BulletHell.MathLib
             ValidateDimensions(this, v2, "Vector.Subtract(Vector<T> v2, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
-                res[i] = v2[i] - this[i];
+                res[i] = (dynamic) v2[i] - this[i];
             }
             return res;
         }
-        public Vector<T> LComb(double a, Vector<T> v2, double b, Vector<T> res = default(Vector<T>))
+        public Vector<T> LComb(T a, Vector<T> v2, T b, Vector<T> res = default(Vector<T>))
         {
             MakeOrValidate(ref res, this.Dimension);
-            ValidateDimensions(this, v2, "Vector.LComb(double a, Vector<T> v2, double b, Vector<T> res = default(Vector<T>))", "this", "v2");
+            ValidateDimensions(this, v2, "Vector.LComb(T a, Vector<T> v2, T b, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
-                res[i] = b * v2[i] + a * this[i];
+                res[i] = (dynamic) b * v2[i] + (dynamic) a * this[i];
             }
             return res;
         }
-        public Vector<T> Divide(double d, Vector<T> res = default(Vector<T>))
+        public Vector<T> Divide(T d, Vector<T> res = default(Vector<T>))
         {
-            return Multiply(1 / d, res);
-        }
-
-
-        public S Map<Q, S>(Func<T, Q> f, ref S res)
+            return Multiply(1 / (dynamic)d, res);
+        }/*
+        public S Map<Q, S>(Func<T, Q> f, ref S res) where S : struct
         {
             Vector<Q>? rn = res as Vector<Q>?;
             if (rn == null)
@@ -134,13 +132,21 @@ namespace BulletHell.MathLib
                 r = new Vector<Q>(Dimension);
                 reassign = true;
             }
-
-
-            res = r as S;
+            for (int i = 0; i < Dimension; i++)
+            {
+                r[i] = f(this[i]);
+            }
+            if (reassign)
+            {
+                Nullable<S> q = r as Nullable<S>;
+                if (q == null)
+                    throw new ArgumentException("Res is not of correct type");
+                else
+                    res = q.Value;
+            }
             return res;
         }
-
-        public Vector<T> Map(Func<double,double> f, Vector<T> res = default(Vector<T>))
+        /*public Vector<T> Map(Func<double,double> f, Vector<T> res = default(Vector<T>))
         {
             MakeOrValidate(ref res, this.Dimension);
             for (int i = 0; i < this.Dimension; i++)
@@ -158,7 +164,7 @@ namespace BulletHell.MathLib
                 res[i] = f(this[i], v2[i]);
             }
             return res;
-        }
+        }*/
 
         public Vector<T> Multiply(Matrix m, Vector<T> res = default(Vector<T>))
         {
@@ -169,12 +175,12 @@ namespace BulletHell.MathLib
                 throw new InvalidOperationException("Vector.Multiply(Matrix m) - Cannot multiply in place");
             for (int c = 0; c < m.Cols; c++)
             {
-                double sum = 0;
+                T sum = default(T);
                 for (int r = 0; r < m.Rows; r++)
                 {
-                    sum += this[r] * m[r, c];
+                    sum += (dynamic) this[r] * m[r, c];
                 }
-                res[c] = sum;
+                res[c] = (dynamic)sum; //TODO come fix this.
             }
 
             return res;
@@ -188,10 +194,10 @@ namespace BulletHell.MathLib
                 throw new InvalidOperationException("Vector.Multiply(Matrix m) - Cannot multiply in place");
             for (int r = 0; r < m.Rows; r++)
             {
-                double sum = 0;
+                T sum = default(T);
                 for (int c = 0; c < m.Cols; c++)
                 {
-                    sum += this[c] * m[r, c];
+                    sum += (dynamic)this[c] * m[r, c];
                 }
                 res[r] = sum;
             }
@@ -203,15 +209,15 @@ namespace BulletHell.MathLib
         {
             return v1.Negate();
         }
-        public static Vector<T> operator *(Vector<T> v1, double d)
+        public static Vector<T> operator *(Vector<T> v1, T d)
         {
             return v1.Multiply(d);
         }
-        public static Vector<T> operator *(double d, Vector<T> v1)
+        public static Vector<T> operator *(T d, Vector<T> v1)
         {
             return v1.Multiply(d);
         }
-        public static Vector<T> operator /(Vector<T> v1, double d)
+        public static Vector<T> operator /(Vector<T> v1, T d)
         {
             return v1.Divide(d);
         }
@@ -223,7 +229,7 @@ namespace BulletHell.MathLib
         {
             return v1.Add(v2);
         }
-        public static double operator *(Vector<T> v1, Vector<T> v2)
+        public static T operator *(Vector<T> v1, Vector<T> v2)
         {
             return v1.Dot(v2);
         }
@@ -240,7 +246,7 @@ namespace BulletHell.MathLib
         {
             if (v1.vec == null)
             {
-                v1.vec = new double[dimension];
+                v1.vec = new T[dimension];
             }
             else
             {
@@ -266,7 +272,7 @@ namespace BulletHell.MathLib
         {
             get
             {
-                return this / Length;
+                return this / (dynamic)Length;
             }
         }
         public int Dimension
@@ -277,7 +283,7 @@ namespace BulletHell.MathLib
             }
         }
 
-        public double Length2
+        public T Length2
         {
             get
             {
@@ -288,12 +294,12 @@ namespace BulletHell.MathLib
         {
             get
             {
-                return MathLib.Sqrt(Length2);
+                return Math.Sqrt((double)(dynamic)Length2);
             }
             set
             {
                 double d = value / Length;
-                Multiply(d, this);
+                Multiply((dynamic)d, this);
             }
         }
         public Matrix AsColumnMatrix
@@ -303,7 +309,7 @@ namespace BulletHell.MathLib
                 Matrix res = new Matrix(Dimension, 1);
                 for (int i = 0; i < Dimension; i++)
                 {
-                    res[i, 1] = this[i];
+                    res[i, 1] = (double)(dynamic)this[i];
                 }
                 return res;
             }
@@ -315,7 +321,7 @@ namespace BulletHell.MathLib
                 Matrix res = new Matrix(1, Dimension);
                 for (int i = 0; i < Dimension; i++)
                 {
-                    res[1, i] = this[i];
+                    res[1, i] = (double)(dynamic)this[i];
                 }
                 return res;
             }
@@ -334,7 +340,7 @@ namespace BulletHell.MathLib
             return b.ToString();
         }
 
-        public double this[int i]
+        public T this[int i]
         {
             get
             {

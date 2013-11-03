@@ -757,14 +757,14 @@ namespace BulletHell.MathLib
             }
         }
         
-        public Vector[] AsRows
+        public Vector<double>[] AsRows
         {
             get
             {
-                Vector[] rows = new Vector[Rows];
+                Vector<double>[] rows = new Vector<double>[Rows];
                 for (int r = 0; r < Rows; r++)
                 {
-                    rows[r] = new Vector(Cols);
+                    rows[r] = new Vector<double>(Cols);
                     for (int c = 0; c < Cols; c++)
                     {
                         rows[r][c] = this[r, c];
@@ -773,14 +773,14 @@ namespace BulletHell.MathLib
                 return rows;
             }
         }
-        public Vector[] AsCols
+        public Vector<double>[] AsCols
         {
             get
             {
-                Vector[] cols = new Vector[Cols];
+                Vector<double>[] cols = new Vector<double>[Cols];
                 for(int c = 0; c<Cols;c++)
                 {
-                    cols[c]=new Vector(Rows);
+                    cols[c]=new Vector<double>(Rows);
                     for(int r = 0; r < Rows; r++)
                     {
                         cols[c][r]=this[r,c];
@@ -815,11 +815,11 @@ namespace BulletHell.MathLib
             WriteMatrix("B*C", m20 * m21);
             WriteMatrix("B+C", m20 + m21);
             Pause();
-            Vector v1 = new Vector(1, 2, 4);
+            Vector<double> v1 = new Vector<double>(1, 2, 4);
             P("v1",v1);
-            Vector v1u = v1.Unit;
+            Vector<double> v1u = v1.Unit;
             P("unit of v1",v1u);
-            Vector v2 = new Vector(1, 2, 2);
+            Vector<double> v2 = new Vector<double>(1, 2, 2);
             P("v2", v2);
             P("unit of v2", v2.Unit);
             P("v1*v2", v1 * v2);

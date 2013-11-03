@@ -28,11 +28,11 @@ namespace BulletHell.MathLib
 
     public interface MappableD<M>
     {
-        M Map(Func<double,double> f, ref M res);
+        M Map(Func<double,double> f, M res);
     }
 
-    public interface Mappable2D<M : MappableD<M>
+    public interface Mappable2D<M> : MappableD<M>
     {
-        M Map(Func<double, double, double> f, M m2, ref M res);
+        M Map(Func<double, double, double> f, M m2, M res);
     }
 }

@@ -29,7 +29,7 @@ namespace BulletHell.PhysicsLibOld
 
     public interface VectorTimeFunction
     {
-        TimeFunc<Vector> f
+        TimeFunc<Vector<double>> f
         {
             get;
         }
@@ -47,7 +47,7 @@ namespace BulletHell.PhysicsLibOld
 
     public class PolyVFunc : VectorTimeFunction
     {
-        public Vector[] Coefficients { get; private set; }
+        public Vector<double>[] Coefficients { get; private set; }
         public int Dimension { get; private set; }
         public int Degree
         {
@@ -56,9 +56,9 @@ namespace BulletHell.PhysicsLibOld
                 return Coefficients.Length;
             }
         }
-        public PolyVFunc(int dim,params Vector[] coeffs)
+        public PolyVFunc(int dim,params Vector<double>[] coeffs)
         {
-            this.Coefficients = new Vector[coeffs.Length];
+            this.Coefficients = new Vector<double>[coeffs.Length];
             Dimension = dim;
             for (int i = 0; i < Coefficients.Length; i++)
             {
@@ -72,13 +72,13 @@ namespace BulletHell.PhysicsLibOld
                 }
             }
         }
-        public TimeFunc<Vector> f
+        public TimeFunc<Vector<double>> f
         {
             get
             {
                 return t =>
                 {
-                    Vector sum = new Vector(Dimension);
+                    Vector<double> sum = new Vector<double>(Dimension);
                     for (int i = Coefficients.Length - 1; i >= 0; i--)
                     {
                         sum *= t;
@@ -93,8 +93,8 @@ namespace BulletHell.PhysicsLibOld
             get
             {
                 if(Coefficients.Length<1)
-                    return new PolyVFunc(Dimension,new Vector(Dimension));
-                Vector[] dCoeffs = new Vector[Coefficients.Length-1];
+                    return new PolyVFunc(Dimension,new Vector<double>(Dimension));
+                Vector<double>[] dCoeffs = new Vector<double>[Coefficients.Length-1];
                 for(int i = 0;i<dCoeffs.Length;i++)
                 {
                     dCoeffs[i]=Coefficients[i+1]*(i+1);
@@ -106,8 +106,8 @@ namespace BulletHell.PhysicsLibOld
         {
             get
             {
-                Vector[] iCoeffs = new Vector[Coefficients.Length + 1];
-                iCoeffs[0] = new Vector(Dimension);
+                Vector<double>[] iCoeffs = new Vector<double>[Coefficients.Length + 1];
+                iCoeffs[0] = new Vector<double>(Dimension);
                 for (int i = 1; i < iCoeffs.Length; i++)
                 {
                     iCoeffs[i] = Coefficients[i - 1] / i;
@@ -116,15 +116,15 @@ namespace BulletHell.PhysicsLibOld
             }
         }
 
-        public static implicit operator PolyVFunc(Vector v)
+        public static implicit operator PolyVFunc(Vector<double> v)
         {
             return new PolyVFunc(v.Dimension,v);
         }
         public static PolyVFunc operator +(PolyVFunc f1, PolyVFunc f2)
         {
-            int newDim = MathLib.Max(f1.Dimension, f2.Dimension);
-            int d = MathLib.Max(f1.Degree,f2.Degree);
-            Vector[] cs = new Vector[d];
+            int newDim = Math.Max(f1.Dimension, f2.Dimension);
+            int d = Math.Max(f1.Degree,f2.Degree);
+            Vector<double>[] cs = new Vector<double>[d];
             int i = 0;
             for (; i < f1.Degree && i < f2.Degree; i++)
             {
@@ -134,15 +134,15 @@ namespace BulletHell.PhysicsLibOld
             for (; i < f2.Degree; i++) cs[i] = f2.Coefficients[i];
             return new PolyVFunc(newDim, cs);
         }
-        public static PolyVFunc operator +(PolyVFunc f1, Vector v)
+        public static PolyVFunc operator +(PolyVFunc f1, Vector<double> v)
         {
             return f1 + (PolyVFunc)v;
         }
-        public static PolyVFunc operator +(Vector v, PolyVFunc f1)
+        public static PolyVFunc operator +(Vector<double> v, PolyVFunc f1)
         {
             return f1 + (PolyVFunc)v;
         }
-        public Vector this[int i]
+        public Vector<double> this[int i]
         {
             get
             {

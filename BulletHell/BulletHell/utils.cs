@@ -7,15 +7,21 @@ namespace BulletHell
 {
     class Utils
     {
-        public static S CastTo<R,S>
-
-        public static S CastAndAssign<R, S>(R from, ref S to) where S : class
+        /*public static bool CastAndAssign<R, S>(R from, ref S to) where S : class
         {
-            to = 
+            to = from as S;
+            return to == null;
         }
-        public static S CastAndAssign<R, S>(R from, ref S to) where S : struct
+        public static bool CastAndAssign<R, S>(R from, ref S to) where S : struct
         {
-
-        }
+            Nullable<S> ns = from as Nullable<S>;
+            if (ns != null)
+            {
+                to = ns.Value;
+                return true;
+            }
+            to = default(S);
+            return false;
+        }*/
     }
 }

@@ -2,7 +2,7 @@
 using System.Net;
 using System.Text;
 
-namespace BulletHell.MathLib
+namespace BulletHell.MathLib.Deprecated
 {
     public struct Vector : Mappable2D<Vector>
     {
@@ -18,12 +18,12 @@ namespace BulletHell.MathLib
             if (dim > 0)
             {
                 vec = new double[dim];
-                indmax = MathLib.Min(dim, MathLib.Max(v.Length - offset, 0));
+                indmax = Math.Min(dim, Math.Max(v.Length - offset, 0));
             }
             else
             {
-                vec = new double[MathLib.Max(v.Length - offset, 0)];
-                indmax = MathLib.Max(v.Length - offset, 0);
+                vec = new double[Math.Max(v.Length - offset, 0)];
+                indmax = Math.Max(v.Length - offset, 0);
             }
             for (int i = 0; i < indmax; i++)
             {
@@ -267,7 +267,7 @@ namespace BulletHell.MathLib
         {
             get
             {
-                return MathLib.Sqrt(Length2);
+                return Math.Sqrt(Length2);
             }
             set
             {

@@ -8,7 +8,7 @@ namespace BulletHell.BasicPhysicsLib
 {
     class BasicParticle
     {
-        Func<Vector> pos;
+        Func<Vector<double>> pos;
 
     }
 }
