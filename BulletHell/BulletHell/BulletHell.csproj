@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2B96C304-6B5B-45F4-9FE9-82551B3DA639}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BulletHell</RootNamespace>
     <AssemblyName>BulletHell</AssemblyName>
@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>BulletHell.Program</StartupObject>
+    <StartupObject>BulletHell.MathLib.MathTest</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -58,8 +58,11 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Math\Function.cs" />
+    <Compile Include="Math\GenMatrix.cs" />
     <Compile Include="Math\GenVector.cs" />
     <Compile Include="Math\Math.cs" />
+    <Compile Include="Math\Matrix.cs" />
+    <Compile Include="Math\OldMath.cs" />
     <Compile Include="Math\Vector.cs" />
     <Compile Include="OldFiles\Particle.cs" />
     <Compile Include="OldFiles\Physics.cs" />

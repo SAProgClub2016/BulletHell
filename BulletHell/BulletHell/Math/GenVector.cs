@@ -49,9 +49,9 @@ namespace BulletHell.MathLib
         {
         }
 
-        public static Vector<T> MakeStandardBasisVector<T>(int dimension, int basisDim)
+        public static Vector<S> MakeStandardBasisVector<S>(int dimension, int basisDim)
         {
-            Vector<T> ans = new Vector<T>(dimension);
+            Vector<S> ans = new Vector<S>(dimension);
             ans[basisDim] = (dynamic)1;
             return ans;
         }
@@ -166,13 +166,13 @@ namespace BulletHell.MathLib
             return res;
         }*/
 
-        public Vector<T> Multiply(Matrix m, Vector<T> res = default(Vector<T>))
+        public Vector<T> Multiply(Matrix<T> m, Vector<T> res = default(Vector<T>))
         {
             if (m.Rows != Dimension)
-                throw new InvalidOperationException(string.Format("Vector.Multiply(Matrix m) - Dimension Mismatch - m.Rows[{0}] != this.Dimension[{1}]", m.Rows, this.Dimension));
+                throw new InvalidOperationException(string.Format("Vector.Multiply(Matrix<T> m) - Dimension Mismatch - m.Rows[{0}] != this.Dimension[{1}]", m.Rows, this.Dimension));
             MakeOrValidate(ref res, m.Cols);
             if (res.vec == this.vec)
-                throw new InvalidOperationException("Vector.Multiply(Matrix m) - Cannot multiply in place");
+                throw new InvalidOperationException("Vector.Multiply(Matrix<T> m) - Cannot multiply in place");
             for (int c = 0; c < m.Cols; c++)
             {
                 T sum = default(T);
@@ -185,13 +185,13 @@ namespace BulletHell.MathLib
 
             return res;
         }
-        public Vector<T> MultiplyL(Matrix m, Vector<T> res = default(Vector<T>))
+        public Vector<T> MultiplyL(Matrix<T> m, Vector<T> res = default(Vector<T>))
         {
             if (m.Cols != Dimension)
-                throw new InvalidOperationException(string.Format("Vector.Multiply(Matrix m) - Dimension Mismatch - m.Rows[{0}] != this.Dimension[{1}]", m.Rows, this.Dimension));
+                throw new InvalidOperationException(string.Format("Vector.Multiply(Matrix<T> m) - Dimension Mismatch - m.Rows[{0}] != this.Dimension[{1}]", m.Rows, this.Dimension));
             MakeOrValidate(ref res, m.Rows);
             if (res.vec == this.vec)
-                throw new InvalidOperationException("Vector.Multiply(Matrix m) - Cannot multiply in place");
+                throw new InvalidOperationException("Vector.Multiply(Matrix<T> m) - Cannot multiply in place");
             for (int r = 0; r < m.Rows; r++)
             {
                 T sum = default(T);
@@ -233,11 +233,11 @@ namespace BulletHell.MathLib
         {
             return v1.Dot(v2);
         }
-        public static Vector<T> operator *(Matrix m, Vector<T> v)
+        public static Vector<T> operator *(Matrix<T> m, Vector<T> v)
         {
             return v.MultiplyL(m);
         }
-        public static Vector<T> operator *(Vector<T> v, Matrix m)
+        public static Vector<T> operator *(Vector<T> v, Matrix<T> m)
         {
             return v.Multiply(m);
         }
@@ -302,26 +302,26 @@ namespace BulletHell.MathLib
                 Multiply((dynamic)d, this);
             }
         }
-        public Matrix AsColumnMatrix
+        public Matrix<T> AsColumnMatrix
         {
             get
             {
-                Matrix res = new Matrix(Dimension, 1);
+                Matrix<T> res = new Matrix<T>(Dimension, 1);
                 for (int i = 0; i < Dimension; i++)
                 {
-                    res[i, 1] = (double)(dynamic)this[i];
+                    res[i, 1] = this[i];
                 }
                 return res;
             }
         }
-        public Matrix AsRowMatrix
+        public Matrix<T> AsRowMatrix
         {
             get
             {
-                Matrix res = new Matrix(1, Dimension);
+                Matrix<T> res = new Matrix<T>(1, Dimension);
                 for (int i = 0; i < Dimension; i++)
                 {
-                    res[1, i] = (double)(dynamic)this[i];
+                    res[1, i] = this[i];
                 }
                 return res;
             }
