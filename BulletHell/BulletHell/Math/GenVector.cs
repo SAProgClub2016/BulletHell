@@ -117,7 +117,29 @@ namespace BulletHell.MathLib
         public Vector<T> Divide(T d, Vector<T> res = default(Vector<T>))
         {
             return Multiply(1 / (dynamic)d, res);
-        }/*
+        }
+
+        public Vector<Q> Map<Q>(Func<T, Q> f, Vector<Q> res = default(Vector<Q>))
+        {
+            MakeOrValidate(ref res, this.Dimension);
+            for (int i = 0; i < this.Dimension; i++)
+            {
+                res[i] = f(this[i]);
+            }
+            return res;
+        }
+        public Vector<Q> Map<S,Q>(Func<T, S, Q> f, Vector<S> o, Vector<Q> res = default(Vector<Q>))
+        {
+            MakeOrValidate(ref res, this.Dimension);
+            ValidateDimensions(this, o, "public Vector<Q> Map<S,Q>(Func<T, S, Q> f, Vector<S> o, Vector<Q> res = default(Vector<Q>))", "this", "o");
+            for (int i = 0; i < this.Dimension; i++)
+            {
+                res[i] = f(this[i],o[i]);
+            }
+            return res;
+        }
+        
+        /*
         public S Map<Q, S>(Func<T, Q> f, ref S res) where S : struct
         {
             Vector<Q>? rn = res as Vector<Q>?;
@@ -242,25 +264,25 @@ namespace BulletHell.MathLib
             return v.Multiply(m);
         }
 
-        private static void MakeOrValidate(ref Vector<T> v1, int dimension)
+        private static void MakeOrValidate<S>(ref Vector<S> v1, int dimension)
         {
             if (v1.vec == null)
             {
-                v1.vec = new T[dimension];
+                v1.vec = new S[dimension];
             }
             else
             {
                 ValidateDimensions(v1, dimension, "MakeOrValidate(Vector<T> v1, int dimension)", "v1");
             }
         }
-        private static void ValidateDimensions(Vector<T> v1, Vector<T> v2, string method, string pName1, string pName2)
+        private static void ValidateDimensions<Q,S>(Vector<Q> v1, Vector<S> v2, string method, string pName1, string pName2)
         {
             if (v1.Dimension != v2.Dimension)
             {
                 throw new InvalidOperationException(string.Format("Error - {0} - Dimension mismatch: {1}({2}) {3}({4})", method, pName1, v1.Dimension, pName2, v2.Dimension));
             }
         }
-        private static void ValidateDimensions(Vector<T> v1, int dim, string method, string pName1)
+        private static void ValidateDimensions<S>(Vector<S> v1, int dim, string method, string pName1)
         {
             if (v1.Dimension != dim)
             {

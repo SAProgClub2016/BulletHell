@@ -21,6 +21,13 @@ namespace BulletHell.MathLib
         // Dimensions
         public int Rows { get; protected set; }
         public int Cols { get; protected set; }
+        public Pair<int> Dimensions
+        {
+            get
+            {
+                return new Pair<int>(Rows, Cols);
+            }
+        }
 
         // Constructors
         public Matrix(int rows, int cols)
@@ -210,6 +217,33 @@ namespace BulletHell.MathLib
                         sum += (dynamic)this[r, i] * m2[i, c];
                     }
                     res[r,c]=sum;
+                }
+            }
+            return res;
+        }
+
+        public Matrix<S> Map<S>(Func<T,S> f, Matrix<S> res = null)
+        {
+            MakeOrValidate(this.Dimensions, ref res);
+            for (int r = 0; r < Rows; r++)
+            {
+                for (int c = 0; c < Cols; c++)
+                {
+                    res[r, c] = f(this[r, c]);
+                }
+            }
+            return res;
+        }
+
+        public Matrix<Q> Map<S, Q>(Func<T, S, Q> f, Matrix<S> o, Matrix<Q> res = null)
+        {
+            ValidateDimensions(o, this.Dimensions, "Map<S,Q>", "o");
+            MakeOrValidate(this.Dimensions, ref res);
+            for (int r = 0; r < Rows; r++)
+            {
+                for (int c = 0; c < Cols; c++)
+                {
+                    res[r, c] = f(this[r, c],o[r,c]);
                 }
             }
             return res;
@@ -593,37 +627,37 @@ namespace BulletHell.MathLib
         }
 
         // Validation
-        private static Matrix<T> MakeOrValidate(int r, int c, ref Matrix<T> m)
+        private static Matrix<S> MakeOrValidate<S>(int r, int c, ref Matrix<S> m)
         {
             if (m == null)
             {
-                m = new Matrix<T>(r, c);
+                m = new Matrix<S>(r, c);
             }
             else
             {
-                ValidateDimensions(m, r, c, "Matrix<T>.MakeOrValidate(int r, int c, ref Matrix<T> m)", "m");
+                ValidateDimensions(m, r, c, "Matrix<T>.MakeOrValidate(int r, int c, ref Matrix<S> m)", "m");
             }
             return m;
         }
-        private static Matrix<T> MakeOrValidate(Pair<int> dims, ref Matrix<T> m)
+        private static Matrix<S> MakeOrValidate<S>(Pair<int> dims, ref Matrix<S> m)
         {
             return MakeOrValidate(dims.x, dims.y, ref m);
         }
-        private static void ValidateDimensions(Matrix<T> m1, Matrix<T> m2, string method, string pName1, string pName2)
+        private static void ValidateDimensions<Q,S>(Matrix<Q> m1, Matrix<S> m2, string method, string pName1, string pName2)
         {
             if ((m1.Cols != m2.Cols) || (m1.Rows != m2.Rows))
             {
                 throw new InvalidOperationException(string.Format("Error - {0} - Dimension mismatch: {1}({2},{3}) {4}({5},{6})", method, pName1, m1.Rows, m1.Cols, pName2, m2.Rows, m2.Cols));
             }
         }
-        private static void ValidateDimensions(Matrix<T> m1, int r, int c, string method, string pName1)
+        private static void ValidateDimensions<S>(Matrix<S> m1, int r, int c, string method, string pName1)
         {
             if ((m1.Cols != c) || (m1.Rows != r))
             {
                 throw new InvalidOperationException(string.Format("Error - {0} - Dimension mismatch: expected(({1},{2}) given {3}({4},{5})", method, r, c, pName1, m1.Rows, m1.Cols));
             }
         }
-        private static void ValidateDimensions(Matrix<T> m1, Pair<int> dims, string method, string pName1)
+        private static void ValidateDimensions<S>(Matrix<S> m1, Pair<int> dims, string method, string pName1)
         {
             ValidateDimensions(m1, dims.x, dims.y, method, pName1);
         }
