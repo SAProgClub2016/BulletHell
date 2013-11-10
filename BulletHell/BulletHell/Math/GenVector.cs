@@ -138,7 +138,32 @@ namespace BulletHell.MathLib
             }
             return res;
         }
-        
+
+        public static Func<S, Vector<Q>> Aggregate<S, Q>(params Func<S, Q>[] comps)
+        {
+            return x =>
+            {
+                Vector<Q> ans = new Vector<Q>(comps.Length);
+                for (int i = 0; i < ans.Dimension; i++)
+                {
+                    ans[i] = comps[i](x);
+                }
+                return ans;
+            };
+        }
+        public static Func<S, Vector<T>> Aggregate<S>(params Func<S, T>[] comps)
+        {
+            return x =>
+            {
+                Vector<T> ans = new Vector<T>(comps.Length);
+                for (int i = 0; i < ans.Dimension; i++)
+                {
+                    ans[i] = comps[i](x);
+                }
+                return ans;
+            };
+        }
+
         /*
         public S Map<Q, S>(Func<T, Q> f, ref S res) where S : struct
         {
