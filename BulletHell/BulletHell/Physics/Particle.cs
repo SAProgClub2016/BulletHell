@@ -6,7 +6,7 @@ using BulletHell.MathLib;
 
 namespace BulletHell.Physics
 {
-    class Particle
+    public class Particle
     {
         private double time;
         private Vector<double> pos;

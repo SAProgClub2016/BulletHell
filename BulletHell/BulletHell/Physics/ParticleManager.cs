@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BulletHell.Physics
 {
-    public virtual class ParticleManager
+    public class ParticleManager
     {
     }
 }

@@ -6,14 +6,19 @@ using System.Drawing;
 using BulletHell.Physics;
 using BulletHell.MathLib;
 
-namespace BulletHell
+namespace BulletHell.Gfx
 {
     public interface GraphicsObject
     {
-        public void DrawObject(double t, Graphics g);
-        public Brush ObjectBrush { get; set; }
-        public Pen ObjectPen { get; set; }
+        Particle Position { get; set; }
+        void DrawObject(double t, Graphics g);
+        Brush ObjectBrush { get; set; }
+        Pen ObjectPen { get; set; }
+        void DrawObject(System.Drawing.Graphics g);
     }
+}
+namespace BulletHell.Gfx.Objects
+{
     public class Ellipse : GraphicsObject
     {
         private Particle p, r;
@@ -21,7 +26,7 @@ namespace BulletHell
         public Brush ObjectBrush { get; set; }
         public Pen ObjectPen { get; set; }
         public Ellipse(Particle p, double rx, double ry)
-            : this(p, new Particle(x => rx, y => ry), false)
+            : this(p, new Particle(x => rx, y => ry))
         {
         }
         public Ellipse(Particle p, Particle rrad, bool radParented = false)
@@ -41,7 +46,7 @@ namespace BulletHell
                 rrad -= pos;
             }
             Vector<double> apos = pos-rrad;
-            Rectangle bounds = new Rectangle((int)apos[0],(int)apos[1],(int)(2*rrad[0]),(int)(2*rrad[1])));
+            Rectangle bounds = new Rectangle((int)apos[0],(int)apos[1],(int)(2*rrad[0]),(int)(2*rrad[1]));
             if(ObjectBrush!=null)
             {
                 g.FillEllipse(ObjectBrush,bounds);
@@ -49,6 +54,40 @@ namespace BulletHell
             if(ObjectPen!=null)
             {
                 g.DrawEllipse(ObjectPen,bounds);
+            }
+        }
+        public void DrawObject(Graphics g)
+        {
+            Vector<double> pos = p.CurrentPosition;
+            Vector<double> rrad = r.CurrentPosition;
+            if (rParented)
+            {
+                rrad -= pos;
+            }
+            Console.WriteLine(rrad);
+            Vector<double> apos = pos-rrad;
+            Console.WriteLine(apos);
+            Console.WriteLine(rrad - pos);
+            Rectangle bounds = new Rectangle((int)apos[0],(int)apos[1],(int)(2*rrad[0]),(int)(2*rrad[1]));
+            Console.WriteLine(bounds);
+            if(ObjectBrush!=null)
+            {
+                g.FillEllipse(ObjectBrush,bounds);
+            }
+            if(ObjectPen!=null)
+            {
+                g.DrawEllipse(ObjectPen,bounds);
+            }
+        }
+        public Particle Position
+        {
+            get
+            {
+                return p;
+            }
+            set
+            {
+                p = value;
             }
         }
     }

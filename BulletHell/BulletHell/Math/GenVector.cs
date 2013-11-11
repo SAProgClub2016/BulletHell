@@ -100,7 +100,7 @@ namespace BulletHell.MathLib
             ValidateDimensions(this, v2, "Vector.Subtract(Vector<T> v2, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
-                res[i] = (dynamic) v2[i] - this[i];
+                res[i] = (dynamic)this[i] - v2[i];
             }
             return res;
         }

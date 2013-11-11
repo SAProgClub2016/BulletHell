@@ -8,6 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using BulletHell.Time;
 using BulletHell.Physics;
+using BulletHell.Gfx;
+using BulletHell.Gfx.Objects;
 
 namespace BulletHell
 {
@@ -15,17 +17,23 @@ namespace BulletHell
     {
         int t = 0;
 
-        Particle p1;
-        Particle p2;
+        GraphicsObject o1, o2;
+        BufferedGraphics buff;
 
         public MainForm()
         {
             InitializeComponent();
             int vx = 3;
             int vy = 5;
-            p1 = new Particle(x => vx * x, y => vy * y);
+            Particle p1 = new Particle(x => vx * x, y => vy * y);
             int radius = 10;
-            p2 = new Particle(p1, x => radius * Math.Cos(x), y => radius * Math.Sin(y));
+            Particle p2 = new Particle(p1, x => radius * Math.Cos(x), y => radius * Math.Sin(y));
+            o1 = new Ellipse(p1, 5, 5);
+            o2 = new Ellipse(p2, 5, 5);
+            o1.ObjectBrush = Brushes.Aquamarine;
+            o2.ObjectBrush = Brushes.OrangeRed;
+            BufferedGraphicsContext c = BufferedGraphicsManager.Current;
+            buff = c.Allocate(CreateGraphics(), ClientRectangle);
         }
         public void GameLoop()
         {
@@ -42,23 +50,31 @@ namespace BulletHell
         }
         private void RenderScene()
         {
-            Graphics g = CreateGraphics();
-            g.FillRectangle(Brushes.White, this.ClientRectangle);
-            int r = 20;
-            g.FillEllipse(Brushes.Aquamarine, new Rectangle((int)p1.CurrentPosition[0], (int)p1.CurrentPosition[1], r, r));
-            g.FillEllipse(Brushes.OrangeRed, new Rectangle((int)p2.CurrentPosition[0], (int)p2.CurrentPosition[1], r, r));
+            if (buff != null)
+            {
+                Graphics g = buff.Graphics;
+                g.FillRectangle(Brushes.Black, this.ClientRectangle);
+                o1.DrawObject(g);
+                for (int i = 0; i < 4; i++)
+                {
+                    o2.DrawObject(((double)t)/3+((double)i)/9,g);
+                }
+                //o2.DrawObject(g);
+                buff.Render();
+            }
         }
         private void GameLogic()
         {
             double time = t;
             time /= 3;
-            p1.Time = time;
-            p2.Time = time;
+            o1.Position.Time = time;
+            o2.Position.Time = time;
+            Console.OpenStandardOutput();
+            Console.WriteLine("Help"+o1.Position);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-
         }
     }
 }
