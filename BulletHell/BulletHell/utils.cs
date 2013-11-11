@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BulletHell
 {
-    class Utils
+    public class Utils
     {
         /*public static bool CastAndAssign<R, S>(R from, ref S to) where S : class
         {

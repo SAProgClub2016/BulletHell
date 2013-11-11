@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BulletHell.Time;
 
-namespace BulletHell.Game
+namespace BulletHell.Physics
 {
-    public class Game
+    public virtual class ParticleManager
     {
     }
 }
