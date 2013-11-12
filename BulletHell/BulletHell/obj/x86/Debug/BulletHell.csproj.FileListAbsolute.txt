@@ -6,3 +6,5 @@ H:\code\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.csproj.
 H:\code\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.exe
 H:\code\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.pdb
 H:\code\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.MainForm.resources
+C:\Users\rthimmiah\Documents\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.exe
+C:\Users\rthimmiah\Documents\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.pdb
