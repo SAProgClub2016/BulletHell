@@ -64,6 +64,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bullet.cs" />
+    <Compile Include="BulletEmitter.cs" />
+    <Compile Include="BulletTrajectory.cs" />
+    <Compile Include="Entity.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GraphicsObject.cs" />
     <Compile Include="HiResTimer.cs" />

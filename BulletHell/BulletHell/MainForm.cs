@@ -10,6 +10,7 @@ using BulletHell.Time;
 using BulletHell.Physics;
 using BulletHell.Gfx;
 using BulletHell.Gfx.Objects;
+using System.Collections.Generic;
 
 namespace BulletHell
 {
@@ -19,17 +20,21 @@ namespace BulletHell
 
         GraphicsObject o1, o2;
         BufferedGraphics buff;
+        List<GraphicsObject> drawList;
 
         public MainForm()
         {
             InitializeComponent();
             int vx = 3;
             int vy = 5;
+            drawList = new List<GraphicsObject>();
+
             Particle p1 = new Particle(x => vx * x, y => vy * y);
             int radius = 10;
             Particle p2 = new Particle(p1, x => radius * Math.Cos(x), y => radius * Math.Sin(y));
             o1 = new Ellipse(p1, 5, 5);
             o2 = new Ellipse(p2, 5, 5);
+            
             o1.ObjectBrush = Brushes.Aquamarine;
             o2.ObjectBrush = Brushes.OrangeRed;
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
