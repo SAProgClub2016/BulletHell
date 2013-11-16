@@ -36,7 +36,7 @@ namespace BulletHell
             
             //int radius = 10;
             //Particle p2 = new Particle(p1, x => radius * Math.Cos(x), y => radius * Math.Sin(y));
-            o1 = new Ellipse(p1, 5, 5);
+            o1 = new Ellipse(p1, 7, 7);
             o2 = new Ellipse(null, 5, 5);
             
             o1.ObjectBrush = Brushes.Aquamarine;
@@ -45,8 +45,10 @@ namespace BulletHell
             bEms[0]=new BulletEmission(2.5,0,new BulletTrajectory[2] {BulletTrajectoryFactory.SimpleVel(o2,10,0), BulletTrajectoryFactory.SimpleVel(o2,-10,0)});
             bEms[1]=new BulletEmission(2.5,0,new BulletTrajectory[2] {BulletTrajectoryFactory.SimpleVel(o2,0,10), BulletTrajectoryFactory.SimpleVel(o2,0,-10)});
             BulletEmitter em = new BulletEmitter(bEms);
-            e = new Entity(new Ellipse(p1, 7, 7), em);
-            e2 = new Entity(new Ellipse(p2, 7, 7), em);
+            e = new Entity(o1.Clone(), em);
+            GraphicsObject ell = o1.Clone();
+            ell.Position = p2;
+            e2 = new Entity(ell, em);
             drawList.Add(e);
             drawList.Add(e2);
 
@@ -71,7 +73,7 @@ namespace BulletHell
             if (buff != null)
             {
                 Graphics g = buff.Graphics;
-                g.FillRectangle(Brushes.White, this.ClientRectangle);
+                g.FillRectangle(Brushes.Black, this.ClientRectangle);
                 //Console.WriteLine(drawList.Count);
                 for (int i = 0; i < drawList.Count; i++ )
                 {
