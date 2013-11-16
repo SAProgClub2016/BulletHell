@@ -24,11 +24,19 @@ namespace BulletHell.Game
                 i = value;
             }
         }
+        public BulletEmitter Emitter
+        {
+            get
+            {
+                return e;
+            }
+        }
 
         public Entity(GraphicsObject sh, BulletEmitter e)
         {
             i = sh;
             this.e = e;
         }
+
     }
 }

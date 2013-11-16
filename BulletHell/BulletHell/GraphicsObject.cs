@@ -15,6 +15,7 @@ namespace BulletHell.Gfx
         Brush ObjectBrush { get; set; }
         Pen ObjectPen { get; set; }
         void DrawObject(System.Drawing.Graphics g);
+        GraphicsObject Clone();
     }
 }
 namespace BulletHell.Gfx.Objects
@@ -64,12 +65,12 @@ namespace BulletHell.Gfx.Objects
             {
                 rrad -= pos;
             }
-            Console.WriteLine(rrad);
+            //Console.WriteLine(rrad);
             Vector<double> apos = pos-rrad;
-            Console.WriteLine(apos);
-            Console.WriteLine(rrad - pos);
+            //Console.WriteLine(apos);
+            //Console.WriteLine(rrad - pos);
             Rectangle bounds = new Rectangle((int)apos[0],(int)apos[1],(int)(2*rrad[0]),(int)(2*rrad[1]));
-            Console.WriteLine(bounds);
+            //Console.WriteLine(bounds);
             if(ObjectBrush!=null)
             {
                 g.FillEllipse(ObjectBrush,bounds);
@@ -89,6 +90,20 @@ namespace BulletHell.Gfx.Objects
             {
                 p = value;
             }
+        }
+        public GraphicsObject Clone()
+        {
+            Ellipse ans;
+            if (rParented)
+            {
+                Particle s = new Particle(x => r.Position(x) - p.Position(x));
+                ans = new Ellipse(p, s, false);
+            }
+            else
+                ans = new Ellipse(p, r, false);
+            ans.ObjectBrush = ObjectBrush;
+            ans.ObjectPen = ObjectPen;
+            return ans;
         }
     }
 }
