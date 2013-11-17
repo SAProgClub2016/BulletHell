@@ -67,7 +67,7 @@ namespace BulletHell.Gfx.Objects
             }
             //Console.WriteLine(rrad);
             Vector<double> apos = pos-rrad;
-            //Console.WriteLine(apos);
+            //Console.WriteLine(p.CurrentVelocity(0.1));
             //Console.WriteLine(rrad - pos);
             Rectangle bounds = new Rectangle((int)apos[0],(int)apos[1],(int)(2*rrad[0]),(int)(2*rrad[1]));
             //Console.WriteLine(bounds);

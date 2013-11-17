@@ -36,6 +36,13 @@ namespace BulletHell.Game
         {
             i = sh;
             this.e = e;
+            if (e != null)
+                e.pos = sh.Position;
+        }
+        public Entity(GraphicsObject sh)
+            : this(sh, null)
+        {
+
         }
 
     }

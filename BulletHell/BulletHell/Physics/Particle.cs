@@ -41,6 +41,14 @@ namespace BulletHell.Physics
                 return pos;
             }
         }
+        public Vector<double> CurrentVelocity(double dt)
+        {
+            return Velocity(Time, dt);
+        }
+        public Vector<double> Velocity(double t, double dt)
+        {
+            return (Position(t+(dt/2))-Position(t-(dt/2)))/dt;
+        }
 
         public Vector<double> Position(double time)
         {
