@@ -13,7 +13,7 @@ namespace BulletHell.Physics
         private int dimension;
         
         public Particle Parent { get; set; }
-        Func<double, Vector<double>> PosFunc;
+        protected Func<double, Vector<double>> PosFunc;
 
         public double Time
         {
