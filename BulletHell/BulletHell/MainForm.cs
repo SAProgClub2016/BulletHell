@@ -192,5 +192,13 @@ namespace BulletHell
         private void MainForm_Load(object sender, EventArgs e)
         {
         }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            
+        }
+        private void MainForm_KeyUp(object sender, KeyEventArgs e)
+        {
+        }
     }
 }
