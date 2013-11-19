@@ -64,12 +64,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bullet.cs" />
-    <Compile Include="BulletEmitter.cs" />
-    <Compile Include="BulletTrajectory.cs" />
-    <Compile Include="Entity.cs" />
-    <Compile Include="Game.cs" />
-    <Compile Include="GraphicsObject.cs" />
+    <Compile Include="Game\Bullet.cs" />
+    <Compile Include="Game\BulletEmitter.cs" />
+    <Compile Include="Game\BulletTrajectory.cs" />
+    <Compile Include="Game\Entity.cs" />
+    <Compile Include="Game\Game.cs" />
+    <Compile Include="Graphics\GraphicsObject.cs" />
     <Compile Include="HiResTimer.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
