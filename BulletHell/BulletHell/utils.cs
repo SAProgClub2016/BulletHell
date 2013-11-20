@@ -7,21 +7,9 @@ namespace BulletHell
 {
     public class Utils
     {
-        /*public static bool CastAndAssign<R, S>(R from, ref S to) where S : class
+        public static Func<S, T> MakeClosure<Q, S, T>(Q q, Func<Q, S, T> f)
         {
-            to = from as S;
-            return to == null;
+            return (S s) => f(q,s);
         }
-        public static bool CastAndAssign<R, S>(R from, ref S to) where S : struct
-        {
-            Nullable<S> ns = from as Nullable<S>;
-            if (ns != null)
-            {
-                to = ns.Value;
-                return true;
-            }
-            to = default(S);
-            return false;
-        }*/
     }
 }
