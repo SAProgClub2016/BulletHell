@@ -121,6 +121,19 @@ namespace BulletHell.Physics
                 });
             PosFunc = Utils.MakeClosure(PosFunc,f1);
         }
+        public static Particle operator +(Particle p, Func<Vector<double>, Vector<double>> f)
+        {
+            Particle ans = new Particle(x => f(p.PosFunc(x)));
+            ans.Time = p.Time;
+            return ans;
+        }
+        public static Particle operator +(Func<double, double> f, Particle p)
+        {
+            Particle ans = new Particle(x => p.PosFunc(f(x)));
+            ans.Time = p.Time;
+            return ans;
+        }
+        public static Vector<double> MakeInside()
     }
     public class ParticleTest
     {

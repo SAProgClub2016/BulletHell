@@ -14,6 +14,35 @@ namespace BulletHell.MathLib
             x = x1;
             y = y1;
         }
+        public T this[int i]
+        {
+            get
+            {
+                switch (i)
+                {
+                    case 0:
+                        return x;
+                    case 1:
+                        return y;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
+            set
+            {
+                switch (i)
+                {
+                    case 0:
+                        x = value;
+                        break;
+                    case 1:
+                        y = value;
+                        break;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
+        }
     }
 
     public interface Mappable<T>

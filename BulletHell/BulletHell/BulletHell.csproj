@@ -81,6 +81,7 @@
     <Compile Include="Math\GenMatrix.cs" />
     <Compile Include="Math\GenVector.cs" />
     <Compile Include="Math\Math.cs" />
+    <Compile Include="Math\GenRect.cs" />
     <Compile Include="Physics\Particle.cs" />
     <Compile Include="Physics\ParticleManager.cs" />
     <Compile Include="Physics\PhysicsTest.cs" />
