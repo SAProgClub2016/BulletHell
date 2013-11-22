@@ -83,7 +83,8 @@ namespace BulletHell.Physics
         public override string ToString()
         {
             return "<Particle: pos: " + CurrentPosition + " >";
-        }public void ChangeTrajectory(Func<double, Vector<double>> newPath, double t1, bool seal1 = true, double t2 = -1, bool seal2 = true)
+        }
+        public void ChangeTrajectory(Func<double, Vector<double>> newPath, double t1, bool seal1 = true, double t2 = -1, bool seal2 = true)
         {
 
             Func<Func<double,Vector<double>>,double, Vector<double>> f1 = ((f,t) =>
@@ -133,7 +134,6 @@ namespace BulletHell.Physics
             ans.Time = p.Time;
             return ans;
         }
-        public static Vector<double> MakeInside()
     }
     public class ParticleTest
     {

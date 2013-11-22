@@ -9,8 +9,7 @@ using System.Windows.Forms;
 using BulletHell.Time;
 using BulletHell.Physics;
 using BulletHell.Gfx;
-using BulletHell.Gfx.Objects;
-using BulletHell.Game;
+using BulletHell.GameLib;
 using BulletHell.MathLib;
 
 namespace BulletHell
@@ -22,30 +21,26 @@ namespace BulletHell
         //int it = 0;
         bool[] keys = new bool[256];
 
-        GraphicsObject o1, o2;
-        Entity e,e2;
+        Drawable o1, o2;
+        Entity e, e2;
+
         BufferedGraphics buff;
-        List<Entity> drawList;
+        Game game;
         Particle MEEEEEEE;
 
         public MainForm()
         {
             InitializeComponent();
-            int vx = 1,vx2=2;
+            int vx = 1, vx2 = 2;
             int vy = 2, vy2 = 4;
-            drawList = new List<Entity>();
+            game = new Game();
 
             Particle p1 = new Particle(x => vx * x, y => vy * y);
             Particle p2 = new Particle(x => ClientRectangle.Width - vx2 * x, y => vy2 * y);
-            
-            //int radius = 10;
-            //Particle p2 = new Particle(p1, x => radius * Math.Cos(x), y => radius * Math.Sin(y));
-            o1 = new Ellipse(p1, 7, 7);
-            o2 = new Ellipse(null, 5, 5);
-            
-            o1.ObjectBrush = Brushes.Aquamarine;
-            o2.ObjectBrush = Brushes.OrangeRed;
-            //double PIOSIX = Math.PI/6;
+
+            o1 = DrawableFactory.MakeCircle(7, new GraphicsStyle(Brushes.Green));
+            o2 = DrawableFactory.MakeCircle(5, new GraphicsStyle(Brushes.OrangeRed));
+
             double FULL = 2 * Math.PI;
             double cd = .5;
             int perCirc = 12;
@@ -55,13 +50,13 @@ namespace BulletHell
             BulletTrajectory[][] arrs = new BulletTrajectory[offsets][];
             for (int i = 0; i < offsets; i++)
                 arrs[i] = new BulletTrajectory[perCirc];
-            Brush[] cols = { Brushes.AliceBlue, Brushes.Orange, Brushes.PaleGoldenrod, Brushes.GreenYellow, Brushes.IndianRed, Brushes.Cyan, Brushes.Crimson, Brushes.Pink, Brushes.SeaGreen, Brushes.Silver, Brushes.Salmon, Brushes.Purple};
-            GraphicsObject[] dcols = new GraphicsObject[cols.Length];
+            Brush[] cols = { Brushes.AliceBlue, Brushes.Orange, Brushes.PaleGoldenrod, Brushes.GreenYellow, Brushes.IndianRed, Brushes.Cyan, Brushes.Crimson, Brushes.Pink, Brushes.SeaGreen, Brushes.Silver, Brushes.Salmon, Brushes.Purple };
+            /*GraphicsObject[] dcols = new GraphicsObject[cols.Length];
             for (int i = 0; i < dcols.Length; i++)
             {
                 dcols[i] = o2.Clone();
                 dcols[i].ObjectBrush = cols[i];
-            }
+            }*/
             for (int i = 0; i < perCirc; i++)
             {
                 for (int j = 0; j < offsets; j++)
@@ -72,37 +67,21 @@ namespace BulletHell
             for (int i = 0; i < offsets; i++)
                 bEms[i] = new BulletEmission(cd, 0, arrs[i]);
 
-            //bEms[0]=new BulletEmission(5,0,new BulletTrajectory[2] {BulletTrajectoryFactory.AngleMagVel(o2,DOWN+PIOSIX,10), BulletTrajectoryFactory.AngleMagVel(o2,DOWN-PIOSIX,10)});
-            //bEms[1]=new BulletEmission(5,0,new BulletTrajectory[2] {BulletTrajectoryFactory.AngleMagVel(o2,DOWN-Math.PI/12,10), BulletTrajectoryFactory.AngleMagVel(o2,DOWN+Math.PI/12,10)});
-            int nbems=5;
-            BulletEmitter[] ems = new BulletEmitter[nbems];
-            for (int i = 0; i < ems.Length; i++)
-            {
-                ems[i] = new BulletEmitter(bEms);
-            }
+            BulletEmitter em = new BulletEmitter(bEms);
 
-            e = new Entity(o1.Clone(), ems[0]);
-            GraphicsObject ell = o1.Clone();
-            ell.Position = p2;
-            e2 = new Entity(ell, ems[1]);
+            e = new Entity(p1, o1, em);
+            e2 = new Entity(p2, o1, em);
 
-            GraphicsObject ell2 = o1.Clone();
-            ell2.Position = new Particle(x => 0.5 * x + 500, y => 3 * y);
-            Entity e3 = new Entity(ell2, ems[2]);
+            Particle p3 = new Particle(x => 0.5 * x + 500, y => 3 * y);
+            Entity e3 = new Entity(p3, o1, em);
 
-            GraphicsObject ell3 = o1.Clone();
-            ell3.Position = new Particle(x => -0.25 * x + 300, y => 3.5 * y);
-            Entity e4 = new Entity(ell3, ems[3]);
+            Particle p4 = new Particle(x => -0.25 * x + 300, y => 3.5 * y);
+            Entity e4 = new Entity(p4, o1, em);
 
-            GraphicsObject ell4 = o1.Clone();
-            ell4.Position = new Particle(x => -0.4 * x + 800, y => 2 * y);
-            Entity e5 = new Entity(ell4, ems[4]);
+            Particle p5 = new Particle(x => -0.4 * x + 800, y => 2 * y);
+            Entity e5 = new Entity(p5, o1, em);
 
-            drawList.Add(e);
-            drawList.Add(e2);
-            drawList.Add(e3);
-            drawList.Add(e4);
-            drawList.Add(e5);
+            game = game + e + e2 + e3 + e4 + e5;
 
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
@@ -114,12 +93,12 @@ namespace BulletHell
             BulletHell.Time.Timer gameTime = new BulletHell.Time.Timer();
             BulletHell.Time.Timer frameTimer = new BulletHell.Time.Timer();
             gameTime.Reset();
-            int count = 0,FRAMES=30;
+            int count = 0, FRAMES = 30;
             while (this.Created)
             {
                 if (++count == FRAMES)
                 {
-                    Console.WriteLine("FR: {0}", 1000*(double)(FRAMES) / (double)frameTimer.Time);
+                    Console.WriteLine("FR: {0}", 1000 * (double)(FRAMES) / (double)frameTimer.Time);
                     frameTimer.Reset();
                     count = 0;
                 }
@@ -138,58 +117,44 @@ namespace BulletHell
             {
                 Graphics g = buff.Graphics;
                 g.FillRectangle(Brushes.Black, this.ClientRectangle);
-                //Console.WriteLine(drawList.Count);
-                for (int i = 0; i < drawList.Count; i++ )
-                {
-                    Entity o = drawList[i];
-                    Vector<double> cpos = o.MyShape.Position.CurrentPosition;
-                    Rectangle r = ClientRectangle;
-
-                    if (cpos[0] < -20 || cpos[1] < -20 || cpos[0] > r.Width +20 || cpos[1] > r.Height+20)
-                    {
-                        drawList.Remove(o);
-                        i--;
-                    }
-
-                    //Console.WriteLine(o);
-                    o.MyShape.DrawObject(g);
-                }
-                //o2.DrawObject(g);
+                game.Draw(g);
                 buff.Render();
             }
         }
         double oldTime = 0;
         private void GameLogic()
         {
-            
+            int bounds = 20;
             double time = at;
             time /= 150;
-            if (e != null)
+
+            game.Time = time;
+            List<Entity> removeList = new List<Entity>();
+            foreach (Entity e in game.Entities)
             {
-                List<Entity> newBullets = new List<Entity>();
-                foreach (Entity o in drawList)
+                Rectangle r = ClientRectangle;
+
+                GenRect<double> gr = new GenRect<double>(new Vector<double>(r.X - bounds, r.Y - bounds), new Vector<double>(r.X + r.Width + bounds, r.Y + r.Height + bounds));
+                if (!gr.Contains(e.Position.CurrentPosition))
                 {
-                    if (o.Emitter == null)
-                        continue;
-                    foreach (Bullet b in o.Emitter.BulletsBetween(oldTime, time))
-                    {
-                        //b.MyShape.Position.Parent = o.MyShape.Position;
-                        newBullets.Add(b);
-                    }
-                }
-                foreach(Entity o in newBullets)
-                    drawList.Add(o);
-                oldTime = time;
-                foreach (Entity o in drawList)
-                {
-                    o.MyShape.Position.Time = time;
+                    removeList.Add(e);
                 }
             }
-            else {
-                Console.WriteLine(e);
+            foreach (Entity e in removeList)
+                game -= e;
+            List<Entity> newBullets = new List<Entity>();
+            foreach (Entity o in game.Entities)
+            {
+                if (o.Emitter == null)
+                    continue;
+                foreach (Bullet b in o.Emitter.BulletsBetween(o.Position, oldTime, time))
+                {
+                    newBullets.Add(b);
+                }
             }
-            //Console.OpenStandardOutput();
-            //Console.WriteLine("Help"+o1.Position);
+            foreach (Entity o in newBullets)
+                game.Add(o);
+            oldTime = time;
         }
 
         private void MainForm_Load(object sender, EventArgs e)

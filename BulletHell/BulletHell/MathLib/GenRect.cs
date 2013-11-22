@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BulletHell.MathLib
 {
-    class GenRect<T>
+    public class GenRect<T>
     {
         public int Dimension { get; private set; }
         Vector<T> first;

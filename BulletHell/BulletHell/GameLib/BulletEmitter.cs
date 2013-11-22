@@ -6,7 +6,7 @@ using BulletHell;
 using BulletHell.Physics;
 using BulletHell.MathLib;
 
-namespace BulletHell.Game
+namespace BulletHell.GameLib
 {
     public struct BulletEmission
     {
@@ -25,9 +25,8 @@ namespace BulletHell.Game
     {
         BulletEmission[] pattern;
         double cycleTime;
-        public Particle pos;
 
-        public BulletEmitter(BulletEmission[] ps, Particle pos)
+        public BulletEmitter(BulletEmission[] ps)
         {
             pattern = ps;
             cycleTime = 0;
@@ -35,16 +34,9 @@ namespace BulletHell.Game
             {
                 cycleTime += b.Warmup + b.Cooldown;
             }
-            this.pos = pos;
         }
 
-        public BulletEmitter(BulletEmission[] bEms)
-            : this(bEms, null)
-        {
-
-        }
-
-        public List<Bullet> BulletsBetween(double t1, double t2)
+        public List<Bullet> BulletsBetween(Particle p, double t1, double t2)
         {
             //Console.WriteLine("{0},{1}",t1,t2);
             List<Bullet> ans = new List<Bullet>();
@@ -66,7 +58,7 @@ namespace BulletHell.Game
             if (index != 0 && k - this[index - 1].Cooldown - t1 > 0.001 && k - this[index - 1].Cooldown - t2 < 0.001)
             {
                 double t = k - this[index - 1].Cooldown;
-                Vector<double> x = pos.Position(t); 
+                Vector<double> x = p.Position(t); 
                 foreach (BulletTrajectory j in this[index - 1].Bullets)
                 {
                     ans.Add(j(t,x[0],x[1]));
@@ -80,7 +72,7 @@ namespace BulletHell.Game
                 k += b.Warmup;
                 if (k < t2)
                 {
-                    Vector<double> x = pos.Position(k);
+                    Vector<double> x = p.Position(k);
                     foreach (BulletTrajectory j in b.Bullets)
                     {
                         Console.WriteLine(k);

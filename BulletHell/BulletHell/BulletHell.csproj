@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2B96C304-6B5B-45F4-9FE9-82551B3DA639}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BulletHell</RootNamespace>
     <AssemblyName>BulletHell</AssemblyName>
@@ -49,7 +49,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>BulletHell.Physics.ParticleTest</StartupObject>
+    <StartupObject>BulletHell.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -64,12 +64,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game\Bullet.cs" />
-    <Compile Include="Game\BulletEmitter.cs" />
-    <Compile Include="Game\BulletTrajectory.cs" />
-    <Compile Include="Game\Entity.cs" />
-    <Compile Include="Game\Game.cs" />
-    <Compile Include="Graphics\GraphicsObject.cs" />
+    <Compile Include="GameLib\Bullet.cs" />
+    <Compile Include="GameLib\BulletEmitter.cs" />
+    <Compile Include="GameLib\BulletTrajectory.cs" />
+    <Compile Include="GameLib\Entity.cs" />
+    <Compile Include="GameLib\Game.cs" />
+    <Compile Include="Gfx\Drawable.cs" />
+    <Compile Include="Gfx\GraphicsStyles.cs" />
     <Compile Include="HiResTimer.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -77,11 +78,11 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Math\Function.cs" />
-    <Compile Include="Math\GenMatrix.cs" />
-    <Compile Include="Math\GenVector.cs" />
-    <Compile Include="Math\Math.cs" />
-    <Compile Include="Math\GenRect.cs" />
+    <Compile Include="MathLib\Function.cs" />
+    <Compile Include="MathLib\GenMatrix.cs" />
+    <Compile Include="MathLib\GenVector.cs" />
+    <Compile Include="MathLib\Math.cs" />
+    <Compile Include="MathLib\GenRect.cs" />
     <Compile Include="Physics\Particle.cs" />
     <Compile Include="Physics\ParticleManager.cs" />
     <Compile Include="Physics\PhysicsTest.cs" />
