@@ -20,11 +20,13 @@ namespace BulletHell
         int t = 0;
         int at = 0;
         //int it = 0;
+        bool[] keys = new bool[256];
 
         GraphicsObject o1, o2;
         Entity e,e2;
         BufferedGraphics buff;
         List<Entity> drawList;
+        Particle MEEEEEEE;
 
         public MainForm()
         {
@@ -104,6 +106,7 @@ namespace BulletHell
 
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
+            MEEEEEEE = new Particle(x => (double)ClientRectangle.Width / 2, y => (double)ClientRectangle.Height * 3 / 4);
         }
         public void GameLoop()
         {
@@ -195,10 +198,11 @@ namespace BulletHell
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            
+            keys[(int)e.KeyCode] = true;
         }
         private void MainForm_KeyUp(object sender, KeyEventArgs e)
         {
+            keys[(int)e.KeyCode] = false;
         }
     }
 }

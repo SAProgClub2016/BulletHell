@@ -14,3 +14,5 @@ S:\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.csprojResolv
 S:\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.MainForm.resources
 S:\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.Properties.Resources.resources
 S:\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.csproj.GenerateResource.Cache
+C:\Users\jschuchardt\Documents\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.exe
+C:\Users\jschuchardt\Documents\GitHub\BulletHell\BulletHell\BulletHell\obj\x86\Debug\BulletHell.pdb

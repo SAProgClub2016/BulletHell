@@ -33,7 +33,29 @@ namespace BulletHell.MathLib
         }
         public bool Contains(Vector<T> v)
         {
-            
+            if (v.Dimension != Dimension)
+                return false;
+            for (int i = 0; i < Dimension; i++)
+            {
+                if ((dynamic)v[i] < first[i] || (dynamic)v[i] > last[i])
+                    return false;
+            }
+            return true;
+        }
+        public Vector<T> MakeInside(Vector<T> v)
+        {
+            Vector<T> ans = new Vector<T>(Dimension);
+            v=v.MakeDim(Dimension);
+            for (int i = 0; i < Dimension; i++)
+            {
+                if ((dynamic)v[i] < first[i])
+                    ans[i] = first[i];
+                else if ((dynamic)v[i] > last[i])
+                    ans[i] = last[i];
+                else
+                    ans[i] = v[i];
+            }
+            return ans;
         }
     }
 }
