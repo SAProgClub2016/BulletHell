@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 using BulletHell.Time;
 using BulletHell.Physics;
 using BulletHell.Gfx;
@@ -87,28 +88,19 @@ namespace BulletHell
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
             MEEEEEEE = new Particle(x => (double)ClientRectangle.Width / 2, y => (double)ClientRectangle.Height * 3 / 4);
         }
+        BulletHell.Time.Timer timer, gameTime, frameTimer;
         public void GameLoop()
         {
-            BulletHell.Time.Timer timer = new BulletHell.Time.Timer();
-            BulletHell.Time.Timer gameTime = new BulletHell.Time.Timer();
-            BulletHell.Time.Timer frameTimer = new BulletHell.Time.Timer();
+            timer = new BulletHell.Time.Timer();
+            gameTime = new BulletHell.Time.Timer();
+            frameTimer = new BulletHell.Time.Timer();
             gameTime.Reset();
-            int count = 0, FRAMES = 30;
+            Thread renderThread = new Thread(this.ASynchRender);
+            renderThread.Start();
             while (this.Created)
             {
-                if (++count == FRAMES)
-                {
-                    Console.WriteLine("FR: {0}", 1000 * (double)(FRAMES) / (double)frameTimer.Time);
-                    frameTimer.Reset();
-                    count = 0;
-                }
-                timer.Reset();
-                GameLogic();
-                RenderScene();
                 Application.DoEvents();
-                t += 1;
-                at = (int)gameTime.Time;
-                while (timer.Time < 20) ;
+                //t += 1;
             }
         }
         private void RenderScene()
@@ -168,6 +160,51 @@ namespace BulletHell
         private void MainForm_KeyUp(object sender, KeyEventArgs e)
         {
             keys[(int)e.KeyCode] = false;
+        }
+
+        public void ASynchRender()
+        {
+            int count = 0, FRAMES = 30;
+            while (this.Created)
+            {
+                if (++count == FRAMES)
+                {
+                    Console.WriteLine("FR: {0}", 1000 * (double)(FRAMES) / (double)frameTimer.Time);
+                    frameTimer.Reset();
+                    count = 0;
+                }
+                timer.Reset();
+                at = (int)gameTime.Time;
+                GameLogic();
+                RenderScene();
+                while (timer.Time < 20) ;
+            }
+        }
+
+        BulletHell.Time.Timer renderTimer=null;
+        public void ArbitraryRender()
+        {
+            if (renderTimer == null)
+            {
+                renderTimer = new BulletHell.Time.Timer();
+                ArbitraryRenderHelper();
+            }
+            else if (renderTimer.Time > 20)
+            {
+                renderTimer.Reset();
+                ArbitraryRenderHelper();
+            }
+        }
+        private void ArbitraryRenderHelper()
+        {
+            at = (int)gameTime.Time;
+            GameLogic();
+            RenderScene();
+        }
+
+        private void MainForm_Move(object sender, EventArgs e)
+        {
+            //ArbitraryRender();
         }
     }
 }

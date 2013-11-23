@@ -13,6 +13,7 @@ namespace BulletHell.GameLib
         Particle pos;
         Drawable d;
         BulletEmitter e;
+        GraphicsStyle gs;
 
         public double Time
         {
@@ -60,16 +61,24 @@ namespace BulletHell.GameLib
             }
         }
 
-        public Entity(Particle pos, Drawable draw, BulletEmitter e)
+        public GraphicsStyle Style
+        {
+            get
+            {
+                return gs;
+            }
+            set
+            {
+                gs = value;
+            }
+        }
+
+        public Entity(Particle pos, Drawable draw, BulletEmitter e = null, GraphicsStyle g = null)
         {
             this.pos = pos;
             d = draw;
             this.e = e;
-        }
-        public Entity(Particle pos, Drawable draw)
-            : this(pos, draw, null)
-        {
-
+            gs = g;
         }
 
     }
