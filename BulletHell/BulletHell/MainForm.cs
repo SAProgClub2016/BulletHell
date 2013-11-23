@@ -37,27 +37,24 @@ namespace BulletHell
             game = new Game();
 
             Particle p1 = new Particle(x => vx * x, y => vy * y);
-            Particle p2 = new Particle(x => ClientRectangle.Width - vx2 * x, y => vy2 * y);
+            Particle p2 = new Particle(Utils.MakeClosure<double,double,double>(ClientRectangle.Width,(w,x) => w - vx2 * x), y => vy2 * y);
+
+            Particle q = new Particle(t => 7 * t + 10 * Math.Cos(t), t => 3 * t + 10 * Math.Sin(t));
 
             o1 = DrawableFactory.MakeCircle(7, new GraphicsStyle(Brushes.Green));
             o2 = DrawableFactory.MakeCircle(5, new GraphicsStyle(Brushes.OrangeRed));
+            Drawable o3 = DrawableFactory.ChangeDefStyles(o2, new GraphicsStyle(Brushes.Azure));
 
             double FULL = 2 * Math.PI;
             double cd = .5;
             int perCirc = 12;
             int offsets = 6;
-            BulletEmission[] bEms = new BulletEmission[offsets];
+            BulletEmission[] bEms = new BulletEmission[offsets], bEms2 = new BulletEmission[offsets];
             double DOWN = Math.PI / 2;
+            // Makes the spiral pattern with bullets of shape o2
             BulletTrajectory[][] arrs = new BulletTrajectory[offsets][];
             for (int i = 0; i < offsets; i++)
                 arrs[i] = new BulletTrajectory[perCirc];
-            Brush[] cols = { Brushes.AliceBlue, Brushes.Orange, Brushes.PaleGoldenrod, Brushes.GreenYellow, Brushes.IndianRed, Brushes.Cyan, Brushes.Crimson, Brushes.Pink, Brushes.SeaGreen, Brushes.Silver, Brushes.Salmon, Brushes.Purple };
-            /*GraphicsObject[] dcols = new GraphicsObject[cols.Length];
-            for (int i = 0; i < dcols.Length; i++)
-            {
-                dcols[i] = o2.Clone();
-                dcols[i].ObjectBrush = cols[i];
-            }*/
             for (int i = 0; i < perCirc; i++)
             {
                 for (int j = 0; j < offsets; j++)
@@ -67,8 +64,35 @@ namespace BulletHell
             }
             for (int i = 0; i < offsets; i++)
                 bEms[i] = new BulletEmission(cd, 0, arrs[i]);
+            // Same as above, but we're gonna change the shape
+            for (int i = 0; i < offsets; i++)
+                arrs[i] = new BulletTrajectory[perCirc];
+            for (int i = 0; i < perCirc; i++)
+            {
+                for (int j = 0; j < offsets; j++)
+                {
+                    arrs[j][i] = BulletTrajectoryFactory.AngleMagVel(o3/*dcols[i%cols.Length]*/, (i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 10);
+                }
+            }
+            for (int i = 0; i < offsets; i++)
+                bEms2[i] = new BulletEmission(cd, 0, arrs[i]);
+            // Same as above, but we're gonna change the shape again and the path
+            BulletEmission[] bEms3 = new BulletEmission[offsets];
+            for (int i = 0; i < offsets; i++)
+                arrs[i] = new BulletTrajectory[perCirc];
+            for (int i = 0; i < perCirc; i++)
+            {
+                for (int j = 0; j < offsets; j++)
+                {
+                    arrs[j][i] = BulletTrajectoryFactory.SpinningLinearAMVel(DrawableFactory.ChangeDefStyles(o2,new GraphicsStyle(Brushes.HotPink)), (i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 3, 0.5, 20);
+                }
+            }
+            for (int i = 0; i < offsets; i++)
+                bEms3[i] = new BulletEmission(cd, 0, arrs[i]);
 
             BulletEmitter em = new BulletEmitter(bEms);
+            BulletEmitter em2 = new BulletEmitter(bEms2);
+            BulletEmitter em3 = new BulletEmitter(bEms3);
 
             e = new Entity(p1, o1, em);
             e2 = new Entity(p2, o1, em);
@@ -83,6 +107,13 @@ namespace BulletHell
             Entity e5 = new Entity(p5, o1, em);
 
             game = game + e + e2 + e3 + e4 + e5;
+
+            Entity e6 = new Entity(q, o1, em2);
+            game += e6;
+
+            Particle r = new Particle(Utils.MakeClosure<double,double,double>((double)ClientRectangle.Width/3, (w,t)=>w+3*t), t=>5*t);
+            Entity e7 = new Entity(r,o1,em3);
+            game += e7;
 
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
@@ -110,7 +141,8 @@ namespace BulletHell
                 Graphics g = buff.Graphics;
                 g.FillRectangle(Brushes.Black, this.ClientRectangle);
                 game.Draw(g);
-                buff.Render();
+                if(this.Created)
+                    buff.Render();
             }
         }
         double oldTime = 0;
