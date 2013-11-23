@@ -110,11 +110,11 @@ namespace BulletHell
             game = game + e + e2 + e3 + e4 + e5;
 
             Entity e6 = new Entity(q, o1, em2);
-            game += e6;
+            //game += e6;
 
             Particle r = new Particle(Utils.MakeClosure<double,double,double>((double)ClientRectangle.Width/3, (w,t)=>w+3*t), t=>5*t);
             Entity e7 = new Entity(r,o1,em3);
-            game += e7;
+            //game += e7;
 
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
