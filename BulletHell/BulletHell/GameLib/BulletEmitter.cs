@@ -75,7 +75,7 @@ namespace BulletHell.GameLib
                     Vector<double> x = p.Position(k);
                     foreach (BulletTrajectory j in b.Bullets)
                     {
-                        Console.WriteLine(k);
+                        //Console.WriteLine(k);
                         ans.Add(j(k,x[0],x[1]));
                     }
                 }

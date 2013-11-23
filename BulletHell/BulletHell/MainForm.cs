@@ -28,6 +28,7 @@ namespace BulletHell
         BufferedGraphics buff;
         Game game;
         Particle MEEEEEEE;
+        bool DisplayFrameRate = true;
 
         public MainForm()
         {
@@ -39,7 +40,7 @@ namespace BulletHell
             Particle p1 = new Particle(x => vx * x, y => vy * y);
             Particle p2 = new Particle(Utils.MakeClosure<double,double,double>(ClientRectangle.Width,(w,x) => w - vx2 * x), y => vy2 * y);
 
-            Particle q = new Particle(t => 7 * t + 10 * Math.Cos(t), t => 3 * t + 10 * Math.Sin(t));
+            Particle q = new Particle(t => 7 * t + 10 * Utils.FastCos(t), t => 3 * t + 10 * Utils.FastSin(t));
 
             o1 = DrawableFactory.MakeCircle(7, new GraphicsStyle(Brushes.Green));
             o2 = DrawableFactory.MakeCircle(5, new GraphicsStyle(Brushes.OrangeRed));
@@ -84,7 +85,7 @@ namespace BulletHell
             {
                 for (int j = 0; j < offsets; j++)
                 {
-                    arrs[j][i] = BulletTrajectoryFactory.SpinningLinearAMVel(DrawableFactory.ChangeDefStyles(o2,new GraphicsStyle(Brushes.HotPink)), (i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 3, 0.5, 20);
+                    arrs[j][i] = BulletTrajectoryFactory.SpinningLinearAMVel(DrawableFactory.ChangeDefStyles(o2,new GraphicsStyle(Brushes.HotPink)), (i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 7/*3*/, 0.5, 20);
                 }
             }
             for (int i = 0; i < offsets; i++)
@@ -126,7 +127,7 @@ namespace BulletHell
             gameTime = new BulletHell.Time.Timer();
             frameTimer = new BulletHell.Time.Timer();
             gameTime.Reset();
-            Thread renderThread = new Thread(this.ASynchRender);
+            Thread renderThread = new Thread(this.ASynchGameLoop);
             renderThread.Start();
             while (this.Created)
             {
@@ -141,6 +142,12 @@ namespace BulletHell
                 Graphics g = buff.Graphics;
                 g.FillRectangle(Brushes.Black, this.ClientRectangle);
                 game.Draw(g);
+                if (DisplayFrameRate)
+                {
+                    g.FillRectangle(Brushes.Black, new Rectangle(18, 18, 300, 48));
+                    g.DrawString(string.Format("Framerate: {0}", fr), new Font("Arial", 12), Brushes.White, 20, 20);
+                    g.DrawString(string.Format("Entities: {0}", entityCount), new Font("Arial", 12), Brushes.White, 20, 40);
+                }
                 if(this.Created)
                     buff.Render();
             }
@@ -187,24 +194,32 @@ namespace BulletHell
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode == Keys.F && !keys[(int)e.KeyCode])
+            {
+                DisplayFrameRate = !DisplayFrameRate;
+            }
             keys[(int)e.KeyCode] = true;
         }
         private void MainForm_KeyUp(object sender, KeyEventArgs e)
         {
             keys[(int)e.KeyCode] = false;
         }
+        double fr = 0;
+        int entityCount = 0;
 
-        public void ASynchRender()
+        public void ASynchGameLoop()
         {
             int count = 0, FRAMES = 30;
             while (this.Created)
             {
                 if (++count == FRAMES)
                 {
-                    Console.WriteLine("FR: {0}", 1000 * (double)(FRAMES) / (double)frameTimer.Time);
+                    fr = 1000 * (double)(FRAMES) / (double)frameTimer.Time;
+                    //Console.WriteLine("FR: {0}", fr);
                     frameTimer.Reset();
                     count = 0;
                 }
+                entityCount = game.Entities.Count();
                 timer.Reset();
                 at = (int)gameTime.Time;
                 GameLogic();

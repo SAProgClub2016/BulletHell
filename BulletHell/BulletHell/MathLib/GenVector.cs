@@ -1,12 +1,34 @@
 ﻿using System;
 using System.Net;
 using System.Text;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace BulletHell.MathLib
 {
     public struct Vector<T> //: Mappable<T>
     {
         T[] vec;
+        private static readonly Func<T, T, T> AddT, MulT;
+
+
+        static Vector()
+        {
+            try
+            {
+                var first = Expression.Parameter(typeof(T), "x");
+                var second = Expression.Parameter(typeof(T), "y");
+                var body = Expression.Add(first, second);
+                var bodym = Expression.Multiply(first,second);
+                AddT = Expression.Lambda<Func<T, T, T>>(body, first, second).Compile();
+                MulT = Expression.Lambda<Func<T, T, T>>(bodym, first, second).Compile();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine("Trying to create a vector you cannot add or multiply");
+            }
+        }
 
         public Vector(int dim)
         {
@@ -62,7 +84,7 @@ namespace BulletHell.MathLib
             T sum = default(T);
             for (int i = 0; i < this.Dimension; i++)
             {
-                sum += (dynamic) this[i] * v2[i];
+                sum = AddT(sum, MulT(this[i], v2[i]));
             }
             return sum;
         }
@@ -80,7 +102,7 @@ namespace BulletHell.MathLib
             MakeOrValidate(ref res, this.Dimension);
             for (int i = 0; i < this.Dimension; i++)
             {
-                res[i] = (dynamic) d * this[i];
+                res[i] = MulT(d, this[i]);
             }
             return res;
         }
@@ -90,7 +112,7 @@ namespace BulletHell.MathLib
             ValidateDimensions(this, v2, "Vector.Add(Vector<T> v2, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
-                res[i] = (dynamic) v2[i] + this[i];
+                res[i] = AddT(v2[i],this[i]);
             }
             return res;
         }
@@ -110,7 +132,7 @@ namespace BulletHell.MathLib
             ValidateDimensions(this, v2, "Vector.LComb(T a, Vector<T> v2, T b, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
-                res[i] = (dynamic) b * v2[i] + (dynamic) a * this[i];
+                res[i] = AddT(MulT(b, v2[i]), MulT(a, this[i]));
             }
             return res;
         }
@@ -225,9 +247,9 @@ namespace BulletHell.MathLib
                 T sum = default(T);
                 for (int r = 0; r < m.Rows; r++)
                 {
-                    sum += (dynamic) this[r] * m[r, c];
+                    sum = AddT(sum, MulT(this[r], m[r, c]));
                 }
-                res[c] = (dynamic)sum; //TODO come fix this.
+                res[c] = sum;
             }
 
             return res;
@@ -244,7 +266,7 @@ namespace BulletHell.MathLib
                 T sum = default(T);
                 for (int c = 0; c < m.Cols; c++)
                 {
-                    sum += (dynamic)this[c] * m[r, c];
+                    sum = AddT(sum, MulT(this[c], m[r, c]));
                 }
                 res[r] = sum;
             }
