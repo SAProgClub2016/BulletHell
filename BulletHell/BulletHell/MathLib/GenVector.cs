@@ -12,26 +12,6 @@ namespace BulletHell.MathLib
     public struct Vector<T> //: Mappable<T>
     {
         T[] vec;
-        private static readonly Func<T, T, T> AddT, MulT;
-
-
-        static Vector()
-        {
-            try
-            {
-                var first = Expression.Parameter(typeof(T), "x");
-                var second = Expression.Parameter(typeof(T), "y");
-                var body = Expression.Add(first, second);
-                var bodym = Expression.Multiply(first,second);
-                AddT = Expression.Lambda<Func<T, T, T>>(body, first, second).Compile();
-                MulT = Expression.Lambda<Func<T, T, T>>(bodym, first, second).Compile();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                Console.WriteLine("Trying to create a vector you cannot add or multiply");
-            }
-        }
 
         public Vector(int dim)
         {
@@ -88,7 +68,7 @@ namespace BulletHell.MathLib
             for (int i = 0; i < this.Dimension; i++)
             {
 #if(USING_EXPRESSIONS)
-                sum = AddT(sum, MulT(this[i], v2[i]));
+                sum = Operations<T>.AddT(sum, Operations<T>.MulT(this[i], v2[i]));
 #else
                 sum += (dynamic) this[i]*v2[i];
 #endif
@@ -100,8 +80,12 @@ namespace BulletHell.MathLib
             MakeOrValidate(ref res, this.Dimension);
             for (int i = 0; i < this.Dimension; i++)
             {
+#if(USING_EXPRESSIONS)
+                res[i] = Operations<T>.NegT(this[i]);
+#else
                 res[i] = -(dynamic)this[i];
-            }
+#endif
+                }
             return res;
         }
         public Vector<T> Multiply(T d, Vector<T> res = default(Vector<T>))
@@ -110,7 +94,7 @@ namespace BulletHell.MathLib
             for (int i = 0; i < this.Dimension; i++)
             {
 #if(USING_EXPRESSIONS)
-                res[i] = MulT(d, this[i]);
+                res[i] = Operations<T>.MulT(d, this[i]);
 #else
                 res[i] = (dynamic)d*this[i];
 #endif
@@ -124,7 +108,7 @@ namespace BulletHell.MathLib
             for (int i = 0; i < this.Dimension; i++)
             {
 #if(USING_EXPRESSIONS)
-                res[i] = AddT(v2[i],this[i]);
+                res[i] = Operations<T>.AddT(v2[i],this[i]);
 #else
                 res[i] = (dynamic)v2[i]+this[i];
 #endif
@@ -137,7 +121,11 @@ namespace BulletHell.MathLib
             ValidateDimensions(this, v2, "Vector.Subtract(Vector<T> v2, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
+#if(USING_EXPRESSIONS)
+                res[i] = Operations<T>.SubT(this[i], v2[i]);
+#else
                 res[i] = (dynamic)this[i] - v2[i];
+#endif
             }
             return res;
         }
@@ -148,7 +136,7 @@ namespace BulletHell.MathLib
             for (int i = 0; i < this.Dimension; i++)
             {
 #if(USING_EXPRESSIONS)
-                res[i] = AddT(MulT(b, v2[i]), MulT(a, this[i]));
+                res[i] = Operations<T>.AddT(Operations<T>.MulT(b, v2[i]), Operations<T>.MulT(a, this[i]));
 #else
                 res[i] =(dynamic)b*v2[i]+(dynamic)a*this[i];
 #endif
@@ -267,7 +255,7 @@ namespace BulletHell.MathLib
                 for (int r = 0; r < m.Rows; r++)
                 {
 #if(USING_EXPRESSIONS)
-                    sum = AddT(sum, MulT(this[r], m[r, c]));
+                    sum = Operations<T>.AddT(sum, Operations<T>.MulT(this[r], m[r, c]));
 #else
                     sum += (dynamic) this[r]*m[r,c];
 #endif
@@ -290,7 +278,7 @@ namespace BulletHell.MathLib
                 for (int c = 0; c < m.Cols; c++)
                 {
 #if(USING_EXPRESSIONS)
-                    sum = AddT(sum, MulT(this[c], m[r, c]));
+                    sum = Operations<T>.AddT(sum, Operations<T>.MulT(this[c], m[r, c]));
 #else
                     sum += (dynamic) this[c] * m[r,c];
 #endif
@@ -445,6 +433,14 @@ namespace BulletHell.MathLib
             set
             {
                 vec[i] = value;
+            }
+        }
+
+        public T[] AsArray
+        {
+            get
+            {
+                return vec;
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace BulletHell
@@ -16,6 +17,8 @@ namespace BulletHell
         public static double[] Cosines,Sines;
         public static readonly double TWOPI = 2*Math.PI;
         public static readonly double CONVERSION = NUMTRIG/TWOPI;
+        public static readonly double TOLERANCE = 0.000001;
+
         static Utils()
         {
             Cosines = new double[NUMTRIG];
@@ -40,6 +43,70 @@ namespace BulletHell
             i %= NUMTRIG;
             if (i < 0) i += NUMTRIG;
             return Sines[i];
+        }
+        public static bool IsZero(int i)
+        {
+            return i == 0;
+        }
+        public static bool IsZero(short i)
+        {
+            return i == 0;
+        }
+        public static bool IsZero(byte i)
+        {
+            return i == 0;
+        }
+        public static bool IsZero(long i)
+        {
+            return i == 0;
+        }
+        public static bool IsZero(float f)
+        {
+            return Math.Abs(f) < TOLERANCE;
+        }
+        public static bool IsZero(double d)
+        {
+            return Math.Abs(d) < TOLERANCE;
+        }
+
+        public static bool IsZero(object o)
+        {
+            return false;
+        }
+        public static bool IsZero(char c)
+        {
+            return false;
+        }
+    }
+
+    public static class Operations<T>
+    {
+        public static readonly Func<T, T, T> AddT, MulT, SubT, DivT;
+        public static readonly Func<T,T> NegT;
+
+
+        static Operations()
+        {
+            try
+            {
+                var first = Expression.Parameter(typeof(T), "x");
+                var second = Expression.Parameter(typeof(T), "y");
+                var body = Expression.Add(first, second);
+                var bodym = Expression.Multiply(first, second);
+                var bodys = Expression.Subtract(first, second);
+                var bodyd = Expression.Divide(first, second);
+                var bodyn = Expression.Negate(first);
+                AddT = Expression.Lambda<Func<T, T, T>>(body, first, second).Compile();
+                MulT = Expression.Lambda<Func<T, T, T>>(bodym, first, second).Compile();
+                SubT = Expression.Lambda<Func<T, T, T>>(bodys, first, second).Compile();
+                DivT = Expression.Lambda<Func<T, T, T>>(bodyd, first, second).Compile();
+                NegT = Expression.Lambda<Func<T, T>>(bodyn, first).Compile();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine("Error creating operators for: {0}", typeof(T));
+            }
         }
     }
 }
