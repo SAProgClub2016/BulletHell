@@ -28,7 +28,7 @@ namespace BulletHell
         BufferedGraphics buff;
         Game game;
         Particle MEEEEEEE;
-        bool DisplayFrameRate = true;
+        bool DisplayFrameRate = true, DisplayTime = true;
 
         public MainForm()
         {
@@ -36,6 +36,8 @@ namespace BulletHell
             int vx = 1, vx2 = 2;
             int vy = 2, vy2 = 4;
             game = new Game();
+            timeRate = new PolyFunc<double>(curTimeRate);
+            timeFunc = timeRate.FI;
 
             Particle p1 = new Particle(x => vx * x, y => vy * y);
             Particle p2 = new Particle(Utils.MakeClosure<double,double,double>(ClientRectangle.Width,(w,x) => w - vx2 * x), y => vy2 * y);
@@ -148,6 +150,17 @@ namespace BulletHell
                     g.DrawString(string.Format("Framerate: {0}", fr), new Font("Arial", 12), Brushes.White, 20, 20);
                     g.DrawString(string.Format("Entities: {0}", entityCount), new Font("Arial", 12), Brushes.White, 20, 40);
                 }
+                if (DisplayTime)
+                {
+                    g.FillRectangle(Brushes.Black, new Rectangle(18, 78, 300, 48));
+                    g.DrawString(string.Format("Timerate: {0}", curTimeRate), new Font("Arial", 12), Brushes.White, 20, 80);
+                    g.DrawString(string.Format("Time: {0}", timeFunc(gameTime.Time)/150), new Font("Arial", 12), Brushes.White, 20, 100);
+                }
+                if (Paused)
+                {
+                    g.FillRectangle(Brushes.Black, new Rectangle(18, 138, 300, 28));
+                    g.DrawString("Paused", new Font("Arial", 12), Brushes.White, 20, 140);
+                }
                 if(this.Created)
                     buff.Render();
             }
@@ -156,7 +169,7 @@ namespace BulletHell
         private void GameLogic()
         {
             int bounds = 20;
-            double time = at;
+            double time = timeFunc(at);
             time /= 150;
 
             game.Time = time;
@@ -191,12 +204,51 @@ namespace BulletHell
         private void MainForm_Load(object sender, EventArgs e)
         {
         }
+        double curTimeRate = 1;
+        IntegrableFunction<double, double> timeRate;
+        Func<double, double> timeFunc;
+
+        bool Paused = false;
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.F && !keys[(int)e.KeyCode])
             {
                 DisplayFrameRate = !DisplayFrameRate;
+            }
+            if (e.KeyCode == Keys.T && !keys[(int)e.KeyCode])
+            {
+                DisplayTime = !DisplayTime;
+            }
+            if (e.KeyCode == Keys.P && !keys[(int)e.KeyCode])
+            {
+                Paused = !Paused;
+                if (Paused)
+                {
+                    timeRate = IntegrableFunction<double, double>.SplitAt(timeRate, gameTime.Time, (PolyFunc<double>)0, false);
+                    timeFunc = timeRate.FI;
+                }
+                else
+                {
+                    timeRate = IntegrableFunction<double, double>.SplitAt(timeRate, gameTime.Time, (PolyFunc<double>)curTimeRate, false);
+                    timeFunc = timeRate.FI;
+                }
+            }
+            if (e.KeyCode == Keys.Add && !keys[(int)e.KeyCode])
+            {
+                Paused = false;
+                curTimeRate += 0.1;
+                timeRate = IntegrableFunction<double, double>.SplitAt(timeRate, gameTime.Time, (PolyFunc<double>)curTimeRate,false);
+                timeFunc = timeRate.FI;
+                //Console.WriteLine("Q {0}", curTimeRate);
+            }
+            if (e.KeyCode == Keys.Subtract && !keys[(int)e.KeyCode])
+            {
+                Paused = false;
+                curTimeRate -= 0.1;
+                timeRate = IntegrableFunction<double, double>.SplitAt(timeRate, gameTime.Time, (PolyFunc<double>)curTimeRate,false);
+                timeFunc = timeRate.FI;
+                //Console.WriteLine("Cows {0}", curTimeRate);
             }
             keys[(int)e.KeyCode] = true;
         }

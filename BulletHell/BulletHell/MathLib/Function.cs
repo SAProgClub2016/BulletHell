@@ -161,6 +161,88 @@ namespace BulletHell.MathLib
         {
             return new MultFunc<T, Q>(i1, r);
         }
+
+        public static IntegrableFunction<S,S> SplitAt<S>(IntegrableFunction<S,S> f1, S t, IntegrableFunction<S, S> f, bool seal = true)
+        {
+            return new SplitFunction<S>(f1, t, f, seal);
+        }
+        public class SplitFunction<R> : IntegrableFunction<R, R>
+        {
+            Func<R, R> fSt, fISt;
+            IntegrableFunction<R,R> f1,f2;
+            R t;
+            R ft,st, fit, sit, deltat, deltait;
+            bool s;
+
+            public SplitFunction(IntegrableFunction<R, R> first, R tsplit, IntegrableFunction<R, R> second, bool seal = true)
+            {
+                s = seal;
+                f1 = first;
+                f2 = second;
+                t = tsplit;
+                ft = first.F(t);
+                fit = first.FI(t);
+                sit = second.FI(t);
+                st = second.F(t);
+#if(USING_EXPRESSIONS)
+                deltat = Operations<R>.SubT(ft, st);
+                deltait = Operations<R>.SubT(fit, sit);
+#else
+                deltat = (dynamic)ft - st;
+                deltait = (dynamic)fit - sit;
+#endif
+                if (seal)
+                {
+                    f2 += new PolyFunc<R>(deltat);
+
+                    sit = f2.FI(t);
+#if(USING_EXPRESSIONS)
+                    deltait = Operations<R>.SubT(fit, sit);
+#else
+                    deltait = (dynamic)fit - sit;
+#endif
+                }
+
+                fSt = x =>
+                {
+                    if ((dynamic)x < t)
+                    {
+                        return f1.F(x);
+                    }
+                    return f2.F(x);
+                };
+                fISt = x =>
+                {
+                    if ((dynamic)x < t)
+                    {
+                        return f1.FI(x);
+                    }
+#if(USING_EXPRESSIONS)
+                    return Operations<R>.AddT(f2.FI(x), deltait);
+#else
+                    return (dynamic)f2.FI(x)+deltait;
+#endif
+                };
+            }
+
+            public override Func<R, R> F
+            {
+                get { return fSt; }
+            }
+
+            public override Func<R, R> FI
+            {
+                get { return fISt; }
+            }
+
+            public override IntegrableFunction<R, R> StrongInt
+            {
+                get
+                {
+                    return new SplitFunction<R>(f1.StrongInt, t, f2.StrongInt);
+                }
+            }
+        }
     }
     public class PolyFunc<T> : IntegrableFunction<T,T>
     {
@@ -240,7 +322,7 @@ namespace BulletHell.MathLib
                         {
                             iCos[i + 1] = (dynamic)coeffs[i] / (i + 1); // no choice since i must be int here.
                         }
-                        derivative = new PolyFunc<T>(iCos);
+                        integral = new PolyFunc<T>(iCos);
                     }
                 }
                 return integral;
@@ -250,7 +332,7 @@ namespace BulletHell.MathLib
         public PolyFunc(params T[] cos)
         {
             int count=0;
-            while (Utils.IsZero((dynamic)cos[cos.Length - 1 - count])) count++;
+            while (cos.Length-1-count>=0 && Utils.IsZero((dynamic)cos[cos.Length - 1 - count])) count++;
             T[] ans;
             if (count == 0)
             {

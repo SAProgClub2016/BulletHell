@@ -79,6 +79,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MathLib\Function.cs" />
+    <Compile Include="MathLib\FunctionTest.cs" />
     <Compile Include="MathLib\GenMatrix.cs" />
     <Compile Include="MathLib\GenVector.cs" />
     <Compile Include="MathLib\Math.cs" />
