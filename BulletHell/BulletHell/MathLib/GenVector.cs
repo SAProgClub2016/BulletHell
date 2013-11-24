@@ -87,7 +87,11 @@ namespace BulletHell.MathLib
             T sum = default(T);
             for (int i = 0; i < this.Dimension; i++)
             {
+#if(USING_EXPRESSIONS)
                 sum = AddT(sum, MulT(this[i], v2[i]));
+#else
+                sum += (dynamic) this[i]*v2[i];
+#endif
             }
             return sum;
         }
@@ -105,7 +109,11 @@ namespace BulletHell.MathLib
             MakeOrValidate(ref res, this.Dimension);
             for (int i = 0; i < this.Dimension; i++)
             {
+#if(USING_EXPRESSIONS)
                 res[i] = MulT(d, this[i]);
+#else
+                res[i] = (dynamic)d*this[i];
+#endif
             }
             return res;
         }
@@ -115,7 +123,11 @@ namespace BulletHell.MathLib
             ValidateDimensions(this, v2, "Vector.Add(Vector<T> v2, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
+#if(USING_EXPRESSIONS)
                 res[i] = AddT(v2[i],this[i]);
+#else
+                res[i] = (dynamic)v2[i]+this[i];
+#endif
             }
             return res;
         }
@@ -135,7 +147,11 @@ namespace BulletHell.MathLib
             ValidateDimensions(this, v2, "Vector.LComb(T a, Vector<T> v2, T b, Vector<T> res = default(Vector<T>))", "this", "v2");
             for (int i = 0; i < this.Dimension; i++)
             {
+#if(USING_EXPRESSIONS)
                 res[i] = AddT(MulT(b, v2[i]), MulT(a, this[i]));
+#else
+                res[i] =(dynamic)b*v2[i]+(dynamic)a*this[i];
+#endif
             }
             return res;
         }
@@ -250,7 +266,11 @@ namespace BulletHell.MathLib
                 T sum = default(T);
                 for (int r = 0; r < m.Rows; r++)
                 {
+#if(USING_EXPRESSIONS)
                     sum = AddT(sum, MulT(this[r], m[r, c]));
+#else
+                    sum += (dynamic) this[r]*m[r,c];
+#endif
                 }
                 res[c] = sum;
             }
@@ -269,7 +289,11 @@ namespace BulletHell.MathLib
                 T sum = default(T);
                 for (int c = 0; c < m.Cols; c++)
                 {
+#if(USING_EXPRESSIONS)
                     sum = AddT(sum, MulT(this[c], m[r, c]));
+#else
+                    sum += (dynamic) this[c] * m[r,c];
+#endif
                 }
                 res[r] = sum;
             }
