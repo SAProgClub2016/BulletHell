@@ -228,27 +228,6 @@ namespace BulletHell
             }
         }
 
-        BulletHell.Time.Timer renderTimer=null;
-        public void ArbitraryRender()
-        {
-            if (renderTimer == null)
-            {
-                renderTimer = new BulletHell.Time.Timer();
-                ArbitraryRenderHelper();
-            }
-            else if (renderTimer.Time > 20)
-            {
-                renderTimer.Reset();
-                ArbitraryRenderHelper();
-            }
-        }
-        private void ArbitraryRenderHelper()
-        {
-            at = (int)gameTime.Time;
-            GameLogic();
-            RenderScene();
-        }
-
         private void MainForm_Move(object sender, EventArgs e)
         {
             //ArbitraryRender();
