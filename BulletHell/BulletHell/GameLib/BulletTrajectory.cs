@@ -16,7 +16,7 @@ namespace BulletHell.GameLib
             return (t, x, y) =>
             {
                 Particle p = new Particle(s => x + vx * (s - t), s => y + vy * (s - t));
-                return new Bullet(p, DrawableFactory.MakeNullTo(d,t));
+                return new Bullet(t,p, DrawableFactory.MakeNullTo(d,t));
             };
         }
         public static BulletTrajectory AngleMagVel(Drawable d, double th, double m)
@@ -33,7 +33,7 @@ namespace BulletHell.GameLib
             return (t, x, y) =>
             {
                 Particle p = new Particle(s => x + vx * (s - t) + r * Utils.FastCos(th0 + w * (s - t)), s => y + vy * (s - t) + r * Math.Sin(th0 + w * (s - t)));
-                return new Bullet(p, DrawableFactory.MakeNullTo(d, t));
+                return new Bullet(t, p, DrawableFactory.MakeNullTo(d, t));
             };
         }
     }

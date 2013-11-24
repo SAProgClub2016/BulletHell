@@ -17,9 +17,6 @@ namespace BulletHell
 {
     public partial class MainForm : Form
     {
-        int t = 0;
-        int at = 0;
-        //int it = 0;
         bool[] keys = new bool[256];
 
         Drawable o1, o2;
@@ -36,8 +33,6 @@ namespace BulletHell
             int vx = 1, vx2 = 2;
             int vy = 2, vy2 = 4;
             game = new Game();
-            timeRate = new PolyFunc<double>(curTimeRate);
-            timeFunc = timeRate.FI;
 
             Particle p1 = new Particle(x => vx * x, y => vy * y);
             Particle p2 = new Particle(Utils.MakeClosure<double,double,double>(ClientRectangle.Width,(w,x) => w - vx2 * x), y => vy2 * y);
@@ -97,44 +92,46 @@ namespace BulletHell
             BulletEmitter em2 = new BulletEmitter(bEms2);
             BulletEmitter em3 = new BulletEmitter(bEms3);
 
-            e = new Entity(p1, o1, em);
-            e2 = new Entity(p2, o1, em);
+            e = new Entity(0,p1, o1, em);
+            e2 = new Entity(0,p2, o1, em);
 
             Particle p3 = new Particle(x => 0.5 * x + 500, y => 3 * y);
-            Entity e3 = new Entity(p3, o1, em);
+            Entity e3 = new Entity(0,p3, o1, em);
 
             Particle p4 = new Particle(x => -0.25 * x + 300, y => 3.5 * y);
-            Entity e4 = new Entity(p4, o1, em);
+            Entity e4 = new Entity(0,p4, o1, em);
 
             Particle p5 = new Particle(x => -0.4 * x + 800, y => 2 * y);
-            Entity e5 = new Entity(p5, o1, em);
+            Entity e5 = new Entity(0,p5, o1, em);
 
             game = game + e + e2 + e3 + e4 + e5;
 
-            Entity e6 = new Entity(q, o1, em2);
-            //game += e6;
+            Entity e6 = new Entity(0,q, o1, em2);
+            game += e6;
 
             Particle r = new Particle(Utils.MakeClosure<double,double,double>((double)ClientRectangle.Width/3, (w,t)=>w+3*t), t=>5*t);
-            Entity e7 = new Entity(r,o1,em3);
-            //game += e7;
+            Entity e7 = new Entity(0,r,o1,em3);
+            game += e7;
 
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
             MEEEEEEE = new Particle(x => (double)ClientRectangle.Width / 2, y => (double)ClientRectangle.Height * 3 / 4);
         }
-        BulletHell.Time.Timer timer, gameTime, frameTimer;
+        BulletHell.Time.Timer timer, frameTimer, eventTimer;
         public void GameLoop()
         {
             timer = new BulletHell.Time.Timer();
-            gameTime = new BulletHell.Time.Timer();
             frameTimer = new BulletHell.Time.Timer();
-            gameTime.Reset();
+            eventTimer = new BulletHell.Time.Timer();
+            game.ResetTime();
             Thread renderThread = new Thread(this.ASynchGameLoop);
             renderThread.Start();
             while (this.Created)
             {
+                eventTimer.Reset();
                 Application.DoEvents();
-                //t += 1;
+                while (eventTimer.Time <= 30)
+                    Thread.Yield();
             }
         }
         private void RenderScene()
@@ -153,10 +150,10 @@ namespace BulletHell
                 if (DisplayTime)
                 {
                     g.FillRectangle(Brushes.Black, new Rectangle(18, 78, 300, 48));
-                    g.DrawString(string.Format("Timerate: {0}", curTimeRate), new Font("Arial", 12), Brushes.White, 20, 80);
-                    g.DrawString(string.Format("Time: {0}", timeFunc(gameTime.Time)/150), new Font("Arial", 12), Brushes.White, 20, 100);
+                    g.DrawString(string.Format("Timerate: {0}", game.CurrentTimeRate), new Font("Arial", 12), Brushes.White, 20, 80);
+                    g.DrawString(string.Format("Time: {0}", game.CurrentTime), new Font("Arial", 12), Brushes.White, 20, 100);
                 }
-                if (Paused)
+                if (game.Paused)
                 {
                     g.FillRectangle(Brushes.Black, new Rectangle(18, 138, 300, 28));
                     g.DrawString("Paused", new Font("Arial", 12), Brushes.White, 20, 140);
@@ -169,8 +166,7 @@ namespace BulletHell
         private void GameLogic()
         {
             int bounds = 20;
-            double time = timeFunc(at);
-            time /= 150;
+            double time = game.CurrentTime;
 
             game.Time = time;
             List<Entity> removeList = new List<Entity>();
@@ -204,11 +200,7 @@ namespace BulletHell
         private void MainForm_Load(object sender, EventArgs e)
         {
         }
-        double curTimeRate = 1;
-        IntegrableFunction<double, double> timeRate;
-        Func<double, double> timeFunc;
 
-        bool Paused = false;
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
@@ -222,33 +214,15 @@ namespace BulletHell
             }
             if (e.KeyCode == Keys.P && !keys[(int)e.KeyCode])
             {
-                Paused = !Paused;
-                if (Paused)
-                {
-                    timeRate = IntegrableFunction<double, double>.SplitAt(timeRate, gameTime.Time, (PolyFunc<double>)0, false);
-                    timeFunc = timeRate.FI;
-                }
-                else
-                {
-                    timeRate = IntegrableFunction<double, double>.SplitAt(timeRate, gameTime.Time, (PolyFunc<double>)curTimeRate, false);
-                    timeFunc = timeRate.FI;
-                }
+                game.TogglePause();
             }
             if (e.KeyCode == Keys.Add && !keys[(int)e.KeyCode])
             {
-                Paused = false;
-                curTimeRate += 0.1;
-                timeRate = IntegrableFunction<double, double>.SplitAt(timeRate, gameTime.Time, (PolyFunc<double>)curTimeRate,false);
-                timeFunc = timeRate.FI;
-                //Console.WriteLine("Q {0}", curTimeRate);
+                game.CurrentTimeRate += 0.1;
             }
             if (e.KeyCode == Keys.Subtract && !keys[(int)e.KeyCode])
             {
-                Paused = false;
-                curTimeRate -= 0.1;
-                timeRate = IntegrableFunction<double, double>.SplitAt(timeRate, gameTime.Time, (PolyFunc<double>)curTimeRate,false);
-                timeFunc = timeRate.FI;
-                //Console.WriteLine("Cows {0}", curTimeRate);
+                game.CurrentTimeRate -= 0.1;
             }
             keys[(int)e.KeyCode] = true;
         }
@@ -273,12 +247,13 @@ namespace BulletHell
                 }
                 entityCount = game.Entities.Count();
                 timer.Reset();
-                at = (int)gameTime.Time;
                 GameLogic();
                 RenderScene();
-                while (timer.Time < 20) ;
+                while (timer.Time < 20)
+                    Thread.Yield();
             }
         }
+
 
         private void MainForm_Move(object sender, EventArgs e)
         {

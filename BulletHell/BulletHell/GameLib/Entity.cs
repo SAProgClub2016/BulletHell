@@ -14,6 +14,10 @@ namespace BulletHell.GameLib
         Drawable d;
         BulletEmitter e;
         GraphicsStyle gs;
+        public readonly double CreationTime;
+        private double iTime=-1,dTime=-1;
+        public double InvisibilityTime { get { return iTime; } set { iTime = value; } }
+        public double DestructionTime { get { return dTime; } set { dTime = value; } }
 
         public double Time
         {
@@ -73,8 +77,9 @@ namespace BulletHell.GameLib
             }
         }
 
-        public Entity(Particle pos, Drawable draw, BulletEmitter e = null, GraphicsStyle g = null)
+        public Entity(double cTime, Particle pos, Drawable draw, BulletEmitter e = null, GraphicsStyle g = null)
         {
+            CreationTime = cTime;
             this.pos = pos;
             d = draw;
             this.e = e;
