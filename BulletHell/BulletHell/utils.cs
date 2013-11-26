@@ -6,6 +6,7 @@ using System.Text;
 
 namespace BulletHell
 {
+    public delegate void Process();
     public class Utils
     {
         public static Func<S, T> MakeClosure<Q, S, T>(Q q, Func<Q, S, T> f)
@@ -13,6 +14,19 @@ namespace BulletHell
             return (S s) => f(q,s);
         }
         
+        public static long TimeProcess(Process p)
+        {
+            BulletHell.Time.Timer timer = new BulletHell.Time.Timer();
+            timer.Reset();
+            p();
+            return timer.Time;
+        }
+
+        public static void PrintTimeProcess(Process p, string name)
+        {
+            Console.WriteLine("{0}: {1}",name,TimeProcess(p));
+        }
+
         public static readonly int NUMTRIG = 2048;
         public static double[] Cosines,Sines;
         public static readonly double TWOPI = 2*Math.PI;
@@ -76,6 +90,27 @@ namespace BulletHell
         public static bool IsZero(char c)
         {
             return false;
+        }
+        public static T Identity<T>(T t)
+        {
+            return t;
+        }
+
+    }
+    public class Reference<T>
+    {
+        public T Value;
+        public Reference(T t)
+        {
+            Value = t;
+        }
+        public static implicit operator Reference<T>(T t)
+        {
+            return new Reference<T>(t);
+        }
+        public static implicit operator T(Reference<T> t)
+        {
+            return t.Value;
         }
     }
 

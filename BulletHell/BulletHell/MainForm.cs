@@ -107,11 +107,11 @@ namespace BulletHell
             game = game + e + e2 + e3 + e4 + e5;
 
             Entity e6 = new Entity(0,q, o1, em2);
-            game += e6;
+            //game += e6;
 
             Particle r = new Particle(Utils.MakeClosure<double,double,double>((double)ClientRectangle.Width/3, (w,t)=>w+3*t), t=>5*t);
             Entity e7 = new Entity(0,r,o1,em3);
-            game += e7;
+            //game += e7;
 
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
@@ -181,20 +181,26 @@ namespace BulletHell
                 }
             }
             foreach (Entity e in removeList)
-                game -= e;
-            List<Entity> newBullets = new List<Entity>();
-            foreach (Entity o in game.Entities)
             {
-                if (o.Emitter == null)
-                    continue;
-                foreach (Bullet b in o.Emitter.BulletsBetween(o.Position, oldTime, time))
-                {
-                    newBullets.Add(b);
-                }
+                if(game.CurrentTime>e.CreationTime)
+                    e.InvisibilityTime = game.CurrentTime;
             }
-            foreach (Entity o in newBullets)
-                game.Add(o);
-            oldTime = time;
+            List<Entity> newBullets = new List<Entity>();
+            if (game.Time >= game.MostRenderedTime)
+            {
+                foreach (Entity o in game.Entities)
+                {
+                    if (o.Emitter == null)
+                        continue;
+                    foreach (Bullet b in o.Emitter.BulletsBetween(o.Position, oldTime, time))
+                    {
+                        newBullets.Add(b);
+                    }
+                }
+                foreach (Entity o in newBullets)
+                    game.Add(o);
+                oldTime = time;
+            }
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -245,7 +251,7 @@ namespace BulletHell
                     frameTimer.Reset();
                     count = 0;
                 }
-                entityCount = game.Entities.Count();
+                entityCount = game.EntityCount;// game.Entities.Count();
                 timer.Reset();
                 GameLogic();
                 RenderScene();

@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2B96C304-6B5B-45F4-9FE9-82551B3DA639}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BulletHell</RootNamespace>
     <AssemblyName>BulletHell</AssemblyName>
@@ -64,10 +64,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\LayeredLinkedList.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GameLib\Bullet.cs" />
     <Compile Include="GameLib\BulletEmitter.cs" />
     <Compile Include="GameLib\BulletTrajectory.cs" />
     <Compile Include="GameLib\Entity.cs" />
+    <Compile Include="GameLib\EntityManager.cs" />
     <Compile Include="GameLib\Game.cs" />
     <Compile Include="Gfx\Drawable.cs" />
     <Compile Include="Gfx\GraphicsStyles.cs" />
@@ -135,6 +139,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

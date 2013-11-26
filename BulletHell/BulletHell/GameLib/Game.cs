@@ -10,15 +10,24 @@ namespace BulletHell.GameLib
 {
     public class Game
     {
-        private List<Entity> entities;
+        private EntityManager entities;
         private BulletHell.Time.Timer gameTimer;
         private double t;
         private Func<double, double> timeFunc;
         private IntegrableFunction<double, double> timeRateFunc;
         private double curTimeRate;
         private bool paused = false;
+        private double mostRenderedTime = -1;
+        private double rewindLimit = 0;
+        private int entCount;
 
-
+        public int EntityCount
+        {
+            get
+            {
+                return entCount;
+            }
+        }
 
         public long ActualTime
         {
@@ -63,16 +72,23 @@ namespace BulletHell.GameLib
             set
             {
                 t = value;
-                foreach (Entity e in entities)
+                if (t < rewindLimit)
+                {
+                    CurrentTimeRate = 0;
+                }
+                foreach (Entity e in Entities)
                 {
                     e.Time = t;
                 }
+                if (t > mostRenderedTime)
+                    mostRenderedTime = t;
             }
         }
 
         public Game()
         {
-            entities = new List<Entity>();
+            entities = new AdvancedEntityManager(128,64,32,16,8,4,2,1,0.5);
+            //entities = new ListEntityManager();
             gameTimer = new BulletHell.Time.Timer();
             curTimeRate = 1;
             timeRateFunc = new PolyFunc<double>(curTimeRate);
@@ -84,29 +100,40 @@ namespace BulletHell.GameLib
             entities.Add(e);
         }
 
+        public void Remove(Entity e)
+        {
+            entities.Remove(e);
+        }
+
         public static Game operator +(Game g, Entity e)
         {
-            g.entities.Add(e);
+            g.Add(e);
             return g;
         }
         public static Game operator -(Game g, Entity e)
         {
-            g.entities.Remove(e);
+            g.Remove(e);
             return g;
         }
 
         public void Draw(Graphics g)
         {
-            foreach (Entity e in entities)
+            entCount = 0;
+            foreach (Entity e in Entities)
             {
-                e.Draw(e.Position, g);
+                entCount++;
+                if (Time > e.CreationTime && (Utils.IsZero(e.InvisibilityTime + 1) || e.InvisibilityTime > Time))   
+                    e.Draw(e.Position, g);
             }
         }
         public IEnumerable<Entity> Entities
         {
             get
             {
-                return entities;
+
+                IEnumerable<Entity> ans = null;
+                Utils.PrintTimeProcess(() => ans=entities.Entities(Time), "Game.Entities");
+                return ans;
             }
         }
 
@@ -138,5 +165,7 @@ namespace BulletHell.GameLib
                 }
             }
         }
+
+        public double MostRenderedTime { get { return mostRenderedTime; } }
     }
 }
