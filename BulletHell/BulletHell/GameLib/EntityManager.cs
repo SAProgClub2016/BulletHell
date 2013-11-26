@@ -21,10 +21,12 @@ namespace BulletHell.GameLib
         }
         public void Add(Entity e)
         {
+            e.Manager = this;
             entities.Add(e);
         }
         public void Remove(Entity e)
         {
+            e.Manager = null;
             entities.Remove(e);
         }
         public IEnumerable<Entity> Entities(double t)
@@ -34,37 +36,46 @@ namespace BulletHell.GameLib
     }
     public class AdvancedEntityManager : EntityManager
     {
-        LayeredLinkedList<Reference<LinkedListNode<Entity>>> adds, removals;
+        LayeredLinkedList<Entity> adds, removals;
+        Dictionary<Entity, Reference<LinkedListNode<Entity>>> map;
         System.Collections.Generic.LinkedList<Entity> entities;
         double oldTime;
 
         public AdvancedEntityManager(params double[] ints)
         {
             oldTime = 0;
-            adds = new LayeredLinkedList<Reference<LinkedListNode<Entity>>>(0, x => x.Value.Value.CreationTime, ints);
-            removals = new LayeredLinkedList<Reference<LinkedListNode<Entity>>>(0, x => x.Value.Value.InvisibilityTime, ints);
+            adds = new LayeredLinkedList<Entity>(0, x => x.CreationTime, ints);
+            removals = new LayeredLinkedList<Entity>(0, x => x.InvisibilityTime, ints);
             entities = new System.Collections.Generic.LinkedList<Entity>();
+            map = new Dictionary<Entity, Reference<LinkedListNode<Entity>>>();
         }
 
         public void Add(Entity e)
         {
-            //Console.WriteLine(e);
-            LinkedListNode<Entity> enode = new LinkedListNode<Entity>(e);
-            if (e.CreationTime < oldTime && (e.InvisibilityTime == -1) || e.InvisibilityTime > oldTime)
+            e.Manager = this;
+            Reference<LinkedListNode<Entity>> enode = new Reference<LinkedListNode<Entity>>(new LinkedListNode<Entity>(e));
+            if (!map.ContainsKey(e))
+                map.Add(e, enode);
+            if (e.CreationTime < oldTime && (e.InvisibilityTime == -1 || e.InvisibilityTime > oldTime))
             {
                 entities.AddLast(enode);
-                //Console.WriteLine("Q");
             }
-            adds.Add(enode);
-            removals.Add(enode);
-            //adds.Write();
-            //removals.Write();
-            //Console.ReadKey();
+            adds.Add(e);
+            removals.Add(e);
         }
+
 
         public void Remove(Entity e)
         {
-            throw new NotImplementedException();
+            e.Manager = null;
+            if (e.CreationTime > oldTime || (e.InvisibilityTime != -1 && e.InvisibilityTime < oldTime))
+            {
+                LinkedListNode<Entity> enode = map[e];
+                if(enode.List==entities)
+                    entities.Remove(enode);
+            }
+            adds.Remove(e);
+            removals.Remove(e);
         }
 
         public IEnumerable<Entity> Entities(double t)
@@ -77,24 +88,19 @@ namespace BulletHell.GameLib
             {
                 Console.WriteLine("Going Back");
                 testtimer.Reset();
-                foreach (LinkedListNode<Entity> enode in adds.ElementsBetween(t, oldTime))
+                foreach (Entity e in adds.ElementsBetween(t, oldTime))
                 {
                     count++;
+                    LinkedListNode<Entity> enode = map[e];
                     if (enode.List == entities)
                         entities.Remove(enode);
                 }
                 Console.WriteLine("AdvancedEntityManager.Entities: count={1}, time={0}",testtimer.Time,count);
                 count = 0;
                 testtimer.Reset();
-                /*foreach (LinkedListNode<LinkedListNode<Entity>> enode in removals.LLNElementsBetween(t, oldTime))
+                foreach (Entity e in removals.ElementsBetween(t, oldTime))
                 {
-                    LinkedListNode<Entity> newNode = new LinkedListNode<Entity>(enode.Value.Value);
-                    enode.Value = newNode;
-                    entities.AddLast(newNode);
-                    count++;
-                }*/
-                foreach (Reference<LinkedListNode<Entity>> enode in removals.ElementsBetween(t, oldTime))
-                {
+                    Reference<LinkedListNode<Entity>> enode = map[e];
                     LinkedListNode<Entity> newNode = new LinkedListNode<Entity>(enode.Value.Value);
                     enode.Value = newNode;
                     entities.AddLast(enode.Value);
@@ -107,16 +113,19 @@ namespace BulletHell.GameLib
                 Console.WriteLine("Going forward");
                 testtimer.Reset();
 
-                foreach (LinkedListNode<Entity> enode in adds.ElementsBetween(oldTime, t))
+                foreach (Entity e in adds.ElementsBetween(oldTime, t))
                 {
-                    //LinkedListNode<Entity> newNode = new LinkedListNode<Entity>(enode.Value.Value);
-                    //enode.Value = newNode;
+                    Reference<LinkedListNode<Entity>> enode = map[e];
+                    LinkedListNode<Entity> newNode = new LinkedListNode<Entity>(e);
+                    enode.Value = newNode;
                     entities.AddLast(enode.Value);
                     count++;
                 }
-                foreach (LinkedListNode<Entity> enode in removals.ElementsBetween(oldTime,t))
+                foreach (Entity e in removals.ElementsBetween(oldTime,t))
                 {
-                    entities.Remove(enode);
+                    LinkedListNode<Entity> enode = map[e];
+                    if (enode.List == entities)
+                        entities.Remove(enode);
                     count++;
                 }
                 Console.WriteLine("AdvancedEntityManager.Entities: count={1}, time={0}", testtimer.Time, count);

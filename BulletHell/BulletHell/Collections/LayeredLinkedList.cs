@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-// Actually unneeded. Will be removed from project.
+// Needs a remove/reorganize method. Entities should know which entity manager they belong to, so they can update when properties are changed.
 
 namespace BulletHell.Collections
 {
@@ -40,6 +40,38 @@ namespace BulletHell.Collections
                 nextLevel = new LinkedList<LayeredLinkedList<T>>();
             }
         }
+
+        public bool Remove(T t)
+        {
+            return Remove(evaluator(t), t);
+        }
+        private bool Remove(double d, T t)
+        {
+            if (layers == 0)
+                return vals.Remove(t);
+            else
+            {
+                if (d < start)
+                {
+                    return false;
+                }
+                LinkedListNode<LayeredLinkedList<T>> node = nextLevel.First;
+                if (node == null)
+                {
+                    return false;
+                }
+                while (d > node.Value.start + interval)
+                {
+                    if (node.Next == null)
+                    {
+                        return false;
+                    }
+                    node = node.Next;
+                }
+                return node.Value.Remove(d, t);
+            }
+        }
+
         public void Add(T t)
         {
             Add(evaluator(t), t);

@@ -112,6 +112,18 @@ namespace BulletHell
         {
             return t.Value;
         }
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+        public override bool Equals(object obj)
+        {
+            return Value.Equals(obj);
+        }
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
     }
 
     public static class Operations<T>

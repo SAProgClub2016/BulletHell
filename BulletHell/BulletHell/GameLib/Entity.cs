@@ -10,13 +10,26 @@ namespace BulletHell.GameLib
 {
     public class Entity
     {
+        public EntityManager Manager { get; set; }
         Particle pos;
         Drawable d;
         BulletEmitter e;
         GraphicsStyle gs;
         public readonly double CreationTime;
         private double iTime=-1,dTime=-1;
-        public double InvisibilityTime { get { return iTime; } set { iTime = value; } }
+        public double InvisibilityTime
+        {
+            get { return iTime; }
+            set
+            {
+                // This is kinda sketch maybe add an update kind of method to EntityManager.
+                // Looks like LLL needs a remove method :P. Actually wait that's not so bad.
+                EntityManager man = Manager;
+                man.Remove(this);
+                iTime = value;
+                man.Add(this);
+            }
+        }
         public double DestructionTime { get { return dTime; } set { dTime = value; } }
 
         public double Time
