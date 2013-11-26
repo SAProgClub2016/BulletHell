@@ -132,7 +132,7 @@ namespace BulletHell.GameLib
             {
 
                 IEnumerable<Entity> ans = null;
-                Utils.PrintTimeProcess(() => ans=entities.Entities(Time), "Game.Entities");
+                ans=entities.Entities(Time);
                 return ans;
             }
         }
@@ -167,5 +167,13 @@ namespace BulletHell.GameLib
         }
 
         public double MostRenderedTime { get { return mostRenderedTime; } }
+
+        public IEnumerable<Entity> BulletShooters
+        {
+            get
+            {
+                return entities.BulletShooters(Time);
+            }
+        }
     }
 }

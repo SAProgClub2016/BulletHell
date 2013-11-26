@@ -172,6 +172,8 @@ namespace BulletHell
             List<Entity> removeList = new List<Entity>();
             foreach (Entity e in game.Entities)
             {
+                if (e.InvisibilityTime > -0.5)
+                    continue;
                 Rectangle r = ClientRectangle;
 
                 GenRect<double> gr = new GenRect<double>(new Vector<double>(r.X - bounds, r.Y - bounds), new Vector<double>(r.X + r.Width + bounds, r.Y + r.Height + bounds));
@@ -188,7 +190,7 @@ namespace BulletHell
             List<Entity> newBullets = new List<Entity>();
             if (game.Time >= game.MostRenderedTime)
             {
-                foreach (Entity o in game.Entities)
+                foreach (Entity o in game.BulletShooters)
                 {
                     if (o.Emitter == null)
                         continue;
