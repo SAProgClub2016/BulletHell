@@ -128,8 +128,8 @@ namespace BulletHell
 
     public static class Operations<T>
     {
-        public static readonly Func<T, T, T> AddT, MulT, SubT, DivT;
-        public static readonly Func<T,T> NegT;
+        public static readonly Func<T, T, T> Add, Mul, Sub, Div;
+        public static readonly Func<T, T> Neg;
 
 
         static Operations()
@@ -143,17 +143,56 @@ namespace BulletHell
                 var bodys = Expression.Subtract(first, second);
                 var bodyd = Expression.Divide(first, second);
                 var bodyn = Expression.Negate(first);
-                AddT = Expression.Lambda<Func<T, T, T>>(body, first, second).Compile();
-                MulT = Expression.Lambda<Func<T, T, T>>(bodym, first, second).Compile();
-                SubT = Expression.Lambda<Func<T, T, T>>(bodys, first, second).Compile();
-                DivT = Expression.Lambda<Func<T, T, T>>(bodyd, first, second).Compile();
-                NegT = Expression.Lambda<Func<T, T>>(bodyn, first).Compile();
+                Add = Expression.Lambda<Func<T, T, T>>(body, first, second).Compile();
+                Mul = Expression.Lambda<Func<T, T, T>>(bodym, first, second).Compile();
+                Sub = Expression.Lambda<Func<T, T, T>>(bodys, first, second).Compile();
+                Div = Expression.Lambda<Func<T, T, T>>(bodyd, first, second).Compile();
+                Neg = Expression.Lambda<Func<T, T>>(bodyn, first).Compile();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 Console.WriteLine("Error creating operators for: {0}", typeof(T));
             }
+        }
+    }
+    public static class VectorScalar<V,S>
+    {
+        public static readonly Func<S, V, V> ScalarLeft;
+        public static readonly Func<V,S,V> ScalarRight;
+        public static readonly Func<V,V,S> Dot;
+
+        static VectorScalar()
+        {
+            try
+            {
+                var vector = Expression.Parameter(typeof(V), "v");
+                var vector2 = Expression.Parameter(typeof(V), "v2");
+                var scalar = Expression.Parameter(typeof(S), "s");
+                var bodysv = Expression.Multiply(scalar, vector);
+                var bodyvs = Expression.Multiply(vector, scalar);
+                var bodydot = Expression.Multiply(vector, vector2);
+                ScalarLeft = Expression.Lambda<Func<S, V, V>>(bodysv, scalar, vector).Compile();
+                ScalarRight = Expression.Lambda<Func<V, S, V>>(bodyvs, vector, scalar).Compile();
+                Dot = Expression.Lambda<Func<V, V, S>>(bodydot, vector, vector2).Compile();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine("Error creating vector-scalar ops for: {0}, {1}\r\nContinuing", typeof(V),typeof(S));
+            }
+        }
+    }
+    public static class ArrayMapExtensions
+    {
+        public static S[] Map<T,S>(this T[] ts,Func<T,S> f)
+        {
+            S[] ans = new S[ts.Length];
+            for (int i = 0; i < ts.Length; i++)
+            {
+                ans[i] = f(ts[i]);
+            }
+            return ans;
         }
     }
 }

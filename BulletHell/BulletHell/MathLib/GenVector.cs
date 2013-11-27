@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Linq;
 using System.Linq.Expressions;
-
+using BulletHell.MathLib.Function;
 
 namespace BulletHell.MathLib
 {
@@ -68,7 +68,7 @@ namespace BulletHell.MathLib
             for (int i = 0; i < this.Dimension; i++)
             {
 #if(USING_EXPRESSIONS)
-                sum = Operations<T>.AddT(sum, Operations<T>.MulT(this[i], v2[i]));
+                sum = Operations<T>.Add(sum, Operations<T>.Mul(this[i], v2[i]));
 #else
                 sum += (dynamic) this[i]*v2[i];
 #endif
@@ -81,7 +81,7 @@ namespace BulletHell.MathLib
             for (int i = 0; i < this.Dimension; i++)
             {
 #if(USING_EXPRESSIONS)
-                res[i] = Operations<T>.NegT(this[i]);
+                res[i] = Operations<T>.Neg(this[i]);
 #else
                 res[i] = -(dynamic)this[i];
 #endif
@@ -94,7 +94,7 @@ namespace BulletHell.MathLib
             for (int i = 0; i < this.Dimension; i++)
             {
 #if(USING_EXPRESSIONS)
-                res[i] = Operations<T>.MulT(d, this[i]);
+                res[i] = Operations<T>.Mul(d, this[i]);
 #else
                 res[i] = (dynamic)d*this[i];
 #endif
@@ -108,7 +108,7 @@ namespace BulletHell.MathLib
             for (int i = 0; i < this.Dimension; i++)
             {
 #if(USING_EXPRESSIONS)
-                res[i] = Operations<T>.AddT(v2[i],this[i]);
+                res[i] = Operations<T>.Add(v2[i],this[i]);
 #else
                 res[i] = (dynamic)v2[i]+this[i];
 #endif
@@ -122,7 +122,7 @@ namespace BulletHell.MathLib
             for (int i = 0; i < this.Dimension; i++)
             {
 #if(USING_EXPRESSIONS)
-                res[i] = Operations<T>.SubT(this[i], v2[i]);
+                res[i] = Operations<T>.Sub(this[i], v2[i]);
 #else
                 res[i] = (dynamic)this[i] - v2[i];
 #endif
@@ -136,7 +136,7 @@ namespace BulletHell.MathLib
             for (int i = 0; i < this.Dimension; i++)
             {
 #if(USING_EXPRESSIONS)
-                res[i] = Operations<T>.AddT(Operations<T>.MulT(b, v2[i]), Operations<T>.MulT(a, this[i]));
+                res[i] = Operations<T>.Add(Operations<T>.Mul(b, v2[i]), Operations<T>.Mul(a, this[i]));
 #else
                 res[i] =(dynamic)b*v2[i]+(dynamic)a*this[i];
 #endif
@@ -167,19 +167,6 @@ namespace BulletHell.MathLib
             }
             return res;
         }
-
-        public static Func<S, Vector<Q>> Aggregate<S, Q>(params Func<S, Q>[] comps)
-        {
-            return x =>
-            {
-                Vector<Q> ans = new Vector<Q>(comps.Length);
-                for (int i = 0; i < ans.Dimension; i++)
-                {
-                    ans[i] = comps[i](x);
-                }
-                return ans;
-            };
-        }
         public static Func<S, Vector<T>> Aggregate<S>(params Func<S, T>[] comps)
         {
             return x =>
@@ -192,7 +179,10 @@ namespace BulletHell.MathLib
                 return ans;
             };
         }
-
+        public static IntegrableFunction<S, Vector<T>> Aggregate<S>(params IntegrableFunction<S, T>[] comps)
+        {
+            return new VectorAggregateFunc<S, T>(comps);
+        }
         /*
         public S Map<Q, S>(Func<T, Q> f, ref S res) where S : struct
         {
@@ -255,7 +245,7 @@ namespace BulletHell.MathLib
                 for (int r = 0; r < m.Rows; r++)
                 {
 #if(USING_EXPRESSIONS)
-                    sum = Operations<T>.AddT(sum, Operations<T>.MulT(this[r], m[r, c]));
+                    sum = Operations<T>.Add(sum, Operations<T>.Mul(this[r], m[r, c]));
 #else
                     sum += (dynamic) this[r]*m[r,c];
 #endif
@@ -278,7 +268,7 @@ namespace BulletHell.MathLib
                 for (int c = 0; c < m.Cols; c++)
                 {
 #if(USING_EXPRESSIONS)
-                    sum = Operations<T>.AddT(sum, Operations<T>.MulT(this[c], m[r, c]));
+                    sum = Operations<T>.Add(sum, Operations<T>.Mul(this[c], m[r, c]));
 #else
                     sum += (dynamic) this[c] * m[r,c];
 #endif

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BulletHell.MathLib.Function;
 
 namespace BulletHell.MathLib
 {
@@ -9,8 +10,8 @@ namespace BulletHell.MathLib
     {
         public static void Main()
         {
-            PolyFunc<double> l1 = new PolyFunc<double>(1);
-            PolyFunc<double> l2 = new PolyFunc<double>(2);
+            PolyFunc<double,double> l1 = new PolyFunc<double,double>(1);
+            PolyFunc<double,double> l2 = new PolyFunc<double,double>(2);
             IntegrableFunction<double, double> split = IntegrableFunction<double, double>.SplitAt(l1, 2, l2, false);
 
             for (double d = 0; d < 5; d += 0.1)

@@ -24,7 +24,6 @@ namespace BulletHell
 
         BufferedGraphics buff;
         Game game;
-        Particle MEEEEEEE;
         bool DisplayFrameRate = true, DisplayTime = true;
 
         public MainForm()
@@ -32,7 +31,10 @@ namespace BulletHell
             InitializeComponent();
             int vx = 1, vx2 = 2;
             int vy = 2, vy2 = 4;
-            game = new Game();
+
+            Drawable mchar = DrawableFactory.MakeCircle(8, new GraphicsStyle(Brushes.Orange, Pens.Red));
+
+            game = new Game(new MainChar(mchar,ClientRectangle.Width/2,ClientRectangle.Height-20));
 
             Particle p1 = new Particle(x => vx * x, y => vy * y);
             Particle p2 = new Particle(Utils.MakeClosure<double,double,double>(ClientRectangle.Width,(w,x) => w - vx2 * x), y => vy2 * y);
@@ -115,7 +117,6 @@ namespace BulletHell
 
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
-            MEEEEEEE = new Particle(x => (double)ClientRectangle.Width / 2, y => (double)ClientRectangle.Height * 3 / 4);
         }
         BulletHell.Time.Timer timer, frameTimer, eventTimer;
         public void GameLoop()
@@ -209,9 +210,18 @@ namespace BulletHell
         {
         }
 
+        private double ComputeXVel()
+        {
+            return (keys[(int)Keys.Left] ? -1 : 0) + (keys[(int)Keys.Right] ? 1 : 0);
+        }
+        private double ComputeYVel()
+        {
+            return (keys[(int)Keys.Up] ? -1 : 0) + (keys[(int)Keys.Down] ? 1 : 0);
+        }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+
             if (e.KeyCode == Keys.F && !keys[(int)e.KeyCode])
             {
                 DisplayFrameRate = !DisplayFrameRate;
@@ -232,11 +242,32 @@ namespace BulletHell
             {
                 game.CurrentTimeRate -= 0.1;
             }
+            bool computexv = (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right) && !keys[(int)e.KeyCode], computeyv = (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down) && !keys[(int)e.KeyCode];
+
             keys[(int)e.KeyCode] = true;
+            if (computexv)
+            {
+                game.Character.XComp = ComputeXVel();
+            }
+            if (computeyv)
+            {
+                game.Character.YComp = ComputeYVel();
+            }
         }
+
         private void MainForm_KeyUp(object sender, KeyEventArgs e)
         {
+            bool computexv = (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right) && keys[(int)e.KeyCode], computeyv = (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down) && keys[(int)e.KeyCode];
+
             keys[(int)e.KeyCode] = false;
+            if (computexv)
+            {
+                game.Character.XComp = ComputeXVel();
+            }
+            if (computeyv)
+            {
+                game.Character.YComp = ComputeYVel();
+            }
         }
         double fr = 0;
         int entityCount = 0;

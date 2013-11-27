@@ -5,6 +5,7 @@ using System.Text;
 using BulletHell.Time;
 using System.Drawing;
 using BulletHell.MathLib;
+using BulletHell.MathLib.Function;
 
 namespace BulletHell.GameLib
 {
@@ -20,6 +21,15 @@ namespace BulletHell.GameLib
         private double mostRenderedTime = -1;
         private double rewindLimit = 0;
         private int entCount;
+        private MainChar mainChar;
+
+        public MainChar Character
+        {
+            get
+            {
+                return mainChar;
+            }
+        }
 
         public int EntityCount
         {
@@ -54,7 +64,7 @@ namespace BulletHell.GameLib
             {
                 paused = false;
                 curTimeRate = value;
-                timeRateFunc = IntegrableFunction<double, double>.SplitAt(timeRateFunc, ActualTime, (PolyFunc<double>)curTimeRate, false);
+                timeRateFunc = IntegrableFunction<double, double>.SplitAt(timeRateFunc, ActualTime, (PolyFunc<double,double>)curTimeRate, false);
                 timeFunc = timeRateFunc.FI;
                 //Console.WriteLine("Q {0}, {1}",curTimeRate);
             }
@@ -85,14 +95,17 @@ namespace BulletHell.GameLib
             }
         }
 
-        public Game()
+        public Game(MainChar m)
         {
-            entities = new AdvancedEntityManager(128,64,32,16,8,4,2,1,0.5);
+            entities = //new AdvancedEntityManager(128,64,32,16,8,4,2,1,0.5);
+                new AdvancedEntityManager(1000, 100, 10, 1);
+            mainChar = m;
             //entities = new ListEntityManager();
             gameTimer = new BulletHell.Time.Timer();
             curTimeRate = 1;
-            timeRateFunc = new PolyFunc<double>(curTimeRate);
+            timeRateFunc = new PolyFunc<double,double>(curTimeRate);
             timeFunc = timeRateFunc.FI;
+            Add(m);
         }
 
         public void Add(Entity e)
@@ -155,11 +168,11 @@ namespace BulletHell.GameLib
                     paused = value;
                     if (paused)
                     {
-                        timeRateFunc = IntegrableFunction<double, double>.SplitAt(timeRateFunc, ActualTime, (PolyFunc<double>)0, false);
+                        timeRateFunc = IntegrableFunction<double, double>.SplitAt(timeRateFunc, ActualTime, (PolyFunc<double,double>)0, false);
                     }
                     else
                     {
-                        timeRateFunc = IntegrableFunction<double, double>.SplitAt(timeRateFunc, ActualTime, (PolyFunc<double>)curTimeRate, false);
+                        timeRateFunc = IntegrableFunction<double, double>.SplitAt(timeRateFunc, ActualTime, (PolyFunc<double,double>)curTimeRate, false);
                     }
                     timeFunc = timeRateFunc.FI;
                 }

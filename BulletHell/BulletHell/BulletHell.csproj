@@ -73,6 +73,7 @@
     <Compile Include="GameLib\Entity.cs" />
     <Compile Include="GameLib\EntityManager.cs" />
     <Compile Include="GameLib\Game.cs" />
+    <Compile Include="GameLib\MainChar.cs" />
     <Compile Include="Gfx\Drawable.cs" />
     <Compile Include="Gfx\GraphicsStyles.cs" />
     <Compile Include="HiResTimer.cs" />
@@ -82,12 +83,15 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MathLib\Function.cs" />
+    <Compile Include="MathLib\Function\Function.cs" />
     <Compile Include="MathLib\FunctionTest.cs" />
+    <Compile Include="MathLib\Function\PolyFunc.cs" />
     <Compile Include="MathLib\GenMatrix.cs" />
     <Compile Include="MathLib\GenVector.cs" />
     <Compile Include="MathLib\Math.cs" />
     <Compile Include="MathLib\GenRect.cs" />
+    <Compile Include="MathLib\Pair.cs" />
+    <Compile Include="MathLib\Function\VectorAggregateFunc.cs" />
     <Compile Include="Physics\Particle.cs" />
     <Compile Include="Physics\ParticleManager.cs" />
     <Compile Include="Physics\PhysicsTest.cs" />
