@@ -73,6 +73,7 @@
     <Compile Include="GameLib\Entity.cs" />
     <Compile Include="GameLib\EntityManager.cs" />
     <Compile Include="GameLib\Game.cs" />
+    <Compile Include="GameLib\KeyManager.cs" />
     <Compile Include="GameLib\MainChar.cs" />
     <Compile Include="Gfx\Drawable.cs" />
     <Compile Include="Gfx\GraphicsStyles.cs" />

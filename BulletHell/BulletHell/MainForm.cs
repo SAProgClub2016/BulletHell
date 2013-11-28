@@ -17,7 +17,7 @@ namespace BulletHell
 {
     public partial class MainForm : Form
     {
-        bool[] keys = new bool[256];
+        KeyManager keyMan;
 
         Drawable o1, o2;
         Entity e, e2;
@@ -29,6 +29,10 @@ namespace BulletHell
         public MainForm()
         {
             InitializeComponent();
+            keyMan = new KeyManager();
+
+            InitializeKeyManager();
+
             int vx = 1, vx2 = 2;
             int vy = 2, vy2 = 4;
 
@@ -46,7 +50,7 @@ namespace BulletHell
             Drawable o3 = DrawableFactory.ChangeDefStyles(o2, new GraphicsStyle(Brushes.Azure));
 
             double FULL = 2 * Math.PI;
-            double cd = .5;
+            double cd = 1;
             int perCirc = 12;
             int offsets = 6;
             BulletEmission[] bEms = new BulletEmission[offsets], bEms2 = new BulletEmission[offsets];
@@ -106,18 +110,42 @@ namespace BulletHell
             Particle p5 = new Particle(x => -0.4 * x + 800, y => 2 * y);
             Entity e5 = new Entity(0,p5, o1, em);
 
-            game = game + e + e2 + e3 + e4 + e5;
+            //game = game + e + e2 + e3 + e4 + e5;
 
             Entity e6 = new Entity(0,q, o1, em2);
-            //game += e6;
+            game += e6;
 
             Particle r = new Particle(Utils.MakeClosure<double,double,double>((double)ClientRectangle.Width/3, (w,t)=>w+3*t), t=>5*t);
             Entity e7 = new Entity(0,r,o1,em3);
-            //game += e7;
+            game += e7;
 
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
         }
+
+        private void InitializeKeyManager()
+        {
+            keyMan.OnPress[Keys.Up] = this.OnKeyUpDown;
+            keyMan.OnRelease[Keys.Up] = this.OnEndKeyUpDown;
+            keyMan.OnPress[Keys.Down] = this.OnKeyUpDown;
+            keyMan.OnRelease[Keys.Down] = this.OnEndKeyUpDown;
+            keyMan.OnPress[Keys.Left] = this.OnKeyLeftRight;
+            keyMan.OnRelease[Keys.Left] = this.OnEndKeyLeftRight;
+            keyMan.OnPress[Keys.Right] = this.OnKeyLeftRight;
+            keyMan.OnRelease[Keys.Right] = this.OnEndKeyLeftRight;
+            keyMan.OnPress[Keys.T] = this.OnKeyT;
+            keyMan.OnPress[Keys.P] = this.OnKeyP;
+            keyMan.OnPress[Keys.F] = this.OnKeyF;
+            keyMan.OnPress[Keys.Oemplus] = this.OnKeyPlus;
+            keyMan.Repeat[Keys.Oemplus] = 10;
+            keyMan.OnPress[Keys.OemMinus] = this.OnKeyMinus;
+            keyMan.Repeat[Keys.OemMinus] = 10;
+            keyMan.OnPress[Keys.Add] = this.OnKeyPlus;
+            keyMan.Repeat[Keys.Add] = 10;
+            keyMan.OnPress[Keys.Subtract] = this.OnKeyMinus;
+            keyMan.Repeat[Keys.Subtract] = 10;
+        }
+
         BulletHell.Time.Timer timer, frameTimer, eventTimer;
         public void GameLoop()
         {
@@ -206,69 +234,65 @@ namespace BulletHell
             }
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private void OnKeyMinus(KeyManager km, Keys key, bool repeat = false)
         {
+            game.CurrentTimeRate -= 0.1;
+        }
+
+        private void OnKeyPlus(KeyManager km, Keys key, bool repeat = false)
+        {
+            game.CurrentTimeRate += 0.1;
+        }
+
+        private void OnEndKeyLeftRight(KeyManager km, Keys key)
+        {
+            game.Character.XComp = ComputeXVel();
+        }
+
+        private void OnEndKeyUpDown(KeyManager km, Keys key)
+        {
+            game.Character.YComp = ComputeYVel();
+        }
+        private void OnKeyUpDown(KeyManager km, Keys key, bool repeat)
+        {
+            game.Character.YComp = ComputeYVel();
+        }
+        private void OnKeyLeftRight(KeyManager km, Keys key, bool repeat)
+        {
+            game.Character.XComp = ComputeXVel();
+        }
+        private void OnKeyF(KeyManager km, Keys key, bool repeat)
+        {
+            DisplayFrameRate = !DisplayFrameRate;
+        }
+        private void OnKeyP(KeyManager km, Keys key, bool repeat)
+        {
+            game.TogglePause();
+        }
+        private void OnKeyT(KeyManager km, Keys key, bool repeat)
+        {
+            DisplayTime = !DisplayTime;
         }
 
         private double ComputeXVel()
         {
-            return (keys[(int)Keys.Left] ? -1 : 0) + (keys[(int)Keys.Right] ? 1 : 0);
+            return (keyMan[Keys.Left] ? -1 : 0) + (keyMan[Keys.Right] ? 1 : 0);
         }
         private double ComputeYVel()
         {
-            return (keys[(int)Keys.Up] ? -1 : 0) + (keys[(int)Keys.Down] ? 1 : 0);
+            return (keyMan[Keys.Up] ? -1 : 0) + (keyMan[Keys.Down] ? 1 : 0);
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-
-            if (e.KeyCode == Keys.F && !keys[(int)e.KeyCode])
-            {
-                DisplayFrameRate = !DisplayFrameRate;
-            }
-            if (e.KeyCode == Keys.T && !keys[(int)e.KeyCode])
-            {
-                DisplayTime = !DisplayTime;
-            }
-            if (e.KeyCode == Keys.P && !keys[(int)e.KeyCode])
-            {
-                game.TogglePause();
-            }
-            if (e.KeyCode == Keys.Add && !keys[(int)e.KeyCode])
-            {
-                game.CurrentTimeRate += 0.1;
-            }
-            if (e.KeyCode == Keys.Subtract && !keys[(int)e.KeyCode])
-            {
-                game.CurrentTimeRate -= 0.1;
-            }
-            bool computexv = (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right) && !keys[(int)e.KeyCode], computeyv = (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down) && !keys[(int)e.KeyCode];
-
-            keys[(int)e.KeyCode] = true;
-            if (computexv)
-            {
-                game.Character.XComp = ComputeXVel();
-            }
-            if (computeyv)
-            {
-                game.Character.YComp = ComputeYVel();
-            }
+            keyMan.KeyPressed(e.KeyCode);
         }
 
         private void MainForm_KeyUp(object sender, KeyEventArgs e)
         {
-            bool computexv = (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right) && keys[(int)e.KeyCode], computeyv = (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down) && keys[(int)e.KeyCode];
-
-            keys[(int)e.KeyCode] = false;
-            if (computexv)
-            {
-                game.Character.XComp = ComputeXVel();
-            }
-            if (computeyv)
-            {
-                game.Character.YComp = ComputeYVel();
-            }
+            keyMan.KeyReleased(e.KeyCode);
         }
+
         double fr = 0;
         int entityCount = 0;
 
@@ -291,12 +315,6 @@ namespace BulletHell
                 while (timer.Time < 20)
                     Thread.Yield();
             }
-        }
-
-
-        private void MainForm_Move(object sender, EventArgs e)
-        {
-            //ArbitraryRender();
         }
     }
 }

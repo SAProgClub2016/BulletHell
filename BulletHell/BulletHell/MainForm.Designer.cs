@@ -32,16 +32,10 @@
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(1262, 675);
             this.Name = "MainForm";
-            this.Text = "MainForm";
-            this.Load += new System.EventHandler(this.MainForm_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyUp);
-            this.Move += new System.EventHandler(this.MainForm_Move);
             this.ResumeLayout(false);
 
         }
