@@ -23,6 +23,8 @@ namespace BulletHell.Physics
             }
             set
             {
+                if (Utils.IsZero(time - value))
+                    return;
                 time = value;
                 pos = Position(time);
             }
@@ -154,6 +156,20 @@ namespace BulletHell.Physics
         public static Particle operator - (Particle p)
         {
             return new Particle(t => -p.PosFunc(t));
+        }
+
+        private static List<Particle> os;
+
+        public static Particle Origin(int dim)
+        {
+            if(os==null)
+                os = new List<Particle>();
+            while (dim >= os.Count)
+            {
+                Vector<double> v = new Vector<double>(os.Count);
+                os.Add(new Particle(t => v));
+            }
+            return os[dim];
         }
     }
     public class ParticleTest
