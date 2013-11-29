@@ -171,6 +171,10 @@ namespace BulletHell.Physics
             }
             return os[dim];
         }
+        public static implicit operator Particle(Vector<double> constant)
+        {
+            return new Particle(t=>constant);
+        }
     }
     public class ParticleTest
     {

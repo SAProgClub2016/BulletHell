@@ -13,6 +13,7 @@ namespace BulletHell.GameLib
         public EntityManager Manager { get; set; }
         Particle pos;
         Drawable d;
+        PhysicsShape ps;
         BulletEmitter e;
         GraphicsStyle gs;
         public readonly double CreationTime;
@@ -40,6 +41,7 @@ namespace BulletHell.GameLib
             }
             set
             {
+                ps.Time = value;
                 pos.Time = value;
             }
         }
@@ -90,8 +92,9 @@ namespace BulletHell.GameLib
             }
         }
 
-        public Entity(double cTime, Particle pos, Drawable draw, BulletEmitter e = null, GraphicsStyle g = null)
+        public Entity(double cTime, Particle pos, Drawable draw, PhysicsShape physS, BulletEmitter e = null, GraphicsStyle g = null)
         {
+            ps = physS ?? new Point(pos.Dimension);
             CreationTime = cTime;
             this.pos = pos;
             d = draw;

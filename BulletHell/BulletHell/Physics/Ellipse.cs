@@ -37,7 +37,6 @@ namespace BulletHell.Physics
             Vector<double> cp = p.CurrentPosition;
             Vector<double> mcp = pos.CurrentPosition;
             Vector<double> diff = cp-mcp;
-            r.Time=pos.Time;
             Vector<double> rp = r.CurrentPosition;
             for (int i = 0; i < pos.Dimension; i++)
             {
@@ -48,7 +47,7 @@ namespace BulletHell.Physics
             Func<double,double> sqr = t=>t*t;
             for (int i = 0; i < pos.Dimension; i++)
             {
-                sum += sqr(diff[i]) / sqr(rp[i]);
+                sum += sqr(diff[i] / rp[i]);
             }
             return sum < 1;
         }
@@ -65,6 +64,12 @@ namespace BulletHell.Physics
                 return new Ellipse(r + oth.r).ContainsPoint(p, oPos);
             }
             return o.Meets(oPos, this, p);
+        }
+
+        public Particle Radius
+        {
+            get
+            { return r; }
         }
 
         public override Box BoundingBox

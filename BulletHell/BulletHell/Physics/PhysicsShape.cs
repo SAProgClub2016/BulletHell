@@ -51,6 +51,8 @@ namespace BulletHell.Physics
             }
             set
             {
+                if (Utils.IsZero(time - value))
+                    return;
                 time = value;
                 UpdateTime();
             }

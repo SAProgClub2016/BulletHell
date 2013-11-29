@@ -37,7 +37,6 @@ namespace BulletHell.Physics
             Vector<double> cp = p.CurrentPosition;
             Vector<double> mcp = pos.CurrentPosition;
             Vector<double> diff = cp-mcp;
-            r.Time=pos.Time;
             Vector<double> rp = r.CurrentPosition;
             for (int i = 0; i < pos.Dimension; i++)
             {
@@ -70,17 +69,24 @@ namespace BulletHell.Physics
                 Vector<double> mcp = p.CurrentPosition;
                 Vector<double> diff = ocp - mcp;
                 diff = diff.Map(Math.Abs, diff);
-                r.Time = p.Time;
+
                 Vector<double> rp = r.CurrentPosition;
                 rp.Map(Math.Abs, rp);
+
                 for (int i = 0; i < p.Dimension; i++)
                 {
-                    if (Math.Abs(diff[i]) > Math.Abs(rp[i]))
-                        return false;
+                    if (diff[i]<rp[i])
+                        return true;
                 }
-                return true;
+                return o.ContainsPoint(diff,rp);
             }
             return o.Meets(oPos, this, p);
+        }
+
+        public Particle Radius
+        {
+            get
+            { return r; }
         }
 
         public override Box BoundingBox
