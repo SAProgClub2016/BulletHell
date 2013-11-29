@@ -95,7 +95,9 @@
     <Compile Include="MathLib\Function\VectorAggregateFunc.cs" />
     <Compile Include="Physics\Particle.cs" />
     <Compile Include="Physics\ParticleManager.cs" />
+    <Compile Include="Physics\PhysicsShape.cs" />
     <Compile Include="Physics\PhysicsTest.cs" />
+    <Compile Include="Physics\Point.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Timer.cs" />
