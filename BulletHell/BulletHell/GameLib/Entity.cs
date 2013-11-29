@@ -18,6 +18,8 @@ namespace BulletHell.GameLib
         GraphicsStyle gs;
         public readonly double CreationTime;
         private double iTime=-1,dTime=-1;
+
+
         public double InvisibilityTime
         {
             get { return iTime; }
