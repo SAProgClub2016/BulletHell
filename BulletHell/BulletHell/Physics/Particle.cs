@@ -134,6 +134,27 @@ namespace BulletHell.Physics
             ans.Time = p.Time;
             return ans;
         }
+
+        public static Particle operator - (Particle p, Particle q)
+        {
+            return new Particle(t => p.PosFunc(t) - q.PosFunc(t));
+        }
+        public static Particle operator + (Particle p, Particle q)
+        {
+            return new Particle(t => p.PosFunc(t) * q.PosFunc(t));
+        }
+        public static Particle operator *(double d, Particle p)
+        {
+            return new Particle(t => d * p.PosFunc(t));
+        }
+        public static Particle operator *(Particle p, double d)
+        {
+            return d * p;
+        }
+        public static Particle operator - (Particle p)
+        {
+            return new Particle(t => -p.PosFunc(t));
+        }
     }
     public class ParticleTest
     {
