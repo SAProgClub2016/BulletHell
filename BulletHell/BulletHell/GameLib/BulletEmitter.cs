@@ -12,13 +12,15 @@ namespace BulletHell.GameLib
     {
         public double Warmup;
         public double Cooldown;
-        public BulletTrajectory[] Bullets;
+        public Trajectory[] BulletPaths;
+        public BulletStyle bSty;
 
-        public BulletEmission(double w, double c, BulletTrajectory[] bulletTrajectory)
+        public BulletEmission(double w, double c, Trajectory[] bulletTrajectory, BulletStyle sty)
         {
             this.Warmup = w;
             this.Cooldown = c;
-            this.Bullets = bulletTrajectory;
+            this.BulletPaths = bulletTrajectory;
+            this.bSty = sty;
         }
     }
     public class BulletEmitter
@@ -59,9 +61,10 @@ namespace BulletHell.GameLib
             {
                 double t = k - this[index - 1].Cooldown;
                 Vector<double> x = p.Position(t); 
-                foreach (BulletTrajectory j in this[index - 1].Bullets)
+                BulletEmission em = this[index - 1];
+                foreach (Trajectory j in em.BulletPaths)
                 {
-                    ans.Add(j(t,x[0],x[1]));
+                    ans.Add(em.bSty(t,j(t,x[0],x[1])));
                     //Console.WriteLine(k - this[index - 1].Cooldown);
                 }
             }
@@ -73,10 +76,10 @@ namespace BulletHell.GameLib
                 if (k < t2)
                 {
                     Vector<double> x = p.Position(k);
-                    foreach (BulletTrajectory j in b.Bullets)
+                    foreach (Trajectory j in b.BulletPaths)
                     {
                         //Console.WriteLine(k);
-                        ans.Add(j(k,x[0],x[1]));
+                        ans.Add(b.bSty(k,j(k,x[0],x[1])));
                     }
                 }
                 k += b.Cooldown;

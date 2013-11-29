@@ -24,6 +24,12 @@ namespace BulletHell.Physics
 
         }
         protected abstract void Draw(Particle p, Graphics g, GraphicsStyle sty = null);
+
+        public Drawable MakeDrawable(GraphicsStyle defSty = null)
+        {
+            return (p, g, sty) => Draw(p, g, sty ?? defSty);
+        }
+
         public bool ContainsPoint(Particle p)
         {
             return ContainsPoint(Particle.Origin(p.Dimension), p);

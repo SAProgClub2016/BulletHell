@@ -27,10 +27,6 @@ namespace BulletHell.Physics
             pointShape(p, g, sty);
         }
 
-        protected override bool containsPoint(Particle p)
-        {
-            return Utils.IsZero(p.CurrentPosition.Length2);
-        }
 
         protected override bool containsPoint(Particle pos, Particle p)
         {

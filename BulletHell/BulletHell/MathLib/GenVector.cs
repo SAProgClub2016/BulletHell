@@ -19,6 +19,8 @@ namespace BulletHell.MathLib
         }
         public Vector(T[] v, int offset = 0, int dim = -1)
         {
+            if (v == null)
+                throw new ArgumentNullException();
             int indmax = 0;
             if (dim > 0)
             {
@@ -52,6 +54,8 @@ namespace BulletHell.MathLib
         public Vector(params T[] v)
             : this(v, (int)0)
         {
+            if (v == null)
+                throw new ArgumentNullException();
         }
 
         public static Vector<S> MakeStandardBasisVector<S>(int dimension, int basisDim)

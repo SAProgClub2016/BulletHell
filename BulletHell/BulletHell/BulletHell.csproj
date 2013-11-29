@@ -69,7 +69,8 @@
     </Compile>
     <Compile Include="GameLib\Bullet.cs" />
     <Compile Include="GameLib\BulletEmitter.cs" />
-    <Compile Include="GameLib\BulletTrajectory.cs" />
+    <Compile Include="GameLib\BulletStyle.cs" />
+    <Compile Include="GameLib\Trajectory.cs" />
     <Compile Include="GameLib\Entity.cs" />
     <Compile Include="GameLib\EntityManager.cs" />
     <Compile Include="GameLib\Game.cs" />
@@ -93,6 +94,8 @@
     <Compile Include="MathLib\GenRect.cs" />
     <Compile Include="MathLib\Pair.cs" />
     <Compile Include="MathLib\Function\VectorAggregateFunc.cs" />
+    <Compile Include="Physics\Box.cs" />
+    <Compile Include="Physics\Ellipse.cs" />
     <Compile Include="Physics\Particle.cs" />
     <Compile Include="Physics\ParticleManager.cs" />
     <Compile Include="Physics\PhysicsShape.cs" />

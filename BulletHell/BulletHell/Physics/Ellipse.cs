@@ -13,6 +13,15 @@ namespace BulletHell.Physics
         private Particle r;
         private Drawable myDraw;
 
+        public Ellipse(double r, int dim=2)
+        {
+            Vector<double> rad = new Vector<double>(dim);
+            for (int i = 0; i < dim; i++)
+                rad[i] = r;
+            this.r = rad;
+            myDraw = DrawableFactory.MakeEllipse(this.r, new GraphicsStyle(null, Pens.Red));
+        }
+
         public Ellipse(Particle rad)
         {
             r = rad;
@@ -23,11 +32,6 @@ namespace BulletHell.Physics
         protected override void Draw(Particle p, Graphics g, GraphicsStyle sty = null)
         {
             myDraw(p, g, sty);
-        }
-
-        protected override bool containsPoint(Particle p)
-        {
-            return ContainsPoint(Particle.Origin(p.Dimension));
         }
 
         protected override bool containsPoint(Particle pos, Particle p)

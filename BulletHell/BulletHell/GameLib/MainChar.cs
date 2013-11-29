@@ -81,7 +81,7 @@ namespace BulletHell.GameLib
                 }
             }
         }
-        public MainChar(Drawable d, double x0, double y0, double s = 20, GraphicsStyle g = null) : base(0,null, d,null, g)
+        public MainChar(Drawable d, double x0, double y0, double s = 20, GraphicsStyle g = null) : base(0,null, d, new Point(2), null, g)
         {
             speed = s;
             this.x0 = x0;

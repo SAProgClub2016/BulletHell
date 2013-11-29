@@ -25,11 +25,6 @@ namespace BulletHell.Physics
             myDraw(p, g, sty);
         }
 
-        protected override bool containsPoint(Particle p)
-        {
-            return ContainsPoint(Particle.Origin(p.Dimension));
-        }
-
         protected override bool containsPoint(Particle pos, Particle p)
         {
             if(p.Dimension!=r.Dimension || p.Dimension!=pos.Dimension)

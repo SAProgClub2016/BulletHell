@@ -101,6 +101,10 @@ namespace BulletHell.GameLib
             this.e = e;
             gs = g;
         }
+        public Entity(double cTime, Particle pos, PhysicsShape physS, GraphicsStyle g, BulletEmitter e = null)
+            : this(cTime, pos, physS.MakeDrawable(g), physS, e, g)
+        {
+        }
 
     }
 }

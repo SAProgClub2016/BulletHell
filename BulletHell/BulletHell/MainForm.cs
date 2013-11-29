@@ -19,8 +19,10 @@ namespace BulletHell
     {
         KeyManager keyMan;
 
-        Drawable o1, o2;
+        Drawable o1;
         Entity e, e2;
+
+        BulletStyleManager bsm;
 
         BufferedGraphics buff;
         Game game;
@@ -29,6 +31,10 @@ namespace BulletHell
         public MainForm()
         {
             InitializeComponent();
+
+            bsm = new BulletStyleManager();
+            InitializeBulletStyles();
+
             keyMan = new KeyManager();
 
             InitializeKeyManager();
@@ -45,9 +51,8 @@ namespace BulletHell
 
             Particle q = new Particle(t => 7 * t + 10 * Utils.FastCos(t), t => 3 * t + 10 * Utils.FastSin(t));
 
-            o1 = DrawableFactory.MakeCircle(7, new GraphicsStyle(Brushes.Green));
-            o2 = DrawableFactory.MakeCircle(5, new GraphicsStyle(Brushes.OrangeRed));
-            Drawable o3 = DrawableFactory.ChangeDefStyles(o2, new GraphicsStyle(Brushes.Azure));
+            Ellipse entEl = new Ellipse(7);
+            o1 = entEl.MakeDrawable(new GraphicsStyle(Brushes.Green));
 
             double FULL = 2 * Math.PI;
             double cd = 1;
@@ -56,71 +61,80 @@ namespace BulletHell
             BulletEmission[] bEms = new BulletEmission[offsets], bEms2 = new BulletEmission[offsets];
             double DOWN = Math.PI / 2;
             // Makes the spiral pattern with bullets of shape o2
-            BulletTrajectory[][] arrs = new BulletTrajectory[offsets][];
+            Trajectory[][] arrs = new Trajectory[offsets][];
             for (int i = 0; i < offsets; i++)
-                arrs[i] = new BulletTrajectory[perCirc];
+                arrs[i] = new Trajectory[perCirc];
             for (int i = 0; i < perCirc; i++)
             {
                 for (int j = 0; j < offsets; j++)
                 {
-                    arrs[j][i] = BulletTrajectoryFactory.AngleMagVel(o2/*dcols[i%cols.Length]*/, (i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 10);
+                    arrs[j][i] = TrajectoryFactory.AngleMagVel((i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 10);
                 }
             }
             for (int i = 0; i < offsets; i++)
-                bEms[i] = new BulletEmission(cd, 0, arrs[i]);
+                bEms[i] = new BulletEmission(cd, 0, arrs[i],bsm["OrangeRed_5"]);
             // Same as above, but we're gonna change the shape
             for (int i = 0; i < offsets; i++)
-                arrs[i] = new BulletTrajectory[perCirc];
+                arrs[i] = new Trajectory[perCirc];
             for (int i = 0; i < perCirc; i++)
             {
                 for (int j = 0; j < offsets; j++)
                 {
-                    arrs[j][i] = BulletTrajectoryFactory.AngleMagVel(o3/*dcols[i%cols.Length]*/, (i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 10);
+                    arrs[j][i] = TrajectoryFactory.AngleMagVel((i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 10);
                 }
             }
             for (int i = 0; i < offsets; i++)
-                bEms2[i] = new BulletEmission(cd, 0, arrs[i]);
+                bEms2[i] = new BulletEmission(cd, 0, arrs[i],bsm["Azure_5"]);
             // Same as above, but we're gonna change the shape again and the path
             BulletEmission[] bEms3 = new BulletEmission[offsets];
             for (int i = 0; i < offsets; i++)
-                arrs[i] = new BulletTrajectory[perCirc];
+                arrs[i] = new Trajectory[perCirc];
             for (int i = 0; i < perCirc; i++)
             {
                 for (int j = 0; j < offsets; j++)
                 {
-                    arrs[j][i] = BulletTrajectoryFactory.SpinningLinearAMVel(DrawableFactory.ChangeDefStyles(o2,new GraphicsStyle(Brushes.HotPink)), (i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 7/*3*/, 0.5, 20);
+                    arrs[j][i] = TrajectoryFactory.SpinningLinearAMVel((i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 7/*3*/, 0.5, 20);
                 }
             }
             for (int i = 0; i < offsets; i++)
-                bEms3[i] = new BulletEmission(cd, 0, arrs[i]);
+                bEms3[i] = new BulletEmission(cd, 0, arrs[i], bsm["HotPink_5"]);
 
             BulletEmitter em = new BulletEmitter(bEms);
             BulletEmitter em2 = new BulletEmitter(bEms2);
             BulletEmitter em3 = new BulletEmitter(bEms3);
 
-            e = new Entity(0,p1, o1, em);
-            e2 = new Entity(0,p2, o1, em);
+            e = new Entity(0, p1, o1, entEl, em);
+            e2 = new Entity(0,p2, o1, entEl, em);
 
             Particle p3 = new Particle(x => 0.5 * x + 500, y => 3 * y);
-            Entity e3 = new Entity(0,p3, o1, em);
+            Entity e3 = new Entity(0,p3, o1, entEl, em);
 
             Particle p4 = new Particle(x => -0.25 * x + 300, y => 3.5 * y);
-            Entity e4 = new Entity(0,p4, o1, em);
+            Entity e4 = new Entity(0,p4, o1, entEl, em);
 
             Particle p5 = new Particle(x => -0.4 * x + 800, y => 2 * y);
-            Entity e5 = new Entity(0,p5, o1, em);
+            Entity e5 = new Entity(0,p5, o1, entEl, em);
 
             //game = game + e + e2 + e3 + e4 + e5;
 
-            Entity e6 = new Entity(0,q, o1, em2);
+            Entity e6 = new Entity(0,q, o1, entEl, em2);
             game += e6;
 
             Particle r = new Particle(Utils.MakeClosure<double,double,double>((double)ClientRectangle.Width/3, (w,t)=>w+3*t), t=>5*t);
-            Entity e7 = new Entity(0,r,o1,em3);
+            Entity e7 = new Entity(0, r, o1, entEl, em3);
             game += e7;
 
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
+        }
+
+        private void InitializeBulletStyles()
+        {
+            Ellipse bulletEl = new Ellipse(5);
+
+            bsm.MakeStyle("OrangeRed_5", bulletEl, new GraphicsStyle(Brushes.OrangeRed));
+            bsm.MakeStyle("Azure_5", bulletEl, new GraphicsStyle(Brushes.Azure));
+            bsm.MakeStyle("HotPink_5", bulletEl, new GraphicsStyle(Brushes.HotPink));
         }
 
         private void InitializeKeyManager()

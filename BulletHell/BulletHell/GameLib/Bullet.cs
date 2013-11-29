@@ -9,8 +9,8 @@ namespace BulletHell.GameLib
 {
     public class Bullet : Entity
     {
-        public Bullet(double cTime, Particle pos, Drawable d,BulletEmitter e = null)
-            : base(cTime, pos, d, e)
+        public Bullet(double cTime, Particle pos, Drawable d, PhysicsShape ps, BulletEmitter e = null)
+            : base(cTime,pos,d,ps,e)
         {
         }
     }

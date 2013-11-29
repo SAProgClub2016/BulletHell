@@ -76,7 +76,8 @@ namespace BulletHell.Physics
             Parent = parent;
             PosFunc = f;
             dimension = f(0).Dimension;
-            Time = 0;
+            time = 0;
+            pos = Position(time);
         }
         public Particle(Func<double, Vector<double>> f)
             : this(null, f)
