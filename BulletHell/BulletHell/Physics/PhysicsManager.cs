@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BulletHell.GameLib.EntityLib;
 
 namespace BulletHell.Physics
 {
@@ -124,6 +125,20 @@ namespace BulletHell.Physics
                         }
                     }
                 }
+            }
+        }
+
+        internal void RemovePermanently(Entity e)
+        {
+
+            if (ents.ContainsKey(e.Class))
+            {
+                ents[e.Class].RemovePermanently(e);
+            }
+            else
+            {
+                LookupLinkedListSet<Entity> lls = new LookupLinkedListSet<Entity>();
+                ents[e.Class] = lls;
             }
         }
     }

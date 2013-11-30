@@ -7,7 +7,7 @@ using BulletHell.Physics;
 using BulletHell.MathLib.Function;
 using BulletHell.MathLib;
 
-namespace BulletHell.GameLib
+namespace BulletHell.GameLib.EntityLib
 {
     public class MainChar : Entity
     {

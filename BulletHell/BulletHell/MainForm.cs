@@ -13,6 +13,8 @@ using BulletHell.Gfx;
 using BulletHell.GameLib;
 using BulletHell.MathLib;
 using BulletHell.Collections;
+using BulletHell.GameLib.EntityLib;
+using BulletHell.GameLib.EntityLib.BulletLib;
 
 namespace BulletHell
 {

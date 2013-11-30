@@ -5,11 +5,12 @@ using System.Text;
 using BulletHell.Collections;
 using BulletHell.Physics;
 
-namespace BulletHell.GameLib
+namespace BulletHell.GameLib.EntityLib
 {
     public interface EntityManager
     {
         void Add(Entity e);
+        void RemovePermanently(Entity e);
         void Remove(Entity e);
         IEnumerable<Entity> Entities(double t);
         IEnumerable<Entity> BulletShooters(double Time);
@@ -39,6 +40,13 @@ namespace BulletHell.GameLib
         public IEnumerable<Entity> BulletShooters(double t)
         {
             return entities;
+        }
+
+
+        public void RemovePermanently(Entity e)
+        {
+            e.Manager = null;
+            entities.Remove(e);
         }
     }
     public class AdvancedEntityManager : EntityManager
@@ -195,6 +203,28 @@ namespace BulletHell.GameLib
         {
             Update(t);
             return bulletShooters;
+        }
+
+
+        public void RemovePermanently(Entity e)
+        {
+            if (e.Manager != this)
+                return;
+            e.Manager = null;
+            if (e.CreationTime > oldTime || (e.InvisibilityTime != -1 && e.InvisibilityTime < oldTime))
+            {
+                ProcessPermanentRemoval(e);
+            }
+            adds.Remove(e);
+            removals.Remove(e);
+        }
+
+        private void ProcessPermanentRemoval(Entity e)
+        {
+            pm.RemovePermanently(e);
+            entities.RemovePermanently(e);
+            if (e.Emitter != null)
+                bulletShooters.RemovePermanently(e);
         }
     }
 }

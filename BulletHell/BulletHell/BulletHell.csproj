@@ -69,17 +69,19 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Collections\LookupLinkedListSet.cs" />
-    <Compile Include="GameLib\Bullet.cs" />
-    <Compile Include="GameLib\BulletEmitter.cs" />
-    <Compile Include="GameLib\BulletStyle.cs" />
+    <Compile Include="GameLib\EntityLib\BulletLib\Bullet.cs" />
+    <Compile Include="GameLib\EntityLib\BulletLib\BulletEmitter.cs" />
+    <Compile Include="GameLib\EntityLib\BulletLib\BulletStyle.cs" />
+    <Compile Include="GameLib\EventLib\GameEvent.cs" />
+    <Compile Include="GameLib\EventLib\GameEventManager.cs" />
     <Compile Include="Physics\PhysicsManager.cs" />
     <Compile Include="Physics\PhysicsClass.cs" />
     <Compile Include="GameLib\Trajectory.cs" />
-    <Compile Include="GameLib\Entity.cs" />
-    <Compile Include="GameLib\EntityManager.cs" />
+    <Compile Include="GameLib\EntityLib\Entity.cs" />
+    <Compile Include="GameLib\EntityLib\EntityManager.cs" />
     <Compile Include="GameLib\Game.cs" />
     <Compile Include="GameLib\KeyManager.cs" />
-    <Compile Include="GameLib\MainChar.cs" />
+    <Compile Include="GameLib\EntityLib\MainChar.cs" />
     <Compile Include="Gfx\Drawable.cs" />
     <Compile Include="Gfx\GraphicsStyles.cs" />
     <Compile Include="HiResTimer.cs" />

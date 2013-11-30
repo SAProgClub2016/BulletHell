@@ -5,8 +5,9 @@ using System.Text;
 using BulletHell.Gfx;
 using BulletHell.Physics;
 using BulletHell;
+using BulletHell.GameLib.EntityLib.BulletLib;
 
-namespace BulletHell.GameLib
+namespace BulletHell.GameLib.EntityLib
 {
     public class Entity
     {

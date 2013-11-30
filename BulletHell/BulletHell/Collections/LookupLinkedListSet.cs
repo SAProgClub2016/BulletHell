@@ -54,5 +54,16 @@ namespace BulletHell.Collections
         {
             return ll.GetEnumerator();
         }
+
+        internal void RemovePermanently(T t)
+        {
+            if(dict.ContainsKey(t))
+            {
+                LinkedListNode<T> lln = dict[t];
+                if (lln.List != null)
+                    ll.Remove(lln);
+                dict.Remove(t);
+            }
+        }
     }
 }

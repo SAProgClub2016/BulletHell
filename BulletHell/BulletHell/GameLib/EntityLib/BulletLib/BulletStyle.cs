@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BulletHell.GameLib
+namespace BulletHell.GameLib.EntityLib.BulletLib
 {
     public delegate Bullet BulletStyle(double t, Particle path, PhysicsClass pc);
 

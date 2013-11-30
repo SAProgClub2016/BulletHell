@@ -5,7 +5,7 @@ using System.Text;
 using BulletHell.Gfx;
 using BulletHell.Physics;
 
-namespace BulletHell.GameLib
+namespace BulletHell.GameLib.EntityLib.BulletLib
 {
     public class Bullet : Entity
     {

@@ -6,7 +6,7 @@ using BulletHell;
 using BulletHell.Physics;
 using BulletHell.MathLib;
 
-namespace BulletHell.GameLib
+namespace BulletHell.GameLib.EntityLib.BulletLib
 {
     public struct BulletEmission
     {
