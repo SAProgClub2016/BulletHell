@@ -195,6 +195,11 @@ namespace BulletHell.Collections
                 }
             }
         }
+
+        internal IEnumerable<GameLib.EventLib.GameEvent> ElementsAfter(double time)
+        {
+            throw new NotImplementedException();
+        }
     }
     public class LayeredLinkedListTest
     {

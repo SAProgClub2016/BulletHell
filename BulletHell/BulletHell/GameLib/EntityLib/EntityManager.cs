@@ -51,8 +51,6 @@ namespace BulletHell.GameLib.EntityLib
     }
     public class AdvancedEntityManager : EntityManager
     {
-        private LayeredLinkedList<Entity> adds, removals;
-        //Dictionary<Entity, bool> contains;
         private LookupLinkedListSet<Entity> entities;
         private LookupLinkedListSet<Entity> bulletShooters;
         private PhysicsManager pm;
@@ -63,8 +61,6 @@ namespace BulletHell.GameLib.EntityLib
         {
             pm = phys;
             oldTime = 0;
-            adds = new LayeredLinkedList<Entity>(0, x => x.CreationTime, ints);
-            removals = new LayeredLinkedList<Entity>(0, x => x.InvisibilityTime, ints);
             entities = new LookupLinkedListSet<Entity>();
             bulletShooters = new LookupLinkedListSet<Entity>();
         }
@@ -80,8 +76,6 @@ namespace BulletHell.GameLib.EntityLib
             {
                 ProcessAddition(e);
             }
-            adds.Add(e);
-            removals.Add(e);
         }
         private void ProcessAddition(Entity e)
         {
@@ -109,99 +103,16 @@ namespace BulletHell.GameLib.EntityLib
             {
                 ProcessRemoval(e);
             }
-            adds.Remove(e);
-            removals.Remove(e);
         }
 
-        private static readonly double TOLERANCE = 0.01;
 
-        private void Update(double t)
-        {
-            if (Utils.IsZero(t - oldTime))
-                return;
-            if (t < oldTime)
-            {
-                foreach (Entity e in adds.ElementsBetween(t-TOLERANCE, oldTime+TOLERANCE))
-                {
-                    ProcessRemoval(e);
-                }
-                foreach (Entity e in removals.ElementsBetween(t-TOLERANCE, oldTime+TOLERANCE))
-                {
-                    ProcessAddition(e);
-                }
-            }
-            else
-            {
-                foreach (Entity e in adds.ElementsBetween(oldTime-TOLERANCE, t+TOLERANCE))
-                {
-                    ProcessAddition(e);
-                }
-                foreach (Entity e in removals.ElementsBetween(oldTime-TOLERANCE, t+TOLERANCE))
-                {
-                    ProcessRemoval(e);
-                }
-            }
-            oldTime = t;
-        }
-
-        private void DebugUpdate(double t)
-        {
-            BulletHell.Time.Timer testtimer = new BulletHell.Time.Timer();
-            if (Utils.IsZero(t - oldTime))
-                return;
-            Console.WriteLine("AdvancedEntityManager.Update: oldTime={0}, newTime={1}", oldTime, t);
-            int count = 0;
-            if (t < oldTime)
-            {
-                Console.WriteLine("Going Back");
-                testtimer.Reset();
-                foreach (Entity e in adds.ElementsBetween(t - TOLERANCE, oldTime + TOLERANCE))
-                {
-                    count++;
-                    ProcessRemoval(e);
-                }
-                Console.WriteLine("AdvancedEntityManager.Update: count={1}, time={0}", testtimer.Time, count);
-                count = 0;
-                testtimer.Reset();
-                foreach (Entity e in removals.ElementsBetween(t - TOLERANCE, oldTime + TOLERANCE))
-                {
-                    ProcessAddition(e);
-                    count++;
-                }
-                Console.WriteLine("AdvancedEntityManager.Update: count={1}, time={0}", testtimer.Time, count);
-            }
-            else
-            {
-                Console.WriteLine("Going forward");
-                testtimer.Reset();
-
-                foreach (Entity e in adds.ElementsBetween(oldTime - TOLERANCE, t + TOLERANCE))
-                {
-                    ProcessAddition(e);
-                    count++;
-                }
-                foreach (Entity e in removals.ElementsBetween(oldTime - TOLERANCE, t + TOLERANCE))
-                {
-                    ProcessRemoval(e);
-                    count++;
-                }
-                Console.WriteLine("AdvancedEntityManager.Update: count={1}, time={0}", testtimer.Time, count);
-                count = 0;
-                testtimer.Reset();
-                Console.WriteLine("AdvancedEntityManager.Update: count={1}, time={0}", testtimer.Time, count);
-            }
-            oldTime = t;
-            Console.WriteLine("AdvancedEntityManager.Update: Entities size={0}", entities.Count());
-        }
 
         public IEnumerable<Entity> Entities(double t)
         {
-            Update(t);
             return entities;
         }
         public IEnumerable<Entity> BulletShooters(double t)
         {
-            Update(t);
             return bulletShooters;
         }
 
@@ -215,8 +126,6 @@ namespace BulletHell.GameLib.EntityLib
             {
                 ProcessPermanentRemoval(e);
             }
-            adds.Remove(e);
-            removals.Remove(e);
         }
 
         private void ProcessPermanentRemoval(Entity e)
