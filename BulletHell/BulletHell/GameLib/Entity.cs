@@ -11,14 +11,34 @@ namespace BulletHell.GameLib
     public class Entity
     {
         public EntityManager Manager { get; set; }
-        Particle pos;
-        Drawable d;
-        PhysicsShape ps;
-        BulletEmitter e;
-        GraphicsStyle gs;
+        private Particle pos;
+        private Drawable d;
+        private PhysicsShape ps;
+        private BulletEmitter e;
+        private GraphicsStyle gs;
         public readonly double CreationTime;
         private double iTime=-1,dTime=-1;
+        private PhysicsClass pc;
 
+        public PhysicsShape Shape
+        {
+            get
+            {
+                return ps;
+            }
+            set
+            {
+                ps = value;
+            }
+        }
+
+        public PhysicsClass Class
+        {
+            get
+            {
+                return pc;
+            }
+        }
 
         public double InvisibilityTime
         {
@@ -94,8 +114,9 @@ namespace BulletHell.GameLib
             }
         }
 
-        public Entity(double cTime, Particle pos, Drawable draw, PhysicsShape physS, BulletEmitter e = null, GraphicsStyle g = null)
+        public Entity(double cTime, Particle pos, Drawable draw, PhysicsShape physS, PhysicsClass pc, BulletEmitter e = null, GraphicsStyle g = null)
         {
+            this.pc = pc;
             ps = physS ?? new Point(pos.Dimension);
             CreationTime = cTime;
             this.pos = pos;
@@ -103,8 +124,8 @@ namespace BulletHell.GameLib
             this.e = e;
             gs = g;
         }
-        public Entity(double cTime, Particle pos, PhysicsShape physS, GraphicsStyle g, BulletEmitter e = null)
-            : this(cTime, pos, physS.MakeDrawable(g), physS, e, g)
+        public Entity(double cTime, Particle pos, PhysicsShape physS, GraphicsStyle g, PhysicsClass pc, BulletEmitter e = null)
+            : this(cTime, pos, physS.MakeDrawable(g), physS, pc, e, g)
         {
         }
 

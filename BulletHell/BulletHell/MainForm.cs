@@ -12,6 +12,7 @@ using BulletHell.Physics;
 using BulletHell.Gfx;
 using BulletHell.GameLib;
 using BulletHell.MathLib;
+using BulletHell.Collections;
 
 namespace BulletHell
 {
@@ -27,10 +28,13 @@ namespace BulletHell
         BufferedGraphics buff;
         Game game;
         bool DisplayFrameRate = true, DisplayTime = true;
+        private DefaultValueDictionary<Entity, bool> hitby;
 
         public MainForm()
         {
             InitializeComponent();
+
+            hitby = new DefaultValueDictionary<Entity, bool>(false);
 
             bsm = new BulletStyleManager();
             InitializeBulletStyles();
@@ -45,6 +49,7 @@ namespace BulletHell
             Drawable mchar = DrawableFactory.MakeCircle(8, new GraphicsStyle(Brushes.Orange, Pens.Red));
 
             game = new Game(new MainChar(mchar,ClientRectangle.Width/2,ClientRectangle.Height-20));
+            InitializePhysicsManager(game.PhysicsManager);
 
             Particle p1 = new Particle(x => vx * x, y => vy * y);
             Particle p2 = new Particle(Utils.MakeClosure<double,double,double>(ClientRectangle.Width,(w,x) => w - vx2 * x), y => vy2 * y);
@@ -99,33 +104,56 @@ namespace BulletHell
             for (int i = 0; i < offsets; i++)
                 bEms3[i] = new BulletEmission(cd, 0, arrs[i], bsm["HotPink_5"]);
 
-            BulletEmitter em = new BulletEmitter(bEms);
-            BulletEmitter em2 = new BulletEmitter(bEms2);
-            BulletEmitter em3 = new BulletEmitter(bEms3);
+            PhysicsClass enemyBullet = new PhysicsClass("EnemyBullet");
+            PhysicsClass enemy = new PhysicsClass("Enemy");
 
-            e = new Entity(0, p1, o1, entEl, em);
-            e2 = new Entity(0,p2, o1, entEl, em);
+            BulletEmitter em = new BulletEmitter(bEms,enemyBullet);
+            BulletEmitter em2 = new BulletEmitter(bEms2,enemyBullet);
+            BulletEmitter em3 = new BulletEmitter(bEms3,enemyBullet);
+
+            e = new Entity(0, p1, o1, entEl, enemy, em);
+            e2 = new Entity(0,p2, o1, entEl, enemy, em);
 
             Particle p3 = new Particle(x => 0.5 * x + 500, y => 3 * y);
-            Entity e3 = new Entity(0,p3, o1, entEl, em);
+            Entity e3 = new Entity(0,p3, o1, entEl, enemy, em);
 
             Particle p4 = new Particle(x => -0.25 * x + 300, y => 3.5 * y);
-            Entity e4 = new Entity(0,p4, o1, entEl, em);
+            Entity e4 = new Entity(0,p4, o1, entEl, enemy, em);
 
             Particle p5 = new Particle(x => -0.4 * x + 800, y => 2 * y);
-            Entity e5 = new Entity(0,p5, o1, entEl, em);
+            Entity e5 = new Entity(0,p5, o1, entEl, enemy, em);
 
             //game = game + e + e2 + e3 + e4 + e5;
 
-            Entity e6 = new Entity(0,q, o1, entEl, em2);
+            Entity e6 = new Entity(0,q, o1, entEl, enemy, em2);
             game += e6;
 
             Particle r = new Particle(Utils.MakeClosure<double,double,double>((double)ClientRectangle.Width/3, (w,t)=>w+3*t), t=>5*t);
-            Entity e7 = new Entity(0, r, o1, entEl, em3);
+            Entity e7 = new Entity(0, r, o1, entEl, enemy, em3);
             game += e7;
 
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
+        }
+
+        private void InitializePhysicsManager(PhysicsManager pman)
+        {
+            pman.AddCollisionHandler(new PhysicsClass("EnemyBullet"), new PhysicsClass("MainChar"), this.CharHit);
+        }
+
+        public void CharHit(Entity e1, Entity e2)
+        {
+            Entity me, bullet;
+            me = e1; bullet = e2;
+            if (e2 == game.Character)
+            {
+                me = e2;
+                bullet = e1;
+            }
+            if (hitby[bullet])
+                return;
+            hitby[bullet] = true;
+            totalhits++;
         }
 
         private void InitializeBulletStyles()
@@ -201,6 +229,8 @@ namespace BulletHell
                     g.FillRectangle(Brushes.Black, new Rectangle(18, 138, 300, 28));
                     g.DrawString("Paused", new Font("Arial", 12), Brushes.White, 20, 140);
                 }
+                g.FillRectangle(Brushes.Black, new Rectangle(18, 178, 300, 28));
+                g.DrawString(string.Format("Hits: {0}", totalhits), new Font("Arial", 12), Brushes.White, 20, 180);
                 if(this.Created)
                     buff.Render();
             }
@@ -230,6 +260,7 @@ namespace BulletHell
                 if(game.CurrentTime>e.CreationTime)
                     e.InvisibilityTime = game.CurrentTime;
             }
+            game.PhysicsManager.Collisions();
             List<Entity> newBullets = new List<Entity>();
             if (game.Time >= game.MostRenderedTime)
             {
@@ -309,6 +340,7 @@ namespace BulletHell
 
         double fr = 0;
         int entityCount = 0;
+        private int totalhits;
 
         public void ASynchGameLoop()
         {

@@ -6,6 +6,7 @@ using BulletHell.Time;
 using System.Drawing;
 using BulletHell.MathLib;
 using BulletHell.MathLib.Function;
+using BulletHell.Physics;
 
 namespace BulletHell.GameLib
 {
@@ -22,6 +23,19 @@ namespace BulletHell.GameLib
         private double rewindLimit = 0;
         private int entCount;
         private MainChar mainChar;
+        private PhysicsManager pm;
+
+        public PhysicsManager PhysicsManager
+        {
+            get
+            {
+                return pm;
+            }
+            set
+            {
+                pm = value;
+            }
+        }
 
         public MainChar Character
         {
@@ -97,8 +111,9 @@ namespace BulletHell.GameLib
 
         public Game(MainChar m)
         {
+            pm = new PhysicsManager();
             entities = //new AdvancedEntityManager(128,64,32,16,8,4,2,1,0.5);
-                new AdvancedEntityManager(1000, 100, 10, 1);
+                new AdvancedEntityManager(pm,1000, 100, 10, 1);
             mainChar = m;
             //entities = new ListEntityManager();
             gameTimer = new BulletHell.Time.Timer();

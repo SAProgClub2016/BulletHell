@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BulletHell.Collections;
+using BulletHell.Physics;
 
 namespace BulletHell.GameLib
 {
@@ -43,22 +44,21 @@ namespace BulletHell.GameLib
     public class AdvancedEntityManager : EntityManager
     {
         private LayeredLinkedList<Entity> adds, removals;
-        private Dictionary<Entity, Reference<LinkedListNode<Entity>>> map;
-        private Dictionary<Entity, Reference<LinkedListNode<Entity>>> bsmap;
         //Dictionary<Entity, bool> contains;
-        private LinkedList<Entity> entities;
-        private LinkedList<Entity> bulletShooters;
+        private LookupLinkedListSet<Entity> entities;
+        private LookupLinkedListSet<Entity> bulletShooters;
+        private PhysicsManager pm;
+
         private double oldTime;
 
-        public AdvancedEntityManager(params double[] ints)
+        public AdvancedEntityManager(PhysicsManager phys,params double[] ints)
         {
+            pm = phys;
             oldTime = 0;
             adds = new LayeredLinkedList<Entity>(0, x => x.CreationTime, ints);
             removals = new LayeredLinkedList<Entity>(0, x => x.InvisibilityTime, ints);
-            entities = new LinkedList<Entity>();
-            bulletShooters = new LinkedList<Entity>();
-            map = new Dictionary<Entity, Reference<LinkedListNode<Entity>>>();
-            bsmap = new Dictionary<Entity, Reference<LinkedListNode<Entity>>>();
+            entities = new LookupLinkedListSet<Entity>();
+            bulletShooters = new LookupLinkedListSet<Entity>();
         }
 
         public void Add(Entity e)
@@ -68,14 +68,6 @@ namespace BulletHell.GameLib
                 return;
             }
             e.Manager = this;
-            Reference<LinkedListNode<Entity>> enode = new Reference<LinkedListNode<Entity>>(new LinkedListNode<Entity>(e));
-            Reference<LinkedListNode<Entity>> enode2 = new Reference<LinkedListNode<Entity>>(new LinkedListNode<Entity>(e));
-            if (!map.ContainsKey(e))
-            {
-                map.Add(e, enode);
-                if(e.Emitter!=null)
-                    bsmap.Add(e, enode2);
-            }
             if (e.CreationTime < oldTime && (e.InvisibilityTime == -1 || e.InvisibilityTime > oldTime))
             {
                 ProcessAddition(e);
@@ -85,36 +77,19 @@ namespace BulletHell.GameLib
         }
         private void ProcessAddition(Entity e)
         {
-            Reference<LinkedListNode<Entity>> enode, bnode=null;
-            enode = map[e];
+            pm.Add(e);
+            entities.Add(e);
             if (e.Emitter != null)
             {
-                bnode = bsmap[e];
-            }
-            //if(enode.Value.List)
-            LinkedListNode<Entity> newNode = new LinkedListNode<Entity>(e);
-            //enode.Value = newNode;
-            if(enode.Value.List==null)
-                entities.AddLast(enode.Value);
-            if (bnode != null && bnode.Value.List==null)
-            {
-                newNode = new LinkedListNode<Entity>(e);
-                bnode.Value = newNode;
-                bulletShooters.AddLast(bnode.Value);
+                bulletShooters.Add(e);
             }
         }
         private void ProcessRemoval(Entity e)
         {
-            LinkedListNode<Entity> enode, bnode=null;
-            enode = map[e];
-            if (e.Emitter != null)
-            {
-                bnode = bsmap[e];
-            }
-            if (enode.List == entities)
-                entities.Remove(enode);
-            if (bnode != null && bnode.List == bulletShooters)
-                bulletShooters.Remove(bnode);
+            pm.Remove(e);
+            entities.Remove(e);
+            if(e.Emitter!=null)
+                bulletShooters.Remove(e);
         }
 
         public void Remove(Entity e)

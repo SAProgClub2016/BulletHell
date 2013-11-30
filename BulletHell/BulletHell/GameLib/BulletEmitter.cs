@@ -27,9 +27,11 @@ namespace BulletHell.GameLib
     {
         BulletEmission[] pattern;
         double cycleTime;
+        PhysicsClass pc;
 
-        public BulletEmitter(BulletEmission[] ps)
+        public BulletEmitter(BulletEmission[] ps, PhysicsClass bulletClass)
         {
+            pc = bulletClass;
             pattern = ps;
             cycleTime = 0;
             foreach(BulletEmission b in pattern)
@@ -64,7 +66,7 @@ namespace BulletHell.GameLib
                 BulletEmission em = this[index - 1];
                 foreach (Trajectory j in em.BulletPaths)
                 {
-                    ans.Add(em.bSty(t,j(t,x[0],x[1])));
+                    ans.Add(em.bSty(t,j(t,x[0],x[1]),pc));
                     //Console.WriteLine(k - this[index - 1].Cooldown);
                 }
             }
@@ -79,7 +81,7 @@ namespace BulletHell.GameLib
                     foreach (Trajectory j in b.BulletPaths)
                     {
                         //Console.WriteLine(k);
-                        ans.Add(b.bSty(k,j(k,x[0],x[1])));
+                        ans.Add(b.bSty(k,j(k,x[0],x[1]),pc));
                     }
                 }
                 k += b.Cooldown;

@@ -64,12 +64,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\DefaultValueDictionary.cs" />
     <Compile Include="Collections\LayeredLinkedList.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Collections\LookupLinkedListSet.cs" />
     <Compile Include="GameLib\Bullet.cs" />
     <Compile Include="GameLib\BulletEmitter.cs" />
     <Compile Include="GameLib\BulletStyle.cs" />
+    <Compile Include="Physics\PhysicsManager.cs" />
+    <Compile Include="Physics\PhysicsClass.cs" />
     <Compile Include="GameLib\Trajectory.cs" />
     <Compile Include="GameLib\Entity.cs" />
     <Compile Include="GameLib\EntityManager.cs" />
