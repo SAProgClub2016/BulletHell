@@ -180,8 +180,7 @@ namespace BulletHell.GameLib
             foreach (Entity e in Entities)
             {
                 entCount++;
-                if (Time > e.CreationTime && (Utils.IsZero(e.InvisibilityTime + 1) || e.InvisibilityTime > Time))   
-                    e.Draw(e.Position, g);
+                e.Draw(e.Position, g);
             }
         }
         public IEnumerable<Entity> Entities

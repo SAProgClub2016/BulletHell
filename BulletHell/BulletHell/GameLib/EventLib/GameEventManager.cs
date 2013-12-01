@@ -65,7 +65,6 @@ namespace BulletHell.GameLib.EventLib
                 }
             }
         }
-
         public double Time
         {
             get
