@@ -144,7 +144,7 @@ namespace BulletHell
             pman.AddCollisionHandler(new PhysicsClass("EnemyBullet"), new PhysicsClass("MainChar"), this.CharHit);
         }
 
-        public Nullable<GameEvent> CharHit(Entity e1, Entity e2)
+        public GameEvent CharHit(Entity e1, Entity e2)
         {
             Entity me, bullet;
             me = e1; bullet = e2;
@@ -164,7 +164,6 @@ namespace BulletHell
                 (g, st) =>
                 {
                     totalhits--;
-                    hitby[bullet] = false;
                 },
                 (g, st) =>
                 {
@@ -263,13 +262,14 @@ namespace BulletHell
 
             game.Time = time;
             List<Entity> removeList = new List<Entity>();
+            Rectangle r = ClientRectangle;
+
+            GenRect<double> gr = new GenRect<double>(new Vector<double>(r.X - bounds, r.Y - bounds), new Vector<double>(r.X + r.Width + bounds, r.Y + r.Height + bounds));
+            
             foreach (Entity e in game.Entities)
             {
                 if (e.InvisibilityTime > -0.5)
                     continue;
-                Rectangle r = ClientRectangle;
-
-                GenRect<double> gr = new GenRect<double>(new Vector<double>(r.X - bounds, r.Y - bounds), new Vector<double>(r.X + r.Width + bounds, r.Y + r.Height + bounds));
                 if (!gr.Contains(e.Position.CurrentPosition))
                 {
                     removeList.Add(e);
@@ -277,8 +277,11 @@ namespace BulletHell
             }
             foreach (Entity e in removeList)
             {
-                if(game.CurrentTime>e.CreationTime)
+                if (game.CurrentTime > e.CreationTime)
+                {
                     e.InvisibilityTime = game.CurrentTime;
+                    game.Events.Add(e.Invisibility);
+                }
             }
             game.PhysicsManager.Collisions();
             List<Entity> newBullets = new List<Entity>();
@@ -301,12 +304,18 @@ namespace BulletHell
 
         private void OnKeyMinus(KeyManager km, Keys key, bool repeat = false)
         {
-            game.CurrentTimeRate -= 0.1;
+            if (keyMan[Keys.ShiftKey])
+                game.CurrentTimeRate -= 0.01;
+            else
+                game.CurrentTimeRate -= 0.1;
         }
 
         private void OnKeyPlus(KeyManager km, Keys key, bool repeat = false)
         {
-            game.CurrentTimeRate += 0.1;
+            if (keyMan[Keys.ShiftKey])
+                game.CurrentTimeRate += 0.01;
+            else
+                game.CurrentTimeRate += 0.1;
         }
 
         private void OnEndKeyLeftRight(KeyManager km, Keys key)

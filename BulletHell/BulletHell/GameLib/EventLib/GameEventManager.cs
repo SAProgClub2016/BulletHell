@@ -14,12 +14,14 @@ namespace BulletHell.GameLib.EventLib
         private Game g;
         private LayeredLinkedList<GameEvent> events;
         private bool rewinding;
+        private LookupLinkedListSet<GameEvent> unprocessed;
 
         public GameEventManager(Game game, params double[] intervals)
         {
             g = game;
             time = -1;
             events = new LayeredLinkedList<GameEvent>(0, ev => ev.Time, intervals);
+            unprocessed = new LookupLinkedListSet<GameEvent>();
         }
 
         public void Add(GameEvent e)
@@ -32,13 +34,16 @@ namespace BulletHell.GameLib.EventLib
                     e.Do(g);
             }
             events.Add(e);
+            if (e.State == GameEventState.Unprocessed)
+                unprocessed.Add(e);
         }
 
         public void Remove(GameEvent e)
         {
-            if (e.State != GameEventState.Undone)
-                e.Undo(g);
-            events.Remove(e);
+            throw new InvalidOperationException();
+            //if (e.State != GameEventState.Undone)
+            //    e.Undo(g);
+            //events.Remove(e);
         }
 
         public bool Rewinding
@@ -78,7 +83,7 @@ namespace BulletHell.GameLib.EventLib
                     return;
                 double oldTime = time;
                 time = value;
-                Pair<double> range = new Pair<double>(Math.Min(oldTime, time) - TOLERANCE, Math.Max(oldTime, time));
+                Pair<double> range = new Pair<double>(Math.Min(oldTime, time) - (oldTime<time?TOLERANCE:0), Math.Max(oldTime, time)+(oldTime<time?0:TOLERANCE));
 
                 LinkedList<GameEvent> toRemove = new LinkedList<GameEvent>();
 
@@ -86,8 +91,8 @@ namespace BulletHell.GameLib.EventLib
                 {
                     foreach(GameEvent e in events.ElementsBetween(range.x,range.y))
                     {
-                        if (range.x > e.Time || range.y < e.Time)
-                            throw new InvalidOperationException();
+                        //if (range.x > e.Time || range.y < e.Time)
+                        //    throw new InvalidOperationException();
                         switch(e.State)
                         {
                             case GameEventState.Undone:
@@ -103,16 +108,18 @@ namespace BulletHell.GameLib.EventLib
                 else // rewinding
                 {
                     Rewinding = true;
-                    foreach(GameEvent e in events.ElementsBetween(range.x,range.y))
+                    foreach(GameEvent e in events.ElementsBetweenBackwards(range.x,range.y))
                     {
 
                         if (range.x > e.Time || range.y < e.Time)
                             throw new InvalidOperationException();
-                        Console.WriteLine(e.State);
                         switch(e.State)
                         {
                             case GameEventState.Unprocessed:
-                                throw new InvalidOperationException();
+                                e.Do(g);
+                                e.Rewind(g);
+                                break;
+                                //throw new InvalidOperationException();
                             case GameEventState.Processed:
                                 e.Rewind(g);
                                 break;
@@ -120,11 +127,30 @@ namespace BulletHell.GameLib.EventLib
                                 toRemove.AddLast(e);
                                 break;
                         }
+                        //Console.WriteLine(e.State);
                     }
                 }
                 foreach (GameEvent e in toRemove)
                 {
                     events.Remove(e);
+                }
+                
+                LinkedList<GameEvent> removes = new LinkedList<GameEvent>();
+                    
+                foreach (GameEvent e in unprocessed)
+                {
+                    if (oldTime > time)
+                        return;
+                    if (e.State != GameEventState.Unprocessed)
+                        removes.AddLast(e);
+                    else if (range.x < e.Time && e.Time < range.y)
+                        throw new InvalidOperationException();
+                    else if (e.Time < Time)
+                        throw new InvalidOperationException();
+                }
+                foreach(GameEvent e in removes)
+                {
+                    unprocessed.RemovePermanently(e);
                 }
             }
         }

@@ -9,8 +9,8 @@ using BulletHell.GameLib.EventLib;
 
 namespace BulletHell.Physics
 {
-    public delegate Nullable<GameEvent> OnCollision(Entity e1, Entity e2);
-    public delegate Nullable<GameEvent> OnDisconnect(Entity e1, Entity e2);
+    public delegate GameEvent OnCollision(Entity e1, Entity e2);
+    public delegate GameEvent OnDisconnect(Entity e1, Entity e2);
 
     public struct PhysicsSet
     {
@@ -116,18 +116,18 @@ namespace BulletHell.Physics
                         {
                             foreach(OnCollision o in p.CollisionHandlers)
                             {
-                                GameEvent? gev = o(e1, e2);
+                                GameEvent gev = o(e1, e2);
                                 if (gev != null)
-                                    game.Events.Add(gev.Value);
+                                    game.Events.Add(gev);
                             }
                         }
                         else
                         {
                             foreach(OnDisconnect o in p.DisconnectHandlers)
                             {
-                                GameEvent? gev = o(e1, e2);
+                                GameEvent gev = o(e1, e2);
                                 if (gev != null)
-                                    game.Events.Add(gev.Value);
+                                    game.Events.Add(gev);
                             }
                         }
                     }

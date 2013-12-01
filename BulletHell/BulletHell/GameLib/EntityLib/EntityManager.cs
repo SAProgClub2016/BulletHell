@@ -14,6 +14,8 @@ namespace BulletHell.GameLib.EntityLib
         void Remove(Entity e);
         IEnumerable<Entity> Entities(double t);
         IEnumerable<Entity> BulletShooters(double Time);
+
+        bool Contains(Entity entity);
     }
     public class ListEntityManager : EntityManager
     {
@@ -47,6 +49,12 @@ namespace BulletHell.GameLib.EntityLib
         {
             e.Manager = null;
             entities.Remove(e);
+        }
+
+
+        public bool Contains(Entity entity)
+        {
+            return entities.Contains(entity);
         }
     }
     public class AdvancedEntityManager : EntityManager
@@ -87,7 +95,7 @@ namespace BulletHell.GameLib.EntityLib
         {
             pm.Remove(e);
             entities.Remove(e);
-            if(e.Emitter!=null)
+            if (e.Emitter != null)
                 bulletShooters.Remove(e);
         }
 
@@ -126,6 +134,12 @@ namespace BulletHell.GameLib.EntityLib
             entities.RemovePermanently(e);
             if (e.Emitter != null)
                 bulletShooters.RemovePermanently(e);
+        }
+
+
+        public bool Contains(Entity entity)
+        {
+            return entities.Contains(entity);
         }
     }
 }

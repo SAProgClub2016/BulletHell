@@ -51,7 +51,7 @@ namespace BulletHell.GameLib.EntityLib
             set
             {
                 iTime = value;
-                if (invisibility.IsUninitialized())
+                if (invisibility==null)
                     invisibility = new GameEvent(iTime, this.MakeInvisible, this.RewindMakeInvisible, this.UndoMakeInvisible);
             }
         }
@@ -59,7 +59,7 @@ namespace BulletHell.GameLib.EntityLib
             get { return dTime; }
             set {
                 dTime = value;
-                if (destruction.IsUninitialized())
+                if (destruction==null)
                     destruction = new GameEvent(dTime, this.Destroy, this.RewindDestroy, this.UndoDestroy);
             }
         }
@@ -131,6 +131,7 @@ namespace BulletHell.GameLib.EntityLib
         public void RewindCreate(Game g, GameEventState oldstate)
         {
             g.EntityManager.Remove(this);
+            //Console.WriteLine(g.EntityManager.Contains(this));
             Console.WriteLine("Rewinding create");
         }
         public void UndoCreate(Game g, GameEventState oldstate)
@@ -152,7 +153,7 @@ namespace BulletHell.GameLib.EntityLib
         {
             g.EntityManager.Add(this);
             dTime = -1;
-            destruction = new GameEvent();
+            destruction = null;
         }
 
         public void MakeInvisible(Game g, GameEventState oldstate)
@@ -167,7 +168,7 @@ namespace BulletHell.GameLib.EntityLib
         {
             g.EntityManager.Add(this);
             iTime = -1;
-            invisibility = new GameEvent();
+            invisibility = null;
         }
 
 
@@ -193,7 +194,7 @@ namespace BulletHell.GameLib.EntityLib
         {
             get
             {
-                if (destruction.IsUninitialized())
+                if (destruction==null)
                     throw new InvalidOperationException();
                 return destruction;
             }
@@ -202,7 +203,7 @@ namespace BulletHell.GameLib.EntityLib
         {
             get
             {
-                if (invisibility.IsUninitialized())
+                if (invisibility==null)
                     throw new InvalidOperationException();
                 return invisibility;
             }
@@ -213,9 +214,9 @@ namespace BulletHell.GameLib.EntityLib
             get
             {
                 yield return creation;
-                if (invisibility.IsUninitialized())
+                if (invisibility==null)
                     yield return invisibility;
-                if (destruction.IsUninitialized())
+                if (destruction==null)
                     yield return destruction;
             }
         }

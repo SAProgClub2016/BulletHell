@@ -7,7 +7,7 @@ using System.Text;
 namespace BulletHell.GameLib.EventLib
 {
     public delegate void GameEventRunner(Game g, GameEventState oldState);
-    public struct GameEvent
+    public class GameEvent
     {
         public readonly double Time;
         private GameEventState state;
@@ -68,11 +68,6 @@ namespace BulletHell.GameLib.EventLib
                     break;
             }
             state = GameEventState.Undone;
-        }
-
-        internal bool IsUninitialized()
-        {
-            return doer == null;
         }
 
         public static GameEvent operator >(GameEvent e1, GameEvent e2)

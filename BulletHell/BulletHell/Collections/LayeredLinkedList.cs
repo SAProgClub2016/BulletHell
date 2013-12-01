@@ -202,6 +202,51 @@ namespace BulletHell.Collections
         {
             throw new NotImplementedException();
         }
+
+        internal IEnumerable<T> ElementsBetweenBackwards(double t1, double t2)
+        {
+            //System.Environment.Exit(0);
+            if (t2 < start)
+            {
+                yield break;
+            }
+            if (layers == 0)
+            {
+                LinkedListNode<T> node = vals.Last;
+                while (node != null && evaluator(node.Value) > t2)
+                {
+                    node = node.Previous;
+                }
+                if (node == null)
+                {
+                    yield break;
+                }
+                while (node != null && evaluator(node.Value) > t1)
+                {
+                    yield return node.Value;
+                    node = node.Previous;
+                }
+            }
+            else
+            {
+                LinkedListNode<LayeredLinkedList<T>> node = nextLevel.Last;
+
+                while (node != null && node.Value.start > t2)
+                {
+                    node = node.Next;
+                }
+                if (node == null)
+                {
+                    yield break;
+                }
+                while (node != null && node.Value.start + interval > t1)
+                {
+                    foreach (T val in node.Value.ElementsBetweenBackwards(t1, t2))
+                        yield return val;
+                    node = node.Next;
+                }
+            }
+        }
     }
     public class LayeredLinkedListTest
     {
