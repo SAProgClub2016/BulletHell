@@ -40,6 +40,18 @@ namespace BulletHell.GameLib
             }
         }
 
+        public EntityManager EntityManager
+        {
+            get
+            {
+                return entities;
+            }
+            set
+            {
+                entities = value;
+            }
+        }
+
         public PhysicsManager PhysicsManager
         {
             get
@@ -119,6 +131,7 @@ namespace BulletHell.GameLib
                 {
                     e.Time = t;
                 }
+                events.Time = Time;
                 if (t > mostRenderedTime)
                     mostRenderedTime = t;
             }
@@ -126,7 +139,7 @@ namespace BulletHell.GameLib
 
         public Game(MainChar m)
         {
-            pm = new PhysicsManager();
+            pm = new PhysicsManager(this);
             entities = //new AdvancedEntityManager(128,64,32,16,8,4,2,1,0.5);
                 new AdvancedEntityManager(pm);
             events = new GameEventManager(this, 1000, 100, 10, 1);
@@ -141,12 +154,13 @@ namespace BulletHell.GameLib
 
         public void Add(Entity e)
         {
-            entities.Add(e);
+            events.Add(e.Creation);
         }
 
         public void Remove(Entity e)
         {
-            entities.Remove(e);
+            foreach(GameEvent ev in e.LifetimeEvents)
+                events.Remove(ev);
         }
 
         public static Game operator +(Game g, Entity e)

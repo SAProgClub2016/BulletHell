@@ -88,13 +88,15 @@ namespace BulletHell.Collections
                 else
                 {
                     double cur = evaluator(node.Value);
-                    if (d < cur)
+                    if (d <= cur)
                         vals.AddFirst(t);
                     else
                     {
-                        while (node != null && d < cur)
+                        while (d > cur)
                         {
                             node = node.Next;
+                            if (node == null)
+                                break;
                             cur = evaluator(node.Value);
                         }
                         if (node == null)
@@ -196,7 +198,7 @@ namespace BulletHell.Collections
             }
         }
 
-        internal IEnumerable<GameLib.EventLib.GameEvent> ElementsAfter(double time)
+        internal IEnumerable<T> ElementsAfter(double time)
         {
             throw new NotImplementedException();
         }
@@ -205,7 +207,7 @@ namespace BulletHell.Collections
     {
         public static void Main()
         {
-            LayeredLinkedList<double> lll = new LayeredLinkedList<double>(0,Utils.Identity<double>,1000,100,10,1);
+            LayeredLinkedList<double> lll = new LayeredLinkedList<double>(0, Utils.Identity<double>);//,1000,100,10,1);
 
             BulletHell.Time.Timer time = new BulletHell.Time.Timer();
             Random r= new Random();
@@ -227,6 +229,12 @@ namespace BulletHell.Collections
             foreach (double d in lll.ElementsBetween(30, 40))
             {
                 count++;
+            }
+            Console.WriteLine(count);
+            count = 0;
+            foreach (double d in lll.ElementsBetween(-100, 5000))
+            {
+                if(30<d&&d<40) count++;
             }
             Console.WriteLine(count);
             Console.WriteLine(time.Time);

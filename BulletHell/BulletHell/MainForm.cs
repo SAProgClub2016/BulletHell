@@ -15,6 +15,7 @@ using BulletHell.MathLib;
 using BulletHell.Collections;
 using BulletHell.GameLib.EntityLib;
 using BulletHell.GameLib.EntityLib.BulletLib;
+using BulletHell.GameLib.EventLib;
 
 namespace BulletHell
 {
@@ -133,7 +134,7 @@ namespace BulletHell
             Particle r = new Particle(Utils.MakeClosure<double,double,double>((double)ClientRectangle.Width/3, (w,t)=>w+3*t), t=>5*t);
             Entity e7 = new Entity(0, r, o1, entEl, enemy, em3);
             game += e7;
-
+            game.ResetTime();
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
         }
@@ -143,7 +144,7 @@ namespace BulletHell
             pman.AddCollisionHandler(new PhysicsClass("EnemyBullet"), new PhysicsClass("MainChar"), this.CharHit);
         }
 
-        public void CharHit(Entity e1, Entity e2)
+        public Nullable<GameEvent> CharHit(Entity e1, Entity e2)
         {
             Entity me, bullet;
             me = e1; bullet = e2;
@@ -153,9 +154,26 @@ namespace BulletHell
                 bullet = e1;
             }
             if (hitby[bullet])
-                return;
-            hitby[bullet] = true;
-            totalhits++;
+                return null;
+            GameEvent hitEvent = new GameEvent(e1.Time,
+                (g, st) =>
+                {
+                    totalhits++;
+                    hitby[bullet] = true;
+                },
+                (g, st) =>
+                {
+                    totalhits--;
+                    hitby[bullet] = false;
+                },
+                (g, st) =>
+                {
+                    if (st == GameEventState.Processed)
+                        totalhits--;
+                    hitby[bullet] = false;
+                });
+            bullet.DestructionTime = e1.Time;
+            return hitEvent > bullet.Destruction;
         }
 
         private void InitializeBulletStyles()

@@ -72,10 +72,7 @@ namespace BulletHell.GameLib.EntityLib
                 return;
             }
             e.Manager = this;
-            if (e.CreationTime < oldTime && (e.InvisibilityTime == -1 || e.InvisibilityTime > oldTime))
-            {
-                ProcessAddition(e);
-            }
+            ProcessAddition(e);
         }
         private void ProcessAddition(Entity e)
         {
@@ -99,13 +96,8 @@ namespace BulletHell.GameLib.EntityLib
             if (e.Manager != this)
                 return;
             e.Manager = null;
-            if (e.CreationTime > oldTime || (e.InvisibilityTime != -1 && e.InvisibilityTime < oldTime))
-            {
-                ProcessRemoval(e);
-            }
+            ProcessRemoval(e);
         }
-
-
 
         public IEnumerable<Entity> Entities(double t)
         {

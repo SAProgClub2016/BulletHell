@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BulletHell.GameLib.EntityLib;
+using BulletHell.GameLib.EventLib;
 
 namespace BulletHell.Physics
 {
-    public delegate void OnCollision(Entity e1, Entity e2);
-    public delegate void OnDisconnect(Entity e1, Entity e2);
+    public delegate Nullable<GameEvent> OnCollision(Entity e1, Entity e2);
+    public delegate Nullable<GameEvent> OnDisconnect(Entity e1, Entity e2);
 
     public struct PhysicsSet
     {
@@ -29,9 +30,11 @@ namespace BulletHell.Physics
     {
         private List<PhysicsSet> ps;
         private Dictionary<PhysicsClass, LookupLinkedListSet<Entity>> ents;
+        private Game game;
 
-        public PhysicsManager()
+        public PhysicsManager(Game g)
         {
+            game = g;
             ps = new List<PhysicsSet>();
             ents = new Dictionary<PhysicsClass, LookupLinkedListSet<Entity>>();
         }
@@ -113,14 +116,18 @@ namespace BulletHell.Physics
                         {
                             foreach(OnCollision o in p.CollisionHandlers)
                             {
-                                o(e1, e2);
+                                GameEvent? gev = o(e1, e2);
+                                if (gev != null)
+                                    game.Events.Add(gev.Value);
                             }
                         }
                         else
                         {
                             foreach(OnDisconnect o in p.DisconnectHandlers)
                             {
-                                o(e1, e2);
+                                GameEvent? gev = o(e1, e2);
+                                if (gev != null)
+                                    game.Events.Add(gev.Value);
                             }
                         }
                     }

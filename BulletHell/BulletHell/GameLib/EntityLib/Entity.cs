@@ -6,6 +6,7 @@ using BulletHell.Gfx;
 using BulletHell.Physics;
 using BulletHell;
 using BulletHell.GameLib.EntityLib.BulletLib;
+using BulletHell.GameLib.EventLib;
 
 namespace BulletHell.GameLib.EntityLib
 {
@@ -19,6 +20,9 @@ namespace BulletHell.GameLib.EntityLib
         private GraphicsStyle gs;
         public readonly double CreationTime;
         private double iTime=-1,dTime=-1;
+
+        private GameEvent creation, invisibility, destruction;
+
         private PhysicsClass pc;
 
         public PhysicsShape Shape
@@ -46,15 +50,19 @@ namespace BulletHell.GameLib.EntityLib
             get { return iTime; }
             set
             {
-                // This is kinda sketch maybe add an update kind of method to EntityManager.
-                // Looks like LLL needs a remove method :P. Actually wait that's not so bad.
-                EntityManager man = Manager;
-                man.Remove(this);
                 iTime = value;
-                man.Add(this);
+                if (invisibility.IsUninitialized())
+                    invisibility = new GameEvent(iTime, this.MakeInvisible, this.RewindMakeInvisible, this.UndoMakeInvisible);
             }
         }
-        public double DestructionTime { get { return dTime; } set { dTime = value; } }
+        public double DestructionTime {
+            get { return dTime; }
+            set {
+                dTime = value;
+                if (destruction.IsUninitialized())
+                    destruction = new GameEvent(dTime, this.Destroy, this.RewindDestroy, this.UndoDestroy);
+            }
+        }
 
         public double Time
         {
@@ -115,11 +123,60 @@ namespace BulletHell.GameLib.EntityLib
             }
         }
 
+        public void Create(Game g, GameEventState oldstate)
+        {
+            g.EntityManager.Add(this);
+            Console.WriteLine("Creating");
+        }
+        public void RewindCreate(Game g, GameEventState oldstate)
+        {
+            g.EntityManager.Remove(this);
+            Console.WriteLine("Rewinding create");
+        }
+        public void UndoCreate(Game g, GameEventState oldstate)
+        {
+            g.EntityManager.RemovePermanently(this);
+        }
+
+        public void Destroy(Game g, GameEventState oldstate)
+        {
+            g.EntityManager.Remove(this);
+            Console.WriteLine("Destroying");
+        }
+        public void RewindDestroy(Game g, GameEventState oldstate)
+        {
+            g.EntityManager.Add(this);
+            Console.WriteLine("Rewinding destroy");
+        }
+        public void UndoDestroy(Game g, GameEventState oldstate)
+        {
+            g.EntityManager.Add(this);
+            dTime = -1;
+            destruction = new GameEvent();
+        }
+
+        public void MakeInvisible(Game g, GameEventState oldstate)
+        {
+            g.EntityManager.Remove(this);
+        }
+        public void RewindMakeInvisible(Game g, GameEventState oldstate)
+        {
+            g.EntityManager.Add(this);
+        }
+        public void UndoMakeInvisible(Game g, GameEventState oldstate)
+        {
+            g.EntityManager.Add(this);
+            iTime = -1;
+            invisibility = new GameEvent();
+        }
+
+
         public Entity(double cTime, Particle pos, Drawable draw, PhysicsShape physS, PhysicsClass pc, BulletEmitter e = null, GraphicsStyle g = null)
         {
             this.pc = pc;
             ps = physS ?? new Point(pos.Dimension);
             CreationTime = cTime;
+            creation = new GameEvent(cTime, this.Create, this.RewindCreate, this.UndoCreate);
             this.pos = pos;
             d = draw;
             this.e = e;
@@ -130,5 +187,37 @@ namespace BulletHell.GameLib.EntityLib
         {
         }
 
+
+        public GameEvent Creation { get { return creation; } }
+        public GameEvent Destruction
+        {
+            get
+            {
+                if (destruction.IsUninitialized())
+                    throw new InvalidOperationException();
+                return destruction;
+            }
+        }
+        public GameEvent Invisibility
+        {
+            get
+            {
+                if (invisibility.IsUninitialized())
+                    throw new InvalidOperationException();
+                return invisibility;
+            }
+        }
+
+        public IEnumerable<GameEvent> LifetimeEvents
+        {
+            get
+            {
+                yield return creation;
+                if (invisibility.IsUninitialized())
+                    yield return invisibility;
+                if (destruction.IsUninitialized())
+                    yield return destruction;
+            }
+        }
     }
 }

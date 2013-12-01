@@ -69,6 +69,20 @@ namespace BulletHell.GameLib.EventLib
             }
             state = GameEventState.Undone;
         }
+
+        internal bool IsUninitialized()
+        {
+            return doer == null;
+        }
+
+        public static GameEvent operator >(GameEvent e1, GameEvent e2)
+        {
+            return new GameEvent(e2.Time, (g, st) => { e1.doer(g, st); e2.doer(g, st); }, (g, st) => { e1.rewind(g, st); e2.rewind(g, st); }, (g, st) => { e1.undo(g, st); e2.undo(g, st); });
+        }
+        public static GameEvent operator <(GameEvent e1, GameEvent e2)
+        {
+            return new GameEvent(e1.Time, (g, st) => { e1.doer(g, st); e2.doer(g, st); }, (g, st) => { e1.rewind(g, st); e2.rewind(g, st); }, (g, st) => { e1.undo(g, st); e2.undo(g, st); });
+        }
     }
 
     public enum GameEventState

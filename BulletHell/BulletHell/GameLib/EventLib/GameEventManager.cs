@@ -10,7 +10,7 @@ namespace BulletHell.GameLib.EventLib
     public class GameEventManager
     {
         private double time;
-        private static readonly double TOLERANCE = 0.01;
+        private static readonly double TOLERANCE = 0.1;
         private Game g;
         private LayeredLinkedList<GameEvent> events;
         private bool rewinding;
@@ -74,11 +74,12 @@ namespace BulletHell.GameLib.EventLib
             }
             set
             {
+                //Console.WriteLine(rewinding);
                 if (Utils.IsZero(value - time))
                     return;
                 double oldTime = time;
                 time = value;
-                Pair<double> range = new Pair<double>(Math.Min(oldTime, time) - TOLERANCE, Math.Max(oldTime, time) + TOLERANCE);
+                Pair<double> range = new Pair<double>(Math.Min(oldTime, time) - TOLERANCE, Math.Max(oldTime, time));
 
                 LinkedList<GameEvent> toRemove = new LinkedList<GameEvent>();
 
@@ -86,6 +87,8 @@ namespace BulletHell.GameLib.EventLib
                 {
                     foreach(GameEvent e in events.ElementsBetween(range.x,range.y))
                     {
+                        if (range.x > e.Time || range.y < e.Time)
+                            throw new InvalidOperationException();
                         switch(e.State)
                         {
                             case GameEventState.Undone:
@@ -103,8 +106,14 @@ namespace BulletHell.GameLib.EventLib
                     Rewinding = true;
                     foreach(GameEvent e in events.ElementsBetween(range.x,range.y))
                     {
+
+                        if (range.x > e.Time || range.y < e.Time)
+                            throw new InvalidOperationException();
+                        Console.WriteLine(e.State);
                         switch(e.State)
                         {
+                            case GameEventState.Unprocessed:
+                                throw new InvalidOperationException();
                             case GameEventState.Processed:
                                 e.Rewind(g);
                                 break;
