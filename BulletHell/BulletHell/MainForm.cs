@@ -129,7 +129,7 @@ namespace BulletHell
             //game = game + e + e2 + e3 + e4 + e5;
 
             Entity e6 = new Entity(0,q, o1, entEl, enemy, em2);
-            game += e6;
+            //game += e6;
 
             Particle r = new Particle(Utils.MakeClosure<double,double,double>((double)ClientRectangle.Width/3, (w,t)=>w+3*t), t=>5*t);
             Entity e7 = new Entity(0, r, o1, entEl, enemy, em3);
@@ -300,6 +300,8 @@ namespace BulletHell
                     game.Add(o);
                 oldTime = time;
             }
+            else
+                Console.WriteLine("Going backward!!!");
         }
 
         private void OnKeyMinus(KeyManager km, Keys key, bool repeat = false)

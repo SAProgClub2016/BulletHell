@@ -19,11 +19,19 @@ namespace BulletHell.Collections
 
         public void Add(T t)
         {
+            /*if (!Contains(t))
+            {
+                LinkedListNode<T> node = new LinkedListNode<T>(t);
+                dict[t] = node;
+                ll.AddLast(node);
+            }*/
             if(dict.ContainsKey(t))
             {
                 LinkedListNode<T> refnode = dict[t];
                 if (refnode.List == null)
-                    ll.AddLast(refnode.Value);
+                {
+                    ll.AddLast(refnode);
+                }
             }
             else
             {
@@ -77,7 +85,7 @@ namespace BulletHell.Collections
     {
         public static void Main()
         {
-            LookupLinkedListSet<object> ints = new LookupLinkedListSet<object>();
+            LookupLinkedListSet<int> ints = new LookupLinkedListSet<int>();
 
             long thous = 1000;
             long million = thous * thous;
@@ -89,13 +97,13 @@ namespace BulletHell.Collections
             {
                 int rand = r.Next(range);
                 int rand2 = r.Next(range);
-                Pair<int> ri = new Pair<int>(rand, rand2);
-
-                object o = new object();
-                ints.Add(o);
-                ints.Add(o);
-                ints.Add(o);
+                //Pair<int> ri = new Pair<int>(rand, rand2);
+                ints.Add(rand);
+                ints.Remove(rand2);
             }
+            foreach (int i in ints)
+                Console.WriteLine(i);
+            Console.WriteLine("--------------------");
             Console.WriteLine(ints.Count());
             Console.ReadKey();
         }
