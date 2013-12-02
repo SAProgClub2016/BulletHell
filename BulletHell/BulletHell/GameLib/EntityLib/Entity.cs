@@ -159,10 +159,12 @@ namespace BulletHell.GameLib.EntityLib
         public void MakeInvisible(Game g, GameEventState oldstate)
         {
             g.EntityManager.Remove(this);
+            Console.WriteLine("Making invisible");
         }
         public void RewindMakeInvisible(Game g, GameEventState oldstate)
         {
             g.EntityManager.Add(this);
+            Console.WriteLine("Rewinding make invisible");
         }
         public void UndoMakeInvisible(Game g, GameEventState oldstate)
         {

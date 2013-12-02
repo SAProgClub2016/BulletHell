@@ -233,7 +233,7 @@ namespace BulletHell.Collections
 
                 while (node != null && node.Value.start > t2)
                 {
-                    node = node.Next;
+                    node = node.Previous;
                 }
                 if (node == null)
                 {
@@ -243,7 +243,7 @@ namespace BulletHell.Collections
                 {
                     foreach (T val in node.Value.ElementsBetweenBackwards(t1, t2))
                         yield return val;
-                    node = node.Next;
+                    node = node.Previous;
                 }
             }
         }
