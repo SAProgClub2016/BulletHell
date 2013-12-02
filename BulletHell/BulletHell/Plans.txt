@@ -1,0 +1,13 @@
+﻿Notes
+
+Need to debug the weird ring.
+Go through and binary search the commits for when it might have happened.
+Happened after the commit for addition of the MainCharacter class and movement successful.
+Seems to have something to do with bullet emissions as it only appears around bullet emitters
+Happens every "second" which is very odd.
+
+Plans
+
+-Debug ring of bullets.
+-Turn keypresses into GameEvents
+-Actually use the rewinding vs. undo feature
