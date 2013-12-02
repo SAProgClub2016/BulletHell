@@ -74,7 +74,6 @@ namespace BulletHell.GameLib.EventLib
             }
             set
             {
-                //Console.WriteLine(rewinding);
                 if (Utils.IsZero(value - time))
                     return;
                 double oldTime = time;
