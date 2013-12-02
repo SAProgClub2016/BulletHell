@@ -8,10 +8,17 @@ Happened before commit - "Collision detection is working"
 
 Happened between commmits
 -"Forgot to save project before committing" - works
--"Collision detection is working" - ring
+-"Seems to still work" - ring - lol a little irony there :P
+
+Error is in physics shape library and stuff. doesn't compile between these commits, but take particular look at changes introduced in Seems to still work.
 
 Seems to have something to do with bullet emissions as it only appears around bullet emitters
 Happens every "second" which is very odd.
+
+Also periodic breaks in bullet output... doesn't appear to be an error in the trajectory class,
+since all bullet emitters share the issue regardless of bullet's trajectories. Probably occurs below trajectory in commit
+
+Most likely in MainForm.cs (if it is in MainForm, error did not occur this commit) or in BulletEmitter.cs
 
 Plans
 
