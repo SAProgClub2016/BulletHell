@@ -6,6 +6,10 @@ Go through and binary search the commits for when it might have happened.
 Happened after the commit for addition of the MainCharacter class and movement successful.
 Happened before commit - "Collision detection is working"
 
+Happened between commmits
+-"Forgot to save project before committing" - works
+-"Collision detection is working" - ring
+
 Seems to have something to do with bullet emissions as it only appears around bullet emitters
 Happens every "second" which is very odd.
 
