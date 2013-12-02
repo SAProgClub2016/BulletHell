@@ -126,13 +126,10 @@ namespace BulletHell.GameLib.EntityLib
         public void Create(Game g, GameEventState oldstate)
         {
             g.EntityManager.Add(this);
-            Console.WriteLine("Creating");
         }
         public void RewindCreate(Game g, GameEventState oldstate)
         {
             g.EntityManager.Remove(this);
-            //Console.WriteLine(g.EntityManager.Contains(this));
-            Console.WriteLine("Rewinding create");
         }
         public void UndoCreate(Game g, GameEventState oldstate)
         {
@@ -142,12 +139,10 @@ namespace BulletHell.GameLib.EntityLib
         public void Destroy(Game g, GameEventState oldstate)
         {
             g.EntityManager.Remove(this);
-            Console.WriteLine("Destroying");
         }
         public void RewindDestroy(Game g, GameEventState oldstate)
         {
             g.EntityManager.Add(this);
-            Console.WriteLine("Rewinding destroy");
         }
         public void UndoDestroy(Game g, GameEventState oldstate)
         {
@@ -159,12 +154,10 @@ namespace BulletHell.GameLib.EntityLib
         public void MakeInvisible(Game g, GameEventState oldstate)
         {
             g.EntityManager.Remove(this);
-            Console.WriteLine("Making invisible");
         }
         public void RewindMakeInvisible(Game g, GameEventState oldstate)
         {
             g.EntityManager.Add(this);
-            Console.WriteLine("Rewinding make invisible");
         }
         public void UndoMakeInvisible(Game g, GameEventState oldstate)
         {

@@ -19,12 +19,6 @@ namespace BulletHell.Collections
 
         public void Add(T t)
         {
-            /*if (!Contains(t))
-            {
-                LinkedListNode<T> node = new LinkedListNode<T>(t);
-                dict[t] = node;
-                ll.AddLast(node);
-            }*/
             if(dict.ContainsKey(t))
             {
                 LinkedListNode<T> refnode = dict[t];
