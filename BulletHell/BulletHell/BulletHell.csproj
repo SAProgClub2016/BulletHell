@@ -72,10 +72,13 @@
     <Compile Include="GameLib\EntityLib\BulletLib\Bullet.cs" />
     <Compile Include="GameLib\EntityLib\BulletLib\BulletEmitter.cs" />
     <Compile Include="GameLib\EntityLib\BulletLib\BulletStyle.cs" />
+    <Compile Include="GameLib\EntityLib\EntityClass.cs" />
+    <Compile Include="GameLib\EntityLib\ListEntityManager.cs" />
     <Compile Include="GameLib\EventLib\GameEvent.cs" />
     <Compile Include="GameLib\EventLib\GameEventManager.cs" />
+    <Compile Include="Gfx\RenderManager.cs" />
     <Compile Include="Physics\PhysicsManager.cs" />
-    <Compile Include="Physics\PhysicsClass.cs" />
+    <Compile Include="GameLib\Id.cs" />
     <Compile Include="GameLib\Trajectory.cs" />
     <Compile Include="GameLib\EntityLib\Entity.cs" />
     <Compile Include="GameLib\EntityLib\EntityManager.cs" />

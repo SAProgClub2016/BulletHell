@@ -27,9 +27,9 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
     {
         BulletEmission[] pattern;
         double cycleTime;
-        PhysicsClass pc;
+        EntityClass pc;
 
-        public BulletEmitter(BulletEmission[] ps, PhysicsClass bulletClass)
+        public BulletEmitter(BulletEmission[] ps, EntityClass bulletClass)
         {
             pc = bulletClass;
             pattern = ps;

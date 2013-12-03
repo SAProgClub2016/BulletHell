@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BulletHell.Physics
+namespace BulletHell.GameLib
 {
-    public struct PhysicsClass
+    public struct Id
     {
         int id;
 
@@ -13,13 +13,13 @@ namespace BulletHell.Physics
         static Dictionary<int, string> back;
         static Dictionary<string, int> forw;
 
-        static PhysicsClass()
+        static Id()
         {
             back = new Dictionary<int, string>();
             forw = new Dictionary<string, int>();
         }
 
-        public PhysicsClass(string s)
+        public Id(string s)
         {
             if (forw.ContainsKey(s))
             {
@@ -32,7 +32,7 @@ namespace BulletHell.Physics
                 back[id] = s;
             }
         }
-        public PhysicsClass(int id)
+        public Id(int id)
         {
             if(back.ContainsKey(id))
             {
@@ -48,20 +48,28 @@ namespace BulletHell.Physics
 
         public override string ToString()
         {
-            return string.Format("<PhysicsClass: id={0}, name={1}>",id,back[id]);
+            return string.Format("<Id: id={0}, name={1}>",id,back[id]);
         }
 
         public override bool Equals(object obj)
         {
-            PhysicsClass? pc = obj as PhysicsClass?;
+            Id? pc = obj as Id?;
             if (pc == null)
                 return false;
-            PhysicsClass o = pc.Value;
+            Id o = pc.Value;
             return o.id == id;
         }
         public override int GetHashCode()
         {
             return id.GetHashCode();
+        }
+        public static implicit operator Id(string s)
+        {
+            return new Id(s);
+        }
+        public static implicit operator Id(int id)
+        {
+            return new Id(id);
         }
     }
 }

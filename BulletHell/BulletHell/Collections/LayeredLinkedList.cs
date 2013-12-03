@@ -198,12 +198,12 @@ namespace BulletHell.Collections
             }
         }
 
-        internal IEnumerable<T> ElementsAfter(double time)
+        public IEnumerable<T> ElementsAfter(double time)
         {
             throw new NotImplementedException();
         }
 
-        internal IEnumerable<T> ElementsBetweenBackwards(double t1, double t2)
+        public IEnumerable<T> ElementsBetweenBackwards(double t1, double t2)
         {
             //System.Environment.Exit(0);
             if (t2 < start)

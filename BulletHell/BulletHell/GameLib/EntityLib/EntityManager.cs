@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using BulletHell.Collections;
 using BulletHell.Physics;
+using BulletHell.Gfx;
 
 namespace BulletHell.GameLib.EntityLib
 {
@@ -17,57 +18,19 @@ namespace BulletHell.GameLib.EntityLib
 
         bool Contains(Entity entity);
     }
-    public class ListEntityManager : EntityManager
-    {
-        List<Entity> entities;
-        public ListEntityManager()
-        {
-            entities = new List<Entity>();
-        }
-        public void Add(Entity e)
-        {
-            e.Manager = this;
-            entities.Add(e);
-        }
-        public void Remove(Entity e)
-        {
-            e.Manager = null;
-            entities.Remove(e);
-        }
-        public IEnumerable<Entity> Entities(double t)
-        {
-            return entities;
-        }
-
-        public IEnumerable<Entity> BulletShooters(double t)
-        {
-            return entities;
-        }
-
-
-        public void RemovePermanently(Entity e)
-        {
-            e.Manager = null;
-            entities.Remove(e);
-        }
-
-
-        public bool Contains(Entity entity)
-        {
-            return entities.Contains(entity);
-        }
-    }
     public class AdvancedEntityManager : EntityManager
     {
         private LookupLinkedListSet<Entity> entities;
         private LookupLinkedListSet<Entity> bulletShooters;
         private PhysicsManager pm;
+        private RenderManager rm;
 
         private double oldTime;
 
-        public AdvancedEntityManager(PhysicsManager phys,params double[] ints)
+        public AdvancedEntityManager(PhysicsManager phys, RenderManager renders,params double[] ints)
         {
             pm = phys;
+            rm = renders;
             oldTime = 0;
             entities = new LookupLinkedListSet<Entity>();
             bulletShooters = new LookupLinkedListSet<Entity>();
@@ -85,6 +48,7 @@ namespace BulletHell.GameLib.EntityLib
         private void ProcessAddition(Entity e)
         {
             pm.Add(e);
+            rm.Add(e);
             entities.Add(e);
             if (e.Emitter != null)
             {
@@ -94,6 +58,7 @@ namespace BulletHell.GameLib.EntityLib
         private void ProcessRemoval(Entity e)
         {
             pm.Remove(e);
+            rm.Remove(e);
             entities.Remove(e);
             if (e.Emitter != null)
                 bulletShooters.Remove(e);
@@ -131,6 +96,7 @@ namespace BulletHell.GameLib.EntityLib
         private void ProcessPermanentRemoval(Entity e)
         {
             pm.RemovePermanently(e);
+            rm.RemovePermanently(e);
             entities.RemovePermanently(e);
             if (e.Emitter != null)
                 bulletShooters.RemovePermanently(e);

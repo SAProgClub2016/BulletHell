@@ -14,11 +14,11 @@ namespace BulletHell.Physics
 
     public struct PhysicsSet
     {
-        public readonly PhysicsClass Class1,Class2;
+        public readonly Id Class1,Class2;
         public List<OnCollision> CollisionHandlers;
         public List<OnDisconnect> DisconnectHandlers;
 
-        public PhysicsSet(PhysicsClass c1, PhysicsClass c2)
+        public PhysicsSet(Id c1, Id c2)
         {
             Class1 = c1;
             Class2 = c2;
@@ -29,17 +29,17 @@ namespace BulletHell.Physics
     public class PhysicsManager
     {
         private List<PhysicsSet> ps;
-        private Dictionary<PhysicsClass, LookupLinkedListSet<Entity>> ents;
+        private Dictionary<Id, LookupLinkedListSet<Entity>> ents;
         private Game game;
 
         public PhysicsManager(Game g)
         {
             game = g;
             ps = new List<PhysicsSet>();
-            ents = new Dictionary<PhysicsClass, LookupLinkedListSet<Entity>>();
+            ents = new Dictionary<Id, LookupLinkedListSet<Entity>>();
         }
 
-        public void AddCollisionHandler(PhysicsClass p1, PhysicsClass p2, OnCollision ch)
+        public void AddCollisionHandler(Id p1, Id p2, OnCollision ch)
         {
             foreach (PhysicsSet p in ps)
             {
@@ -57,7 +57,7 @@ namespace BulletHell.Physics
             newset.CollisionHandlers.Add(ch);
             ps.Add(newset);
         }
-        public void AddDisconnectHandler(PhysicsClass p1, PhysicsClass p2, OnDisconnect ch)
+        public void AddDisconnectHandler(Id p1, Id p2, OnDisconnect ch)
         {
             foreach (PhysicsSet p in ps)
             {
@@ -78,28 +78,28 @@ namespace BulletHell.Physics
 
         public void Add(Entity e)
         {
-            if(ents.ContainsKey(e.Class))
+            if(ents.ContainsKey(e.PhysicsClass))
             {
-                ents[e.Class].Add(e);
+                ents[e.PhysicsClass].Add(e);
             }
             else
             {
                 LookupLinkedListSet<Entity> lls = new LookupLinkedListSet<Entity>();
                 lls.Add(e);
-                ents[e.Class] = lls;
+                ents[e.PhysicsClass] = lls;
             }
         }
 
         public void Remove(Entity e)
         {
-            if(ents.ContainsKey(e.Class))
+            if(ents.ContainsKey(e.PhysicsClass))
             {
-                ents[e.Class].Remove(e);
+                ents[e.PhysicsClass].Remove(e);
             }
             else
             {
                 LookupLinkedListSet<Entity> lls = new LookupLinkedListSet<Entity>();
-                ents[e.Class] = lls;
+                ents[e.PhysicsClass] = lls;
             }
         }
 
@@ -135,17 +135,17 @@ namespace BulletHell.Physics
             }
         }
 
-        internal void RemovePermanently(Entity e)
+        public void RemovePermanently(Entity e)
         {
 
-            if (ents.ContainsKey(e.Class))
+            if (ents.ContainsKey(e.PhysicsClass))
             {
-                ents[e.Class].RemovePermanently(e);
+                ents[e.PhysicsClass].RemovePermanently(e);
             }
             else
             {
                 LookupLinkedListSet<Entity> lls = new LookupLinkedListSet<Entity>();
-                ents[e.Class] = lls;
+                ents[e.PhysicsClass] = lls;
             }
         }
     }

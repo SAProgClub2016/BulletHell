@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BulletHell.GameLib.EntityLib.BulletLib
 {
-    public delegate Bullet BulletStyle(double t, Particle path, PhysicsClass pc);
+    public delegate Bullet BulletStyle(double t, Particle path, EntityClass pc);
 
     public class BulletStyleManager
     {

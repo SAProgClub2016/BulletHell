@@ -9,6 +9,7 @@ using BulletHell.MathLib.Function;
 using BulletHell.Physics;
 using BulletHell.GameLib.EntityLib;
 using BulletHell.GameLib.EventLib;
+using BulletHell.Gfx;
 
 namespace BulletHell.GameLib
 {
@@ -27,6 +28,7 @@ namespace BulletHell.GameLib
         private MainChar mainChar;
         private PhysicsManager pm;
         private GameEventManager events;
+        private Gfx.RenderManager renderman;
 
         public GameEventManager Events
         {
@@ -140,8 +142,9 @@ namespace BulletHell.GameLib
         public Game(MainChar m)
         {
             pm = new PhysicsManager(this);
+            renderman = new RenderManager();
             entities = //new AdvancedEntityManager(128,64,32,16,8,4,2,1,0.5);
-                new AdvancedEntityManager(pm);
+                new AdvancedEntityManager(pm, renderman, 128, 64, 32, 16, 8, 4, 2, 1, 0.5);
             events = new GameEventManager(this, 1000, 100, 10, 1);
             mainChar = m;
             //entities = new ListEntityManager();
@@ -177,7 +180,7 @@ namespace BulletHell.GameLib
         public void Draw(Graphics g)
         {
             entCount = 0;
-            foreach (Entity e in Entities)
+            foreach (Entity e in RenderManager)
             {
                 entCount++;
                 e.Draw(e.Position, g);
@@ -229,6 +232,13 @@ namespace BulletHell.GameLib
             get
             {
                 return entities.BulletShooters(Time);
+            }
+        }
+        public RenderManager RenderManager
+        {
+            get
+            {
+                return renderman;
             }
         }
     }

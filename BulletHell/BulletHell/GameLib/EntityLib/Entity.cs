@@ -23,7 +23,7 @@ namespace BulletHell.GameLib.EntityLib
 
         private GameEvent creation, invisibility, destruction;
 
-        private PhysicsClass pc;
+        private EntityClass pc;
         private double zorder;
 
         public PhysicsShape Shape
@@ -38,11 +38,27 @@ namespace BulletHell.GameLib.EntityLib
             }
         }
 
-        public PhysicsClass Class
+        public EntityClass Class
         {
             get
             {
                 return pc;
+            }
+        }
+
+        public Id PhysicsClass
+        {
+            get
+            {
+                return pc.PhysicsClass;
+            }
+        }
+
+        public Id RenderClass
+        {
+            get
+            {
+                return pc.RenderClass;
             }
         }
 
@@ -174,7 +190,7 @@ namespace BulletHell.GameLib.EntityLib
         }
 
 
-        public Entity(double cTime, Particle pos, Drawable draw, PhysicsShape physS, PhysicsClass pc, BulletEmitter e = null, GraphicsStyle g = null)
+        public Entity(double cTime, Particle pos, Drawable draw, PhysicsShape physS, EntityClass pc, BulletEmitter e = null, GraphicsStyle g = null)
         {
             this.pc = pc;
             ps = physS ?? new Point(pos.Dimension);
@@ -186,7 +202,7 @@ namespace BulletHell.GameLib.EntityLib
             gs = g;
             zorder = 1;
         }
-        public Entity(double cTime, Particle pos, PhysicsShape physS, GraphicsStyle g, PhysicsClass pc, BulletEmitter e = null)
+        public Entity(double cTime, Particle pos, PhysicsShape physS, GraphicsStyle g, EntityClass pc, BulletEmitter e = null)
             : this(cTime, pos, physS.MakeDrawable(g), physS, pc, e, g)
         {
         }

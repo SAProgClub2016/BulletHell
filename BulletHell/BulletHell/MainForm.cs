@@ -47,7 +47,7 @@ namespace BulletHell
             Particle boxR = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2+border, (double)ClientRectangle.Height / 2+border)); 
             Box bgbox = new Box(boxR);
 
-            PhysicsClass bgClass = new PhysicsClass("Background");
+            EntityClass bgClass = new EntityClass("Background");
 
             bg = new Entity(0, boxC, bgbox, new GraphicsStyle(Brushes.Black), bgClass);
 
@@ -65,6 +65,7 @@ namespace BulletHell
 
             game = new Game(new MainChar(mchar,ClientRectangle.Width/2,ClientRectangle.Height-20));
             InitializePhysicsManager(game.PhysicsManager);
+            InitializeRenderManager(game.RenderManager);
 
             Particle p1 = new Particle(x => vx * x, y => vy * y);
             Particle p2 = new Particle(Utils.MakeClosure<double,double,double>(ClientRectangle.Width,(w,x) => w - vx2 * x), y => vy2 * y);
@@ -119,8 +120,8 @@ namespace BulletHell
             for (int i = 0; i < offsets; i++)
                 bEms3[i] = new BulletEmission(cd, 0, arrs[i], bsm["HotPink_5"]);
 
-            PhysicsClass enemyBullet = new PhysicsClass("EnemyBullet");
-            PhysicsClass enemy = new PhysicsClass("Enemy");
+            EntityClass enemyBullet = new EntityClass("EnemyBullet","Bullet");
+            EntityClass enemy = new EntityClass("Enemy","Character");
 
             BulletEmitter em = new BulletEmitter(bEms,enemyBullet);
             BulletEmitter em2 = new BulletEmitter(bEms2,enemyBullet);
@@ -155,9 +156,18 @@ namespace BulletHell
 
         private void InitializePhysicsManager(PhysicsManager pman)
         {
-            pman.AddCollisionHandler(new PhysicsClass("EnemyBullet"), new PhysicsClass("MainChar"), this.CharHit);
-            pman.AddDisconnectHandler(new PhysicsClass("Enemy"), new PhysicsClass("Background"), this.EnemyOffscreen);
-            pman.AddDisconnectHandler(new PhysicsClass("EnemyBullet"), new PhysicsClass("Background"), this.EnemyOffscreen);
+            pman.AddCollisionHandler("EnemyBullet", "MainChar", this.CharHit);
+            pman.AddDisconnectHandler("Enemy", "Background", this.EnemyOffscreen);
+            pman.AddDisconnectHandler("EnemyBullet", "Background", this.EnemyOffscreen);
+        }
+
+        private void InitializeRenderManager(RenderManager rman)
+        {
+            LinkedList<Id> ids = new LinkedList<Id>();
+            ids.AddLast("Background");
+            ids.AddLast("Character");
+            ids.AddLast("Bullet");
+            rman.RenderOrder = ids;
         }
 
         private GameEvent EnemyOffscreen(Entity e1, Entity e2)
