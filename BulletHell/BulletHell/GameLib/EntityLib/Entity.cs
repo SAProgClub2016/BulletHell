@@ -24,7 +24,6 @@ namespace BulletHell.GameLib.EntityLib
         private GameEvent creation, invisibility, destruction;
 
         private EntityClass pc;
-        private double zorder;
 
         public PhysicsShape Shape
         {
@@ -200,7 +199,6 @@ namespace BulletHell.GameLib.EntityLib
             d = draw;
             this.e = e;
             gs = g;
-            zorder = 1;
         }
         public Entity(double cTime, Particle pos, PhysicsShape physS, GraphicsStyle g, EntityClass pc, BulletEmitter e = null)
             : this(cTime, pos, physS.MakeDrawable(g), physS, pc, e, g)
@@ -238,11 +236,6 @@ namespace BulletHell.GameLib.EntityLib
                 if (destruction==null)
                     yield return destruction;
             }
-        }
-        public double ZOrder
-        {
-            get { return zorder; }
-            set { zorder = value; }
         }
     }
 }
