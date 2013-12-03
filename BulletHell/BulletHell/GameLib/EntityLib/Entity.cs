@@ -24,6 +24,7 @@ namespace BulletHell.GameLib.EntityLib
         private GameEvent creation, invisibility, destruction;
 
         private PhysicsClass pc;
+        private double zorder;
 
         public PhysicsShape Shape
         {
@@ -125,10 +126,12 @@ namespace BulletHell.GameLib.EntityLib
 
         public void Create(Game g, GameEventState oldstate)
         {
+            Console.WriteLine("Create");
             g.EntityManager.Add(this);
         }
         public void RewindCreate(Game g, GameEventState oldstate)
         {
+            Console.WriteLine("RewindCreate");
             g.EntityManager.Remove(this);
         }
         public void UndoCreate(Game g, GameEventState oldstate)
@@ -138,10 +141,12 @@ namespace BulletHell.GameLib.EntityLib
 
         public void Destroy(Game g, GameEventState oldstate)
         {
+            Console.WriteLine("Destroy");
             g.EntityManager.Remove(this);
         }
         public void RewindDestroy(Game g, GameEventState oldstate)
         {
+            Console.WriteLine("RewindDestroy");
             g.EntityManager.Add(this);
         }
         public void UndoDestroy(Game g, GameEventState oldstate)
@@ -153,10 +158,12 @@ namespace BulletHell.GameLib.EntityLib
 
         public void MakeInvisible(Game g, GameEventState oldstate)
         {
+            Console.WriteLine("MakeInvisible");
             g.EntityManager.Remove(this);
         }
         public void RewindMakeInvisible(Game g, GameEventState oldstate)
         {
+            Console.WriteLine("RewindMakeInvisible");
             g.EntityManager.Add(this);
         }
         public void UndoMakeInvisible(Game g, GameEventState oldstate)
@@ -177,6 +184,7 @@ namespace BulletHell.GameLib.EntityLib
             d = draw;
             this.e = e;
             gs = g;
+            zorder = 1;
         }
         public Entity(double cTime, Particle pos, PhysicsShape physS, GraphicsStyle g, PhysicsClass pc, BulletEmitter e = null)
             : this(cTime, pos, physS.MakeDrawable(g), physS, pc, e, g)
@@ -214,6 +222,11 @@ namespace BulletHell.GameLib.EntityLib
                 if (destruction==null)
                     yield return destruction;
             }
+        }
+        public double ZOrder
+        {
+            get { return zorder; }
+            set { zorder = value; }
         }
     }
 }

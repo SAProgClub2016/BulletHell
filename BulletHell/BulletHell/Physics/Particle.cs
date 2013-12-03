@@ -144,7 +144,7 @@ namespace BulletHell.Physics
         }
         public static Particle operator + (Particle p, Particle q)
         {
-            return new Particle(t => p.PosFunc(t) * q.PosFunc(t));
+            return new Particle(t => p.PosFunc(t) + q.PosFunc(t));
         }
         public static Particle operator *(double d, Particle p)
         {

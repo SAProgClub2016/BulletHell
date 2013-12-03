@@ -26,6 +26,8 @@ namespace BulletHell
         Drawable o1;
         Entity e, e2;
 
+        Entity bg;
+
         BulletStyleManager bsm;
 
         BufferedGraphics buff;
@@ -38,6 +40,16 @@ namespace BulletHell
             InitializeComponent();
 
             hitby = new DefaultValueDictionary<Entity, bool>(false);
+
+            double border = 40;
+
+            Particle boxC = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2, (double)ClientRectangle.Height / 2));
+            Particle boxR = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2+border, (double)ClientRectangle.Height / 2+border)); 
+            Box bgbox = new Box(boxR);
+
+            PhysicsClass bgClass = new PhysicsClass("Background");
+
+            bg = new Entity(0, boxC, bgbox, new GraphicsStyle(Brushes.Black), bgClass);
 
             bsm = new BulletStyleManager();
             InitializeBulletStyles();
@@ -126,6 +138,8 @@ namespace BulletHell
             Particle p5 = new Particle(x => -0.4 * x + 800, y => 2 * y);
             Entity e5 = new Entity(0,p5, o1, entEl, enemy, em);
 
+
+            game += bg;
             game = game + e + e2 + e3 + e4 + e5;
 
             Entity e6 = new Entity(0,q, o1, entEl, enemy, em2);
@@ -142,6 +156,25 @@ namespace BulletHell
         private void InitializePhysicsManager(PhysicsManager pman)
         {
             pman.AddCollisionHandler(new PhysicsClass("EnemyBullet"), new PhysicsClass("MainChar"), this.CharHit);
+            pman.AddDisconnectHandler(new PhysicsClass("Enemy"), new PhysicsClass("Background"), this.EnemyOffscreen);
+            pman.AddDisconnectHandler(new PhysicsClass("EnemyBullet"), new PhysicsClass("Background"), this.EnemyOffscreen);
+        }
+
+        private GameEvent EnemyOffscreen(Entity e1, Entity e2)
+        {
+            Entity e;
+            if (e1 == bg)
+                e = e2;
+            else
+                e = e1;
+            if (e.InvisibilityTime > -0.5)
+                return null;
+            if (game.CurrentTime > e.CreationTime)
+            {
+                e.InvisibilityTime = game.CurrentTime;
+                return e.Invisibility;
+            }
+            return null;
         }
 
         public GameEvent CharHit(Entity e1, Entity e2)
@@ -266,27 +299,10 @@ namespace BulletHell
 
             GenRect<double> gr = new GenRect<double>(new Vector<double>(r.X - bounds, r.Y - bounds), new Vector<double>(r.X + r.Width + bounds, r.Y + r.Height + bounds));
             
-            foreach (Entity e in game.Entities)
-            {
-                if (e.InvisibilityTime > -0.5)
-                    continue;
-                if (!gr.Contains(e.Position.CurrentPosition))
-                {
-                    removeList.Add(e);
-                }
-            }
-            foreach (Entity e in removeList)
-            {
-                if (game.CurrentTime > e.CreationTime)
-                {
-                    e.InvisibilityTime = game.CurrentTime;
-                    game.Events.Add(e.Invisibility);
-                }
-            }
-            game.PhysicsManager.Collisions();
-            List<Entity> newBullets = new List<Entity>();
             if (game.Time >= game.MostRenderedTime)
             {
+                game.PhysicsManager.Collisions();
+                List<Entity> newBullets = new List<Entity>();
                 foreach (Entity o in game.BulletShooters)
                 {
                     if (o.Emitter == null)

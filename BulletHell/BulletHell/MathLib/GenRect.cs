@@ -57,5 +57,41 @@ namespace BulletHell.MathLib
             }
             return ans;
         }
+        public override string ToString()
+        {
+            return string.Format("Rectangle: {0} - {1}", first, last);
+        }
+    }
+    public class GenRectTest
+    {
+        public static void Main()
+        {
+            GenRect<double> rect = new GenRect<double>(new Vector<double>(1, 2), new Vector<double>(6, 5));
+            Console.WriteLine(rect);
+            long thous = 1000;
+            long million = thous * thous;
+            long billion = thous * million;
+            long trillion = million * million;
+            Random r = new Random();
+            int range = 10;
+            long total = million;
+            int count=0;
+            for (long i = 0; i < total; i++)
+            {
+                double rand = range*r.NextDouble();
+                double rand2 = range*r.NextDouble();
+                Vector<double> ri = new Vector<double>(rand, rand2);
+                //Console.WriteLine("Rectangle {0} {1}", rect.Contains(ri) ? "contains" : "does not contain", ri);
+                
+                if (rect.Contains(ri))
+                {
+                    count++;
+                    //Console.WriteLine(ri);
+                }
+            }
+            Console.WriteLine(rect);
+            Console.WriteLine((double)count / total * range * range);
+            Console.ReadKey();
+        }
     }
 }

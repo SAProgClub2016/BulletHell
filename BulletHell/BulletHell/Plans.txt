@@ -17,6 +17,7 @@ Happens every "second" which is very odd.
 
 Also periodic breaks in bullet output... doesn't appear to be an error in the trajectory class,
 since all bullet emitters share the issue regardless of bullet's trajectories. Probably occurs below trajectory in commit
+bullets disappear!!! they appear, but then disappear!!!
 
 Most likely in MainForm.cs (if it is in MainForm, error did not occur this commit) or in BulletEmitter.cs
 
