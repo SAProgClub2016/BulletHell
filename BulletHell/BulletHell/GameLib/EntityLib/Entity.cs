@@ -7,6 +7,7 @@ using BulletHell.Physics;
 using BulletHell;
 using BulletHell.GameLib.EntityLib.BulletLib;
 using BulletHell.GameLib.EventLib;
+using BulletHell.MathLib;
 
 namespace BulletHell.GameLib.EntityLib
 {
@@ -67,6 +68,7 @@ namespace BulletHell.GameLib.EntityLib
             set
             {
                 iTime = value;
+
                 if (invisibility==null)
                     invisibility = new GameEvent(iTime, this.MakeInvisible, this.RewindMakeInvisible, this.UndoMakeInvisible);
             }
@@ -141,12 +143,16 @@ namespace BulletHell.GameLib.EntityLib
 
         public void Create(Game g, GameEventState oldstate)
         {
-            Console.WriteLine("Create");
+#if(DEBUG_EVENTS)
+            Console.WriteLine("Create: {0}", pos.CurrentPosition);
+#endif
             g.EntityManager.Add(this);
         }
         public void RewindCreate(Game g, GameEventState oldstate)
         {
+#if(DEBUG_EVENTS)
             Console.WriteLine("RewindCreate");
+#endif
             g.EntityManager.Remove(this);
         }
         public void UndoCreate(Game g, GameEventState oldstate)
@@ -156,12 +162,16 @@ namespace BulletHell.GameLib.EntityLib
 
         public void Destroy(Game g, GameEventState oldstate)
         {
-            Console.WriteLine("Destroy");
+#if(DEBUG_EVENTS)
+            Console.WriteLine("Destroy: {0}", pos.CurrentPosition);
+#endif
             g.EntityManager.Remove(this);
         }
         public void RewindDestroy(Game g, GameEventState oldstate)
         {
+#if(DEBUG_EVENTS)
             Console.WriteLine("RewindDestroy");
+#endif
             g.EntityManager.Add(this);
         }
         public void UndoDestroy(Game g, GameEventState oldstate)
@@ -173,12 +183,16 @@ namespace BulletHell.GameLib.EntityLib
 
         public void MakeInvisible(Game g, GameEventState oldstate)
         {
-            Console.WriteLine("MakeInvisible");
+#if(DEBUG_EVENTS)
+            Console.WriteLine("MakeInvisible: {0}",pos.CurrentPosition);
+#endif
             g.EntityManager.Remove(this);
         }
         public void RewindMakeInvisible(Game g, GameEventState oldstate)
         {
+#if(DEBUG_EVENTS)
             Console.WriteLine("RewindMakeInvisible");
+#endif
             g.EntityManager.Add(this);
         }
         public void UndoMakeInvisible(Game g, GameEventState oldstate)
@@ -199,6 +213,8 @@ namespace BulletHell.GameLib.EntityLib
             d = draw;
             this.e = e;
             gs = g;
+            if(pos!=null)
+                this.Time = CreationTime;
         }
         public Entity(double cTime, Particle pos, PhysicsShape physS, GraphicsStyle g, EntityClass pc, BulletEmitter e = null)
             : this(cTime, pos, physS.MakeDrawable(g), physS, pc, e, g)
