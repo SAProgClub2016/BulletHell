@@ -13,6 +13,15 @@ namespace BulletHell.GameLib.EventLib
         private GameEventState state;
 
         private GameEventRunner doer, rewind, undo;
+
+
+        public GameEventRunner DoNothing
+        {
+            get
+            {
+                return (g, state) => { };
+            }
+        }
         
         public GameEvent(double time, GameEventRunner doer, GameEventRunner rwnd, GameEventRunner undo)
         {

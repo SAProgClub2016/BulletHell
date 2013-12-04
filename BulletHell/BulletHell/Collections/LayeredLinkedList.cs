@@ -200,7 +200,34 @@ namespace BulletHell.Collections
 
         public IEnumerable<T> ElementsAfter(double time)
         {
-            throw new NotImplementedException();
+            if (layers == 0)
+            {
+                LinkedListNode<T> node = vals.First;
+                while (node != null && evaluator(node.Value) < time)
+                {
+                    node = node.Next;
+                }
+                while (node != null)
+                {
+                    yield return node.Value;
+                    node = node.Next;
+                }
+            }
+            else
+            {
+                LinkedListNode<LayeredLinkedList<T>> node = nextLevel.First;
+
+                while (node != null && node.Value.start + interval < time)
+                {
+                    node = node.Next;
+                }
+                while (node != null)
+                {
+                    foreach (T val in node.Value.ElementsAfter(time))
+                        yield return val;
+                    node = node.Next;
+                }
+            }
         }
 
         public IEnumerable<T> ElementsBetweenBackwards(double t1, double t2)

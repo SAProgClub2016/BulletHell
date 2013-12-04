@@ -5,8 +5,8 @@
 Plans
 
 -Debug ring of bullets. - Done 3 December 2013
--Turn keypresses into GameEvents
--Actually use the rewinding vs. undo feature
+-Turn keypresses into GameEvents // later. requires some reworking of math libs. when I'm not tired.
+-Actually use the rewinding vs. undo feature 
 -Complicated Entity lifetimes/paths
 -Levels
 -Read entities/levels in from files

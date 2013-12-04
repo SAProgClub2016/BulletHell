@@ -14,6 +14,8 @@ namespace BulletHell.GameLib.EventLib
         private Game g;
         private LayeredLinkedList<GameEvent> events;
         private bool rewinding;
+        private double mostRenderedTime;
+
 
         public GameEventManager(Game game, params double[] intervals)
         {
