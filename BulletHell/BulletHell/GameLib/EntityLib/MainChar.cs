@@ -91,6 +91,7 @@ namespace BulletHell.GameLib.EntityLib
             xp = t => x0;
             yp = t => y0;
             Position = new Particle(t => xp(t), t => yp(t));
+            Time = 0;
         }
     }
 }
