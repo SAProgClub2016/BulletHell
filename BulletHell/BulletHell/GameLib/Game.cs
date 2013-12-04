@@ -22,7 +22,6 @@ namespace BulletHell.GameLib
         private IntegrableFunction<double, double> timeRateFunc;
         private double curTimeRate;
         private bool paused = false;
-        private double mostRenderedTime = -1;
         private double rewindLimit = 0;
         private int entCount;
         private MainChar mainChar;
@@ -134,8 +133,6 @@ namespace BulletHell.GameLib
                     e.Time = t;
                 }
                 events.Time = Time;
-                if (t > mostRenderedTime)
-                    mostRenderedTime = t;
             }
         }
 
@@ -225,7 +222,7 @@ namespace BulletHell.GameLib
             }
         }
 
-        public double MostRenderedTime { get { return mostRenderedTime; } }
+        public double MostRenderedTime { get { return events.MostRenderedTime; } }
 
         public IEnumerable<Entity> BulletShooters
         {

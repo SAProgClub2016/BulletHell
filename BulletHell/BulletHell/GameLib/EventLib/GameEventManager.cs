@@ -26,12 +26,17 @@ namespace BulletHell.GameLib.EventLib
 
         public void Add(GameEvent e)
         {
+            Rewinding = false;
             if (e.State == GameEventState.Undone)
                 return;
             if(e.Time<Time)
             {
                 if (e.State == GameEventState.Unprocessed || e.State == GameEventState.Rewound)
                     e.Do(g);
+            }
+            if(e.Time>MostRenderedTime)
+            {
+                mostRenderedTime = e.Time;
             }
             events.Add(e);
         }
@@ -124,6 +129,13 @@ namespace BulletHell.GameLib.EventLib
                 {
                     events.Remove(e);
                 }
+            }
+        }
+
+        public double MostRenderedTime {
+            get
+            {
+                return mostRenderedTime;
             }
         }
     }
