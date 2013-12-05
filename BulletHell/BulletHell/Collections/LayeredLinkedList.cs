@@ -3,19 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
 // Needs a remove/reorganize method. Entities should know which entity manager they belong to, so they can update when properties are changed.
 
 namespace BulletHell.Collections
 {
-    class LayeredLinkedList<T>
+
+    public class LayeredLinkedList<T>
     {
         double start;
         LinkedList<T> vals;
         LinkedList<LayeredLinkedList<T>> nextLevel;
         int layers;
-        Func<T,double> evaluator;
+        Func<T, double> evaluator;
         double interval;
         double[] nextInts;
+        private int count = 0;
 
         public LayeredLinkedList(double s, Func<T, double> evaluator, params double[] intervals)
         {
@@ -33,17 +36,27 @@ namespace BulletHell.Collections
                 vals = null;
                 interval = intervals[0];
                 nextInts = new double[layers - 1];
-                for(int i = 1; i< layers; i++)
+                for (int i = 1; i < layers; i++)
                 {
-                    nextInts[i-1] = intervals[i];
+                    nextInts[i - 1] = intervals[i];
                 }
                 nextLevel = new LinkedList<LayeredLinkedList<T>>();
             }
         }
 
+        public int Layers
+        {
+            get
+            {
+                return layers;
+            }
+        }
+
         public bool Remove(T t)
         {
-            return Remove(evaluator(t), t);
+            bool ans = Remove(evaluator(t), t);
+            if (ans) count--;
+            return ans;
         }
         private bool Remove(double d, T t)
         {
@@ -78,6 +91,7 @@ namespace BulletHell.Collections
         }
         private void Add(double d, T t)
         {
+            count++;
             if (layers == 0)
             {
                 LinkedListNode<T> node = vals.First;
@@ -105,7 +119,7 @@ namespace BulletHell.Collections
                         }
                         else
                         {
-                            vals.AddBefore(node,t);
+                            vals.AddBefore(node, t);
                         }
                     }
                 }
@@ -114,7 +128,7 @@ namespace BulletHell.Collections
             {
                 while (d < start)
                 {
-                    start-=interval;
+                    start -= interval;
                     nextLevel.AddFirst(new LayeredLinkedList<T>(start, evaluator, nextInts));
                 }
                 LinkedListNode<LayeredLinkedList<T>> node = nextLevel.First;
@@ -123,11 +137,11 @@ namespace BulletHell.Collections
                     nextLevel.AddLast(new LayeredLinkedList<T>(start, evaluator, nextInts));
                     node = nextLevel.First;
                 }
-                while (d > node.Value.start+interval)
+                while (d > node.Value.start + interval)
                 {
-                    if(node.Next == null)
+                    if (node.Next == null)
                     {
-                        nextLevel.AddLast(new LayeredLinkedList<T>(node.Value.start+interval,evaluator,nextInts));
+                        nextLevel.AddLast(new LayeredLinkedList<T>(node.Value.start + interval, evaluator, nextInts));
                     }
                     node = node.Next;
                 }
@@ -162,7 +176,7 @@ namespace BulletHell.Collections
             {
                 LinkedListNode<LayeredLinkedList<T>> node = nextLevel.First;
 
-                while (node != null && node.Value.start+interval < t1)
+                while (node != null && node.Value.start + interval < t1)
                 {
                     node = node.Next;
                 }
@@ -172,10 +186,92 @@ namespace BulletHell.Collections
                 }
                 while (node != null && node.Value.start < t2)
                 {
-                    foreach(T val in node.Value.ElementsBetween(t1,t2))
+                    foreach (T val in node.Value.ElementsBetween(t1, t2))
                         yield return val;
                     node = node.Next;
                 }
+            }
+        }
+
+        // if there is nothing before d, returns the first element. might have it throw an exception soon, then you check it and get the first element yourself.
+        public T LastBefore(double d)
+        {
+            if (Count() == 0)
+                throw new InvalidOperationException("No elements to return");
+            if (layers == 0)
+            {
+                LinkedListNode<T> node = vals.Last;
+                while (node != null && evaluator(node.Value) > d) node = node.Previous;
+                if (node == null)
+                    return First();
+                return node.Value;
+            }
+            else
+            {
+                LinkedListNode<LayeredLinkedList<T>> node = nextLevel.Last;
+                while (node != null && (node.Value.start > d || node.Value.Count() == 0)) node = node.Previous;
+                if (node == null)
+                    return First();
+                return node.Value.LastBefore(d);
+            }
+        }
+
+        public T FirstAfter(double d)
+        {
+            if (Count() == 0)
+                throw new InvalidOperationException("No elements to return");
+            if (layers == 0)
+            {
+                LinkedListNode<T> node = vals.First;
+                while (node != null && evaluator(node.Value) < d) node = node.Next;
+                if (node == null)
+                    return Last();
+                return node.Value;
+            }
+            else
+            {
+                LinkedListNode<LayeredLinkedList<T>> node = nextLevel.First;
+                while (node != null && (node.Value.start + interval < d || node.Value.Count() == 0)) node = node.Next;
+                if (node == null)
+                    return Last();
+                return node.Value.FirstAfter(d);
+            }
+        }
+
+        public int Count()
+        {
+            return count;
+        }
+
+        public T First()
+        {
+            if (Count() == 0)
+                throw new InvalidOperationException("No first element to return");
+            if (layers == 0)
+            {
+                return vals.First.Value;
+            }
+            else
+            {
+                LinkedListNode<LayeredLinkedList<T>> node = nextLevel.First;
+                while (node != null && node.Value.Count() == 0) node = node.Next;
+                return node.Value.First();
+            }
+        }
+        public T Last()
+        {
+
+            if (Count() == 0)
+                throw new InvalidOperationException("No last element to return");
+            if (layers == 0)
+            {
+                return vals.Last.Value;
+            }
+            else
+            {
+                LinkedListNode<LayeredLinkedList<T>> node = nextLevel.Last;
+                while (node != null && node.Value.Count() == 0) node = node.Previous;
+                return node.Value.Last();
             }
         }
         public void Write()
@@ -274,6 +370,149 @@ namespace BulletHell.Collections
                 }
             }
         }
+
+        public LLLGuide<T> Guide(bool beginning = true)
+        {
+            return new LLLGuide<T>(this, beginning);
+        }
+
+        public class LLLGuide<T>
+        {
+            SimpleLinkedList<LinkedListNode<LayeredLinkedList<T>>> trail;
+            LinkedListNode<T> current;
+            public LLLGuide(LayeredLinkedList<T> list, bool beginning = true)
+            {
+                trail = new SimpleLinkedList<LinkedListNode<LayeredLinkedList<T>>>();
+                if (list.Count() == 0)
+                    throw new InvalidOperationException("List has no elements to guide through");
+                LinkedListNode<LayeredLinkedList<T>> lists;
+                if (beginning)
+                {
+                    while (list.layers != 0)
+                    {
+                        lists = list.nextLevel.First;
+                        while(lists.Value.Count()==0)
+                            lists = lists.Next;
+                        trail = trail.Push(lists);
+                        list = lists.Value;
+                    }
+                    current = list.vals.First;
+                }
+                else
+                {
+                    while (list.layers != 0)
+                    {
+                        lists = list.nextLevel.Last;
+                        while (lists.Value.Count() == 0)
+                            lists = lists.Previous;
+                        trail = trail.Push(lists);
+                        list = lists.Value;
+                    }
+                    current = list.vals.Last;
+                }
+            }
+            public T CurrentValue()
+            {
+                return current.Value;
+            }
+            public bool HasNext()
+            {
+                if (current.Next != null)
+                    return true;
+                SimpleLinkedList<LinkedListNode<LayeredLinkedList<T>>> tc = trail;
+                LinkedListNode<LayeredLinkedList<T>> cur=null;
+                while (tc!=null && tc.Count() > 0)
+                {
+                    cur = tc.Value;
+                    tc = tc.Tail;
+                    while (cur.Next != null && cur.Value.Count() == 0) cur = cur.Next;
+                }
+                return cur == null;
+            }
+            public bool HasPrevious()
+            {
+                if (current.Previous != null)
+                    return true;
+                SimpleLinkedList<LinkedListNode<LayeredLinkedList<T>>> tc = trail;
+                LinkedListNode<LayeredLinkedList<T>> cur = null;
+                while (tc != null && tc.Count() > 0)
+                {
+                    cur = tc.Value;
+                    tc = tc.Tail;
+                    while (cur.Next != null && cur.Value.Count() == 0) cur = cur.Previous;
+                }
+                return cur == null;
+            }
+            public T MoveNext()
+            {
+                if (current.Next != null)
+                {
+                    current = current.Next;
+                    return current.Value;
+                }
+                SimpleLinkedList<LinkedListNode<LayeredLinkedList<T>>> tc = trail;
+                LinkedListNode<LayeredLinkedList<T>> cur = null;
+                while (cur==null && tc != null && tc.Count() > 0)
+                {
+                    cur = tc.Value;
+                    tc = tc.Tail;
+                    while (cur != null && cur.Value.Count() == 0) cur = cur.Next;
+                }
+                if (cur == null)
+                    throw new InvalidOperationException("Can't move forwards");
+                else
+                {
+                    trail = tc;
+                    LayeredLinkedList<T> list = cur.Value;
+                    LinkedListNode<LayeredLinkedList<T>> lists;
+                    while (list.layers != 0)
+                    {
+                        lists = list.nextLevel.First;
+                        while (lists.Value.Count() == 0)
+                            lists = lists.Next;
+                        trail = trail.Push(lists);
+                        list = lists.Value;
+                    }
+                    current = list.vals.First;
+                }
+                return current.Value;
+            }
+            public T MovePrevious()
+            {
+                if (current.Previous != null)
+                {
+                    current = current.Previous;
+                    return current.Value;
+                }
+                SimpleLinkedList<LinkedListNode<LayeredLinkedList<T>>> tc = trail;
+                LinkedListNode<LayeredLinkedList<T>> cur = null;
+                while (cur==null && tc != null && tc.Count() > 0)
+                {
+                    cur = tc.Value;
+                    tc = tc.Tail;
+                    while (cur != null && cur.Value.Count() == 0) cur = cur.Previous;
+                }
+                if (cur == null)
+                    throw new InvalidOperationException("Can't move backwards");
+                else
+                {
+                    trail = tc;
+                    LayeredLinkedList<T> list = cur.Value;
+                    LinkedListNode<LayeredLinkedList<T>> lists;
+                    while (list.layers != 0)
+                    {
+                        lists = list.nextLevel.Last;
+                        while (lists.Value.Count() == 0)
+                            lists = lists.Previous;
+                        trail = trail.Push(lists);
+                        list = lists.Value;
+                    }
+                    current = list.vals.Last;
+                }
+                return current.Value;
+            }
+        }
+
     }
     public class LayeredLinkedListTest
     {
@@ -282,16 +521,16 @@ namespace BulletHell.Collections
             LayeredLinkedList<double> lll = new LayeredLinkedList<double>(0, Utils.Identity<double>);//,1000,100,10,1);
 
             BulletHell.Time.Timer time = new BulletHell.Time.Timer();
-            Random r= new Random();
+            Random r = new Random();
 
             time.Reset();
             long thous = 1000;
-            long million = thous*thous;
-            long billion = thous*million;
+            long million = thous * thous;
+            long billion = thous * million;
             long trillion = million * million;
-            for (long i = 0; i < 20* thous; i++)
+            for (long i = 0; i < 20 * thous; i++)
             {
-                lll.Add(1000*r.NextDouble());
+                lll.Add(1000 * r.NextDouble());
             }
             Console.WriteLine(time.Time);
             //lll.Write();
@@ -306,7 +545,7 @@ namespace BulletHell.Collections
             count = 0;
             foreach (double d in lll.ElementsBetween(-100, 5000))
             {
-                if(30<d&&d<40) count++;
+                if (30 < d && d < 40) count++;
             }
             Console.WriteLine(count);
             Console.WriteLine(time.Time);

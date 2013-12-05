@@ -5,6 +5,7 @@ using System.Text;
 using BulletHell;
 using BulletHell.Physics;
 using BulletHell.MathLib;
+using BulletHell.Collections;
 
 namespace BulletHell.GameLib.EntityLib.BulletLib
 {
@@ -23,13 +24,14 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
             this.bSty = sty;
         }
     }
-    public class BulletEmitter
+    public class BulletPattern
     {
+
         BulletEmission[] pattern;
         double cycleTime;
         EntityClass pc;
 
-        public BulletEmitter(BulletEmission[] ps, EntityClass bulletClass)
+        public BulletPattern(BulletEmission[] ps, EntityClass bulletClass)
         {
             pc = bulletClass;
             pattern = ps;
@@ -40,10 +42,10 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
             }
         }
 
-        public List<Bullet> BulletsBetween(Particle p, double t1, double t2)
+        public LinkedList<Bullet> BulletsBetween(Particle p, double t1, double t2)
         {
             //Console.WriteLine("{0},{1}",t1,t2);
-            List<Bullet> ans = new List<Bullet>();
+            LinkedList<Bullet> ans = new LinkedList<Bullet>();
             double m = Math.Floor(t1 / cycleTime);
             //Console.WriteLine(m);
             //Console.WriteLine(cycleTime);
@@ -66,7 +68,7 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
                 BulletEmission em = this[index - 1];
                 foreach (Trajectory j in em.BulletPaths)
                 {
-                    ans.Add(em.bSty(t,j(t,x[0],x[1]),pc));
+                    ans.AddLast(em.bSty(t,j(t,x[0],x[1]),pc));
                     //Console.WriteLine(k - this[index - 1].Cooldown);
                 }
             }
@@ -81,7 +83,7 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
                     foreach (Trajectory j in b.BulletPaths)
                     {
                         //Console.WriteLine(k);
-                        ans.Add(b.bSty(k,j(k,x[0],x[1]),pc));
+                        ans.AddLast(b.bSty(k,j(k,x[0],x[1]),pc));
                     }
                 }
                 k += b.Cooldown;
@@ -99,5 +101,46 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
             }
         }
     }
+    public struct EmitterState
+    {
+        public readonly int CurrentPattern;
+        public readonly double StartTime;
+        private readonly double delta;
+        public EmitterState(int pat, double time=0, double offset = 0)
+        {
+            CurrentPattern = pat;
+            StartTime = time;
+            delta = offset-StartTime;
+        }
+        public double GetRelativeTime(double t)
+        {
+            return t + delta;
+        }
+    }
+    public class BulletEmitter
+    {
+        List<BulletPattern> myPats;
+        EmitterState curState;
 
+        LayeredLinkedList<EmitterState> changes;
+
+        public BulletEmitter(params BulletPattern[] pats)
+        {
+            myPats = new List<BulletPattern>(pats);
+            curState = new EmitterState(0);
+            changes = new LayeredLinkedList<EmitterState>(0, st => st.StartTime, 1000, 100, 10, 1);
+            changes.Add(curState);
+        }
+
+
+
+        public LinkedList<Bullet> BulletsBetween(double t1, double t2)
+        {
+            LinkedList<Bullet> ans = new LinkedList<Bullet>();
+            
+
+            return ans;
+        }
+
+    }
 }
