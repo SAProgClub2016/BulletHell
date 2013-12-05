@@ -8,6 +8,8 @@ Plans
 -Turn keypresses into GameEvents - Done 4 December 2013
 -Actually use the rewinding vs. undo feature - Done 4 December 2013
 -Debug weird bullet rings. (again) - Done 4 December 2013
+-User needs to be able to fire bullets
+-More complex Trajectories. - not exactly a checkbox
 -Complicated Entity lifetimes/paths
 -Levels
 -Read entities/levels in from files

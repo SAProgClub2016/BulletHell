@@ -77,7 +77,7 @@ namespace BulletHell
             o1 = entEl.MakeDrawable(new GraphicsStyle(Brushes.Green));
 
             double FULL = 2 * Math.PI;
-            double cd = 1;
+            double cd = 0.5;
             int perCirc = 12;
             int offsets = 6;
             BulletEmission[] bEms = new BulletEmission[offsets], bEms2 = new BulletEmission[offsets];
@@ -468,7 +468,7 @@ namespace BulletHell
                 timer.Reset();
                 GameLogic();
                 RenderScene();
-                while (timer.Time < 20)
+                while (timer.Time < 10)
                     Thread.Yield();
             }
         }

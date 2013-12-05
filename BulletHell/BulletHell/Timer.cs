@@ -6,7 +6,7 @@ namespace BulletHell.Time
     class Timer
     {
         [DllImport("kernel32.dll")]
-        private static extern long GetTickCount();
+        private static extern int GetTickCount(); // used to be long, apparently it's an int...
 
         private long StartTick = 0;
         public long Time

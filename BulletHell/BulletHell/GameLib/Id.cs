@@ -10,14 +10,8 @@ namespace BulletHell.GameLib
         int id;
 
         static int curid=0;
-        static Dictionary<int, string> back;
-        static Dictionary<string, int> forw;
-
-        static Id()
-        {
-            back = new Dictionary<int, string>();
-            forw = new Dictionary<string, int>();
-        }
+        static Dictionary<int, string> back = new Dictionary<int,string>();
+        static Dictionary<string, int> forw = new Dictionary<string,int>();
 
         public Id(string s)
         {
@@ -59,6 +53,25 @@ namespace BulletHell.GameLib
             Id o = pc.Value;
             return o.id == id;
         }
+
+        /*public static bool operator ==(Id o1, object o2)
+        {
+            return o1.Equals(o2);
+        }
+        public static bool operator ==(object o2, Id o1)
+        {
+            return o1.Equals(o2);
+        }
+
+        public static bool operator !=(Id o1, object o2)
+        {
+            return !o1.Equals(o2);
+        }
+        public static bool operator !=(object o2, Id o1)
+        {
+            return !o1.Equals(o2);
+        }*/
+
         public override int GetHashCode()
         {
             return id.GetHashCode();

@@ -77,6 +77,7 @@
     <Compile Include="GameLib\EventLib\GameEvent.cs" />
     <Compile Include="GameLib\EventLib\GameEventManager.cs" />
     <Compile Include="Gfx\RenderManager.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Physics\PhysicsManager.cs" />
     <Compile Include="GameLib\Id.cs" />
     <Compile Include="GameLib\Trajectory.cs" />
