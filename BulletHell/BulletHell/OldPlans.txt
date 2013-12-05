@@ -22,3 +22,14 @@ bullets disappear!!! they appear, but then disappear!!!
 Most likely in MainForm.cs (if it is in MainForm, error did not occur this commit) or in BulletEmitter.cs
 ----------------------------------------------------------------------
 
+Removed 4 December 2013
+----------------------------------------------------------------------
+Bug: Weird rings of bullets not being uncreated properly in rewind mode. Might have something to do with collisions immediately after creation.
+Yup that's exactly it. Presumably creation occurs, collision occurs *at the same time* they end up in reverse order in the list so when rewinding,
+attempts to uncreate and then collision attempts to undelete. Wait that can't be it, I don't think, or the bullets would appear after being hit when unrewinding right?
+Well we can check. Yeah no that doesn't seem to be it, besides Physics ought to happen the frame after bullet creation... so anyway. Definitely related
+though cause that's when it happens when I'm testing. No it is actually rewinding create before destroy... that's odd. Yep then it destroys it before creation.
+
+Solution: Idk yet. Probably just have the thing check to see whether it's supposed to be visible before adds
+Actually solution was to give entities minimum lifetimes.
+----------------------------------------------------------------------
