@@ -11,17 +11,17 @@ namespace BulletHell.GameLib
     public class TrajectoryFactory
     {
 
-        public static Trajectory SimpleVel(double vx, double vy)
+        public static Trajectory SimpleVel(double vx, double vy, double x0=0,double y0=0)
         {
             return (t, x, y) =>
             {
-                Particle p = new Particle(s => x + vx * (s - t), s => y + vy * (s - t));
+                Particle p = new Particle(s => x + x0 + vx * (s - t), s => y + y0 + vy * (s - t));
                 return p;
             };
         }
-        public static Trajectory AngleMagVel(double th, double m)
+        public static Trajectory AngleMagVel(double th, double m, double x0=0, double y0=0)
         {
-            return SimpleVel(m * Utils.FastCos(th), m * Utils.FastSin(th));
+            return SimpleVel(m * Utils.FastCos(th), m * Utils.FastSin(th),x0,y0);
         }
         // Because why not :P
         public static Trajectory SpinningLinearAMVel(double th, double m, double w, double r, double th0=0)

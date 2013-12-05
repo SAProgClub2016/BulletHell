@@ -66,7 +66,7 @@ namespace BulletHell
 
             Drawable mchar = DrawableFactory.MakeCircle(8, new GraphicsStyle(Brushes.Orange, Pens.Red));
 
-            game = new Game(new MainChar(mchar,ClientRectangle.Width/2,ClientRectangle.Height-20));
+            game = new Game(new MainChar(mchar,bsm["MainChar"],ClientRectangle.Width/2,ClientRectangle.Height-20,40));
             InitializePhysicsManager(game.PhysicsManager);
             InitializeRenderManager(game.RenderManager);
 
@@ -79,7 +79,7 @@ namespace BulletHell
             o1 = entEl.MakeDrawable(new GraphicsStyle(Brushes.Green));
 
             double FULL = 2 * Math.PI;
-            double cd = 0.5;
+            double cd = 1;
             int perCirc = 12;
             int offsets = 6;
             BulletEmission[] bEms = new BulletEmission[offsets], bEms2 = new BulletEmission[offsets];
@@ -126,9 +126,9 @@ namespace BulletHell
             EntityClass enemyBullet = new EntityClass("EnemyBullet","Bullet");
             EntityClass enemy = new EntityClass("Enemy","Character");
 
-            BulletEmitter em = new BulletEmitter(bEms,enemyBullet);
-            BulletEmitter em2 = new BulletEmitter(bEms2,enemyBullet);
-            BulletEmitter em3 = new BulletEmitter(bEms3,enemyBullet);
+            BulletEmitter em = new BulletEmitter(new BulletPattern(bEms,enemyBullet));
+            BulletEmitter em2 = new BulletEmitter(new BulletPattern(bEms2,enemyBullet));
+            BulletEmitter em3 = new BulletEmitter(new BulletPattern(bEms3,enemyBullet));
 
             entSpawn.MakeType("RedSpiral", null, o1, entEl, enemy, em);
 
@@ -166,8 +166,17 @@ namespace BulletHell
         private void InitializePhysicsManager(PhysicsManager pman)
         {
             pman.AddCollisionHandler("EnemyBullet", "MainChar", this.CharHit);
-            pman.AddDisconnectHandler("Enemy", "Background", this.EnemyOffscreen);
-            pman.AddDisconnectHandler("EnemyBullet", "Background", this.EnemyOffscreen);
+            pman.AddCollisionHandler("MainCharBullet", "Enemy", this.EnemyHit);
+            pman.AddDisconnectHandler("Enemy", "Background", this.KillOffscreen);
+            pman.AddDisconnectHandler("EnemyBullet", "Background", this.KillOffscreen);
+            pman.AddDisconnectHandler("MainCharBullet", "Background", this.KillOffscreen);
+        }
+
+        private GameEvent EnemyHit(Entity e1, Entity e2)
+        {
+            e1.DestructionTime = game.CurrentTime;
+            e2.DestructionTime = game.CurrentTime;
+            return e1.Destruction > e2.Destruction;
         }
 
         private void InitializeRenderManager(RenderManager rman)
@@ -179,7 +188,7 @@ namespace BulletHell
             rman.RenderOrder = ids;
         }
 
-        private GameEvent EnemyOffscreen(Entity e1, Entity e2)
+        private GameEvent KillOffscreen(Entity e1, Entity e2)
         {
             Entity e;
             if (e1 == bg)
@@ -234,6 +243,7 @@ namespace BulletHell
             bsm.MakeStyle("OrangeRed_5", bulletEl, new GraphicsStyle(Brushes.OrangeRed));
             bsm.MakeStyle("Azure_5", bulletEl, new GraphicsStyle(Brushes.Azure));
             bsm.MakeStyle("HotPink_5", bulletEl, new GraphicsStyle(Brushes.HotPink));
+            bsm.MakeStyle("MainChar", bulletEl, new GraphicsStyle(Brushes.Violet));
         }
 
         private void InitializeKeyManager()

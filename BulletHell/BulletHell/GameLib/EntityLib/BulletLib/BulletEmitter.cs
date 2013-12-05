@@ -16,6 +16,11 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
         public Trajectory[] BulletPaths;
         public BulletStyle bSty;
 
+        public BulletEmission(double w, double c, BulletStyle sty, params Trajectory[] trajs)
+            : this(w,c,trajs,sty)
+        {
+        }
+
         public BulletEmission(double w, double c, Trajectory[] bulletTrajectory, BulletStyle sty)
         {
             this.Warmup = w;
@@ -31,6 +36,12 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
         double cycleTime;
         EntityClass pc;
 
+
+        public BulletPattern(EntityClass cls, params BulletEmission[] emissions)
+            : this(emissions,cls)
+        {
+        }
+        
         public BulletPattern(BulletEmission[] ps, EntityClass bulletClass)
         {
             pc = bulletClass;
@@ -101,7 +112,7 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
             }
         }
     }
-    public struct EmitterState
+    public class EmitterState
     {
         public readonly int CurrentPattern;
         public readonly double StartTime;
@@ -125,19 +136,44 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
         LayeredLinkedList<EmitterState> changes;
 
         public BulletEmitter(params BulletPattern[] pats)
+            : this(0,pats)
+        {
+        }
+
+        public BulletEmitter(int defState,params BulletPattern[] pats)
         {
             myPats = new List<BulletPattern>(pats);
-            curState = new EmitterState(0);
+            curState = new EmitterState(defState);
             changes = new LayeredLinkedList<EmitterState>(0, st => st.StartTime, 1000, 100, 10, 1);
             changes.Add(curState);
         }
 
 
 
-        public LinkedList<Bullet> BulletsBetween(double t1, double t2)
+        public LinkedList<Bullet> BulletsBetween(Particle pos, double t1, double t2)
         {
             LinkedList<Bullet> ans = new LinkedList<Bullet>();
-            
+            EmitterState last = changes.LastBefore(t1);
+
+            foreach(EmitterState next in changes.ElementsBetween(t1,t2))
+            {
+                if(last.CurrentPattern<0)
+                {
+                    last=next;
+                    continue;
+                }
+                foreach(Bullet bull in myPats[last.CurrentPattern].BulletsBetween(pos,last.GetRelativeTime(Math.Max(t1,last.StartTime)),last.GetRelativeTime(next.StartTime)))
+                {
+                    ans.AddLast(bull);
+                }
+            }
+            if (last.CurrentPattern >= 0)
+            {
+                foreach (Bullet bull in myPats[last.CurrentPattern].BulletsBetween(pos, last.GetRelativeTime(Math.Max(t1, last.StartTime)), last.GetRelativeTime(t2)))
+                {
+                    ans.AddLast(bull);
+                }
+            }
 
             return ans;
         }

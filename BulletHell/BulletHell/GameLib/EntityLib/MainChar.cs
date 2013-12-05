@@ -7,6 +7,7 @@ using BulletHell.Physics;
 using BulletHell.MathLib.Function;
 using BulletHell.MathLib;
 using BulletHell.Physics.ShapeLib;
+using BulletHell.GameLib.EntityLib.BulletLib;
 
 namespace BulletHell.GameLib.EntityLib
 {
@@ -82,7 +83,7 @@ namespace BulletHell.GameLib.EntityLib
                 }
             }
         }
-        public MainChar(Drawable d, double x0, double y0, double s = 20, GraphicsStyle g = null) : base(0,null, d, new Point(2), new EntityClass("MainChar","Character"), null, g)
+        public MainChar(Drawable d, BulletStyle sty, double x0, double y0, double s = 20, GraphicsStyle g = null) : base(0,null, d, new Point(2), new EntityClass("MainChar","Character"), null, g)
         {
             speed = s;
             this.x0 = x0;
@@ -92,6 +93,14 @@ namespace BulletHell.GameLib.EntityLib
             xp = t => x0;
             yp = t => y0;
             Position = new Particle(t => xp(t), t => yp(t));
+            BulletEmission em = new BulletEmission(0,0.25,
+                sty,
+                TrajectoryFactory.SimpleVel(2,-40,5),
+                TrajectoryFactory.SimpleVel(-2,-40,-5)
+                );
+
+            BulletPattern pat = new BulletPattern(new EntityClass("MainCharBullet", "Bullet"), em);
+            Emitter = new BulletEmitter(pat);
             Time = 0;
         }
     }

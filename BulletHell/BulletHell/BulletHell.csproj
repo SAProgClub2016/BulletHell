@@ -69,6 +69,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Collections\LookupLinkedListSet.cs" />
+    <Compile Include="Collections\SimpleLinkedList.cs" />
     <Compile Include="GameLib\EntityLib\BulletLib\Bullet.cs" />
     <Compile Include="GameLib\EntityLib\BulletLib\BulletEmitter.cs" />
     <Compile Include="GameLib\EntityLib\BulletLib\BulletStyle.cs" />

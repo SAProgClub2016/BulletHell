@@ -376,16 +376,16 @@ namespace BulletHell.Collections
             return new LLLGuide<T>(this, beginning);
         }
 
-        public class LLLGuide<T>
+        public class LLLGuide<S>
         {
-            SimpleLinkedList<LinkedListNode<LayeredLinkedList<T>>> trail;
-            LinkedListNode<T> current;
-            public LLLGuide(LayeredLinkedList<T> list, bool beginning = true)
+            SimpleLinkedList<LinkedListNode<LayeredLinkedList<S>>> trail;
+            LinkedListNode<S> current;
+            public LLLGuide(LayeredLinkedList<S> list, bool beginning = true)
             {
-                trail = new SimpleLinkedList<LinkedListNode<LayeredLinkedList<T>>>();
+                trail = new SimpleLinkedList<LinkedListNode<LayeredLinkedList<S>>>();
                 if (list.Count() == 0)
                     throw new InvalidOperationException("List has no elements to guide through");
-                LinkedListNode<LayeredLinkedList<T>> lists;
+                LinkedListNode<LayeredLinkedList<S>> lists;
                 if (beginning)
                 {
                     while (list.layers != 0)
@@ -411,7 +411,7 @@ namespace BulletHell.Collections
                     current = list.vals.Last;
                 }
             }
-            public T CurrentValue()
+            public S CurrentValue()
             {
                 return current.Value;
             }
@@ -419,8 +419,8 @@ namespace BulletHell.Collections
             {
                 if (current.Next != null)
                     return true;
-                SimpleLinkedList<LinkedListNode<LayeredLinkedList<T>>> tc = trail;
-                LinkedListNode<LayeredLinkedList<T>> cur=null;
+                SimpleLinkedList<LinkedListNode<LayeredLinkedList<S>>> tc = trail;
+                LinkedListNode<LayeredLinkedList<S>> cur=null;
                 while (tc!=null && tc.Count() > 0)
                 {
                     cur = tc.Value;
@@ -433,8 +433,8 @@ namespace BulletHell.Collections
             {
                 if (current.Previous != null)
                     return true;
-                SimpleLinkedList<LinkedListNode<LayeredLinkedList<T>>> tc = trail;
-                LinkedListNode<LayeredLinkedList<T>> cur = null;
+                SimpleLinkedList<LinkedListNode<LayeredLinkedList<S>>> tc = trail;
+                LinkedListNode<LayeredLinkedList<S>> cur = null;
                 while (tc != null && tc.Count() > 0)
                 {
                     cur = tc.Value;
@@ -443,15 +443,15 @@ namespace BulletHell.Collections
                 }
                 return cur == null;
             }
-            public T MoveNext()
+            public S MoveNext()
             {
                 if (current.Next != null)
                 {
                     current = current.Next;
                     return current.Value;
                 }
-                SimpleLinkedList<LinkedListNode<LayeredLinkedList<T>>> tc = trail;
-                LinkedListNode<LayeredLinkedList<T>> cur = null;
+                SimpleLinkedList<LinkedListNode<LayeredLinkedList<S>>> tc = trail;
+                LinkedListNode<LayeredLinkedList<S>> cur = null;
                 while (cur==null && tc != null && tc.Count() > 0)
                 {
                     cur = tc.Value;
@@ -463,8 +463,8 @@ namespace BulletHell.Collections
                 else
                 {
                     trail = tc;
-                    LayeredLinkedList<T> list = cur.Value;
-                    LinkedListNode<LayeredLinkedList<T>> lists;
+                    LayeredLinkedList<S> list = cur.Value;
+                    LinkedListNode<LayeredLinkedList<S>> lists;
                     while (list.layers != 0)
                     {
                         lists = list.nextLevel.First;
@@ -477,15 +477,15 @@ namespace BulletHell.Collections
                 }
                 return current.Value;
             }
-            public T MovePrevious()
+            public S MovePrevious()
             {
                 if (current.Previous != null)
                 {
                     current = current.Previous;
                     return current.Value;
                 }
-                SimpleLinkedList<LinkedListNode<LayeredLinkedList<T>>> tc = trail;
-                LinkedListNode<LayeredLinkedList<T>> cur = null;
+                SimpleLinkedList<LinkedListNode<LayeredLinkedList<S>>> tc = trail;
+                LinkedListNode<LayeredLinkedList<S>> cur = null;
                 while (cur==null && tc != null && tc.Count() > 0)
                 {
                     cur = tc.Value;
@@ -497,8 +497,8 @@ namespace BulletHell.Collections
                 else
                 {
                     trail = tc;
-                    LayeredLinkedList<T> list = cur.Value;
-                    LinkedListNode<LayeredLinkedList<T>> lists;
+                    LayeredLinkedList<S> list = cur.Value;
+                    LinkedListNode<LayeredLinkedList<S>> lists;
                     while (list.layers != 0)
                     {
                         lists = list.nextLevel.Last;
