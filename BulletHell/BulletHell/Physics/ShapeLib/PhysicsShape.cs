@@ -6,7 +6,7 @@ using System.Text;
 using System.Drawing;
 using BulletHell.MathLib;
 
-namespace BulletHell.Physics
+namespace BulletHell.Physics.ShapeLib
 {
     public abstract class PhysicsShape
     {

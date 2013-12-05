@@ -6,6 +6,7 @@ using BulletHell.Gfx;
 using BulletHell.Physics;
 using BulletHell.MathLib.Function;
 using BulletHell.MathLib;
+using BulletHell.Physics.ShapeLib;
 
 namespace BulletHell.GameLib.EntityLib
 {

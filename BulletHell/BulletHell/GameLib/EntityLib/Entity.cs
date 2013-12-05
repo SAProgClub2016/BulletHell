@@ -10,6 +10,7 @@ using BulletHell;
 using BulletHell.GameLib.EntityLib.BulletLib;
 using BulletHell.GameLib.EventLib;
 using BulletHell.MathLib;
+using BulletHell.Physics.ShapeLib;
 
 namespace BulletHell.GameLib.EntityLib
 {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Drawing;
 using BulletHell.Gfx;
 
-namespace BulletHell.Physics
+namespace BulletHell.Physics.ShapeLib
 {
     public class Point : PhysicsShape
     {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using BulletHell.Gfx;
 using BulletHell.Physics;
+using BulletHell.Physics.ShapeLib;
 
 namespace BulletHell.GameLib.EntityLib.BulletLib
 {

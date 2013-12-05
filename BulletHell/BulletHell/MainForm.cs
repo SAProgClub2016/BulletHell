@@ -16,6 +16,7 @@ using BulletHell.Collections;
 using BulletHell.GameLib.EntityLib;
 using BulletHell.GameLib.EntityLib.BulletLib;
 using BulletHell.GameLib.EventLib;
+using BulletHell.Physics.ShapeLib;
 
 namespace BulletHell
 {

@@ -6,17 +6,26 @@ using BulletHell.Gfx;
 using System.Drawing;
 using BulletHell.MathLib;
 
-namespace BulletHell.Physics
+namespace BulletHell.Physics.ShapeLib
 {
-    public class Box : PhysicsShape
+    public class Ellipse : PhysicsShape
     {
         private Particle r;
         private Drawable myDraw;
 
-        public Box(Particle rad)
+        public Ellipse(double r, int dim=2)
+        {
+            Vector<double> rad = new Vector<double>(dim);
+            for (int i = 0; i < dim; i++)
+                rad[i] = r;
+            this.r = rad;
+            myDraw = DrawableFactory.MakeEllipse(this.r, new GraphicsStyle(null, Pens.Red));
+        }
+
+        public Ellipse(Particle rad)
         {
             r = rad;
-            myDraw = DrawableFactory.MakeCenteredRectangle(r, new GraphicsStyle(null, Pens.Red));
+            myDraw = DrawableFactory.MakeEllipse(r, new GraphicsStyle(null, Pens.Red));
         }
 
 
@@ -38,7 +47,13 @@ namespace BulletHell.Physics
                 if (Math.Abs(diff[i]) > Math.Abs(rp[i]))
                     return false;
             }
-            return true;
+            double sum=0;
+            Func<double,double> sqr = t=>t*t;
+            for (int i = 0; i < pos.Dimension; i++)
+            {
+                sum += sqr(diff[i] / rp[i]);
+            }
+            return sum < 1;
         }
 
         protected override bool meets(Particle p, PhysicsShape o, Particle oPos)
@@ -47,33 +62,10 @@ namespace BulletHell.Physics
             {
                 return ContainsPoint(p,oPos);
             }
-            if(o.GetType()==typeof(Box))
-            {
-                Box oth = o as Box;
-                return new Box(r + oth.r).ContainsPoint(p, oPos);
-            }
             if(o.GetType()==typeof(Ellipse))
             {
                 Ellipse oth = o as Ellipse;
-                if (!Meets(p, oth.BoundingBox, oPos))
-                    return false;
-
-                if (p.Dimension != r.Dimension || p.Dimension != oPos.Dimension)
-                    return false;
-                Vector<double> ocp = oPos.CurrentPosition;
-                Vector<double> mcp = p.CurrentPosition;
-                Vector<double> diff = ocp - mcp;
-                diff = diff.Map(Math.Abs, diff);
-
-                Vector<double> rp = r.CurrentPosition;
-                rp.Map(Math.Abs, rp);
-
-                for (int i = 0; i < p.Dimension; i++)
-                {
-                    if (diff[i]<rp[i])
-                        return true;
-                }
-                return o.ContainsPoint(diff,rp);
+                return new Ellipse(r + oth.r).ContainsPoint(p, oPos);
             }
             return o.Meets(oPos, this, p);
         }
@@ -86,7 +78,10 @@ namespace BulletHell.Physics
 
         public override Box BoundingBox
         {
-            get { return this; }
+            get
+            {
+                return new Box(r);
+            }
         }
 
         protected override void UpdateTime()
