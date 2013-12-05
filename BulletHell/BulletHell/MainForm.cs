@@ -35,10 +35,12 @@ namespace BulletHell
         Game game;
         bool DisplayFrameRate = true, DisplayTime = true;
         private DefaultValueDictionary<Entity, bool> hitby;
+        EntitySpawner entSpawn;
 
         public MainForm()
         {
             InitializeComponent();
+            entSpawn = new EntitySpawner();
 
             hitby = new DefaultValueDictionary<Entity, bool>(false);
 
@@ -128,27 +130,33 @@ namespace BulletHell
             BulletEmitter em2 = new BulletEmitter(bEms2,enemyBullet);
             BulletEmitter em3 = new BulletEmitter(bEms3,enemyBullet);
 
-            e = new Entity(0, p1, o1, entEl, enemy, em);
-            e2 = new Entity(0,p2, o1, entEl, enemy, em);
+            entSpawn.MakeType("RedSpiral", null, o1, entEl, enemy, em);
+
+            e = entSpawn.Build("RedSpiral", 0, p1);
+            e2 = entSpawn.Build("RedSpiral", 0, p2);
 
             Particle p3 = new Particle(x => 0.5 * x + 500, y => 3 * y);
-            Entity e3 = new Entity(0,p3, o1, entEl, enemy, em);
+            Entity e3  = entSpawn.Build("RedSpiral", 0, p3);
 
             Particle p4 = new Particle(x => -0.25 * x + 300, y => 3.5 * y);
-            Entity e4 = new Entity(0,p4, o1, entEl, enemy, em);
+            Entity e4 = entSpawn.Build("RedSpiral", 0, p4);
 
             Particle p5 = new Particle(x => -0.4 * x + 800, y => 2 * y);
-            Entity e5 = new Entity(0,p5, o1, entEl, enemy, em);
+            Entity e5 = entSpawn.Build("RedSpiral", 0, p5);
 
 
             game += bg;
             game = game + e + e2 + e3 + e4 + e5;
 
-            Entity e6 = new Entity(0,q, o1, entEl, enemy, em2);
+            entSpawn["WhiteSpiral"] = entSpawn["RedSpiral"].ChangeEmitter(em2, true);
+            entSpawn["PinkWaves"] = entSpawn["RedSpiral"].ChangeEmitter(em3, true);
+            //entSpawn.MakeType("WhiteSpinningSpiral",null, o1, entEl, enemy, em2);
+
+            Entity e6 = entSpawn.Build("WhiteSpiral", 0, q);
             game += e6;
 
             Particle r = new Particle(Utils.MakeClosure<double,double,double>((double)ClientRectangle.Width/3, (w,t)=>w+3*t), t=>5*t);
-            Entity e7 = new Entity(0, r, o1, entEl, enemy, em3);
+            Entity e7 = entSpawn.Build("PinkWaves",0, r);
             game += e7;
             game.ResetTime();
             BufferedGraphicsContext c = BufferedGraphicsManager.Current;
@@ -301,14 +309,9 @@ namespace BulletHell
         double oldTime = 0;
         private void GameLogic()
         {
-            int bounds = 20;
             double time = game.CurrentTime;
 
             game.Time = time;
-            List<Entity> removeList = new List<Entity>();
-            Rectangle r = ClientRectangle;
-
-            GenRect<double> gr = new GenRect<double>(new Vector<double>(r.X - bounds, r.Y - bounds), new Vector<double>(r.X + r.Width + bounds, r.Y + r.Height + bounds));
             
             if (game.Time >= game.MostRenderedTime)
             {
@@ -325,7 +328,7 @@ namespace BulletHell
                 }
                 foreach (Entity o in newBullets)
                     game.Add(o);
-                oldTime = time;
+                oldTime = time; // there might be a bug here when stopping a rewind, haven't observed it yet.
             }
         }
 

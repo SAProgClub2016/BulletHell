@@ -73,9 +73,10 @@
     <Compile Include="GameLib\EntityLib\BulletLib\BulletEmitter.cs" />
     <Compile Include="GameLib\EntityLib\BulletLib\BulletStyle.cs" />
     <Compile Include="GameLib\EntityLib\EntityClass.cs" />
-    <Compile Include="GameLib\EntityLib\ListEntityManager.cs" />
+    <Compile Include="GameLib\EntityLib\EntitySpawner.cs" />
     <Compile Include="GameLib\EventLib\GameEvent.cs" />
     <Compile Include="GameLib\EventLib\GameEventManager.cs" />
+    <Compile Include="GameLib\LevelLib\Level.cs" />
     <Compile Include="Gfx\RenderManager.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Physics\PhysicsManager.cs" />
