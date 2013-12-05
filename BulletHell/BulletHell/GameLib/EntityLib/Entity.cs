@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define DEBUG_EVENTS
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -62,11 +64,15 @@ namespace BulletHell.GameLib.EntityLib
             }
         }
 
+        private readonly double MIN_LIFE=0.01;
+
         public double InvisibilityTime
         {
             get { return iTime; }
             set
             {
+                if (value <= CreationTime)
+                    value = CreationTime + MIN_LIFE;
                 iTime = value;
 
                 if (invisibility==null)
@@ -75,7 +81,10 @@ namespace BulletHell.GameLib.EntityLib
         }
         public double DestructionTime {
             get { return dTime; }
-            set {
+            set
+            {
+                if (value <= CreationTime)
+                    value = CreationTime + MIN_LIFE;
                 dTime = value;
                 if (destruction==null)
                     destruction = new GameEvent(dTime, this.Destroy, this.RewindDestroy, this.UndoDestroy);

@@ -346,7 +346,7 @@ namespace BulletHell
 
         private void OnEndKeyLeftRight(KeyManager km, Keys key)
         {
-            if (game.CurrentTimeRate > 0)
+            if (game.CurrentTimeRate > Utils.TOLERANCE)
             {
                 game.Events.Add(new GameEvent(game.CurrentTime,
                     (g,state) => {
@@ -363,7 +363,7 @@ namespace BulletHell
 
         private void OnEndKeyUpDown(KeyManager km, Keys key)
         {
-            if (game.CurrentTimeRate > 0)
+            if (game.CurrentTimeRate > Utils.TOLERANCE)
             {
                 game.Events.Add(new GameEvent(game.CurrentTime,
                     (g, state) =>
@@ -381,7 +381,7 @@ namespace BulletHell
         }
         private void OnKeyUpDown(KeyManager km, Keys key, bool repeat)
         {
-            if (game.CurrentTimeRate > 0)
+            if (game.CurrentTimeRate > Utils.TOLERANCE)
             {
                 game.Events.Add(new GameEvent(game.CurrentTime,
                     (g, state) =>
@@ -399,7 +399,7 @@ namespace BulletHell
         }
         private void OnKeyLeftRight(KeyManager km, Keys key, bool repeat)
         {
-            if (game.CurrentTimeRate > 0)
+            if (game.CurrentTimeRate > Utils.TOLERANCE)
             {
                 game.Events.Add(new GameEvent(game.CurrentTime,
                     (g, state) =>
