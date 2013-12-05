@@ -15,6 +15,9 @@ namespace BulletHell.GameLib.EventLib
         private LayeredLinkedList<GameEvent> events;
         private bool rewinding;
         private double mostRenderedTime;
+        private LinkedList<GameEvent> newAdds1;
+        private bool na1;
+        private LinkedList<GameEvent> newAdds2;
 
 
         public GameEventManager(Game game, params double[] intervals)
@@ -22,23 +25,18 @@ namespace BulletHell.GameLib.EventLib
             g = game;
             time = -1;
             events = new LayeredLinkedList<GameEvent>(0, ev => ev.Time, intervals);
+            newAdds1 = new LinkedList<GameEvent>();
+            newAdds2 = new LinkedList<GameEvent>();
         }
 
         public void Add(GameEvent e)
         {
-            Rewinding = false;
             if (e.State == GameEventState.Undone)
                 return;
-            if(e.Time<Time)
-            {
-                if (e.State == GameEventState.Unprocessed || e.State == GameEventState.Rewound)
-                    e.Do(g);
-            }
-            if(e.Time>MostRenderedTime)
-            {
-                mostRenderedTime = e.Time;
-            }
-            events.Add(e);
+            if (na1)
+                newAdds1.AddLast(e);
+            else
+                newAdds2.AddLast(e);
         }
 
         public void Remove(GameEvent e)
@@ -60,16 +58,17 @@ namespace BulletHell.GameLib.EventLib
                 if (value == rewinding)
                     return;
                 rewinding = value;
-                if(!rewinding)
+                if (!rewinding)
                 {
                     LinkedList<GameEvent> rList = new LinkedList<GameEvent>();
-                    foreach(GameEvent e in events.ElementsAfter(time))
+                    foreach (GameEvent e in events.ElementsAfter(time).Reverse())
                     {
                         e.Undo(g);
                         rList.AddLast(e);
                     }
                     foreach (GameEvent e in rList)
                         events.Remove(e);
+                    mostRenderedTime = Time;
                 }
             }
         }
@@ -81,6 +80,25 @@ namespace BulletHell.GameLib.EventLib
             }
             set
             {
+                na1 = !na1;
+                LinkedList<GameEvent> curFrame = (!na1 ? newAdds1 : newAdds2);
+                if(curFrame.Count>0)
+                    Rewinding=false;
+                foreach(GameEvent e in curFrame)
+                {
+                    
+            if(e.Time>MostRenderedTime)
+            {
+                mostRenderedTime = e.Time;
+            }
+                    if (e.Time < Time)
+                    {
+                        if (e.State == GameEventState.Unprocessed || e.State == GameEventState.Rewound)
+                            e.Do(g);
+                    }
+                    events.Add(e);
+                }
+                curFrame.Clear();
                 if (Utils.IsZero(value - time))
                     return;
                 double oldTime = time;
@@ -132,7 +150,8 @@ namespace BulletHell.GameLib.EventLib
             }
         }
 
-        public double MostRenderedTime {
+        public double MostRenderedTime
+        {
             get
             {
                 return mostRenderedTime;

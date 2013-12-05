@@ -346,20 +346,74 @@ namespace BulletHell
 
         private void OnEndKeyLeftRight(KeyManager km, Keys key)
         {
-            game.Character.XComp = ComputeXVel();
+            if (game.CurrentTimeRate > 0)
+            {
+                game.Events.Add(new GameEvent(game.CurrentTime,
+                    (g,state) => {
+                        if(state == GameEventState.Unprocessed)
+                            game.Character.XComp = ComputeXVel();
+                    },
+                    GameEvent.DoNothing,
+                    (g,state) => {
+
+                    }
+                    ));
+            }
         }
 
         private void OnEndKeyUpDown(KeyManager km, Keys key)
         {
-            game.Character.YComp = ComputeYVel();
+            if (game.CurrentTimeRate > 0)
+            {
+                game.Events.Add(new GameEvent(game.CurrentTime,
+                    (g, state) =>
+                    {
+                        if (state == GameEventState.Unprocessed)
+                            game.Character.YComp = ComputeYVel();
+                    },
+                    GameEvent.DoNothing,
+                    (g, state) =>
+                    {
+
+                    }
+                    ));
+            }
         }
         private void OnKeyUpDown(KeyManager km, Keys key, bool repeat)
         {
-            game.Character.YComp = ComputeYVel();
+            if (game.CurrentTimeRate > 0)
+            {
+                game.Events.Add(new GameEvent(game.CurrentTime,
+                    (g, state) =>
+                    {
+                        if (state == GameEventState.Unprocessed)
+                            game.Character.YComp = ComputeYVel();
+                    },
+                    GameEvent.DoNothing,
+                    (g, state) =>
+                    {
+
+                    }
+                    ));
+            }
         }
         private void OnKeyLeftRight(KeyManager km, Keys key, bool repeat)
         {
-            game.Character.XComp = ComputeXVel();
+            if (game.CurrentTimeRate > 0)
+            {
+                game.Events.Add(new GameEvent(game.CurrentTime,
+                    (g, state) =>
+                    {
+                        if (state == GameEventState.Unprocessed)
+                            game.Character.XComp = ComputeXVel();
+                    },
+                    GameEvent.DoNothing,
+                    (g, state) =>
+                    {
+
+                    }
+                    ));
+            }
         }
         private void OnKeyF(KeyManager km, Keys key, bool repeat)
         {

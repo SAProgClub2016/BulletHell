@@ -15,7 +15,8 @@ namespace BulletHell.GameLib.EventLib
         private GameEventRunner doer, rewind, undo;
 
 
-        public GameEventRunner DoNothing
+
+        public static GameEventRunner DoNothing
         {
             get
             {
