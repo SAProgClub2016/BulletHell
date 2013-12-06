@@ -100,7 +100,7 @@ namespace BulletHell.GameLib.EntityLib
                 );
 
             BulletPattern pat = new BulletPattern(new EntityClass("MainCharBullet", "Bullet"), em);
-            Emitter = new BulletEmitter(pat);
+            Emitter = new BulletEmitter(-1,pat);
             Time = 0;
         }
     }

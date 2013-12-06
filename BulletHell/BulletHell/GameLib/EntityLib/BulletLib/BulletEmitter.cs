@@ -6,6 +6,7 @@ using BulletHell;
 using BulletHell.Physics;
 using BulletHell.MathLib;
 using BulletHell.Collections;
+using BulletHell.GameLib.EventLib;
 
 namespace BulletHell.GameLib.EntityLib.BulletLib
 {
@@ -53,8 +54,10 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
             }
         }
 
-        public LinkedList<Bullet> BulletsBetween(Particle p, double t1, double t2)
+        public LinkedList<Bullet> BulletsBetween(Particle p, double t1, double t2, double offset=0)
         {
+            t1 += offset;
+            t2 += offset;
             //Console.WriteLine("{0},{1}",t1,t2);
             LinkedList<Bullet> ans = new LinkedList<Bullet>();
             double m = Math.Floor(t1 / cycleTime);
@@ -74,7 +77,7 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
             //Console.WriteLine(k);
             if (index != 0 && k - this[index - 1].Cooldown - t1 > 0.001 && k - this[index - 1].Cooldown - t2 < 0.001)
             {
-                double t = k - this[index - 1].Cooldown;
+                double t = k - this[index - 1].Cooldown-offset;
                 Vector<double> x = p.Position(t); 
                 BulletEmission em = this[index - 1];
                 foreach (Trajectory j in em.BulletPaths)
@@ -90,11 +93,12 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
                 k += b.Warmup;
                 if (k < t2)
                 {
-                    Vector<double> x = p.Position(k);
+                    double t = k - offset;
+                    Vector<double> x = p.Position(t);
                     foreach (Trajectory j in b.BulletPaths)
                     {
                         //Console.WriteLine(k);
-                        ans.AddLast(b.bSty(k,j(k,x[0],x[1]),pc));
+                        ans.AddLast(b.bSty(t,j(t,x[0],x[1]),pc));
                     }
                 }
                 k += b.Cooldown;
@@ -127,6 +131,8 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
         {
             return t + delta;
         }
+
+        public double GetRelativeOffset { get { return delta; } }
     }
     public class BulletEmitter
     {
@@ -148,7 +154,26 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
             changes.Add(curState);
         }
 
-
+        public GameEvent ChangePattern(double time, int pat, double offset=0)
+        {
+            EmitterState es=null;
+            return new GameEvent(time,
+                (g, st) => {
+                    if(st==GameEventState.Unprocessed)
+                    {
+                        es=new EmitterState(pat, time, offset);
+                        changes.Add(es);
+                    }
+                },
+                GameEvent.DoNothing,
+                (g, st) => {
+                    if(st!=GameEventState.Unprocessed)
+                    {
+                        if (es != null)
+                            changes.Remove(es);
+                    }
+                });
+        }
 
         public LinkedList<Bullet> BulletsBetween(Particle pos, double t1, double t2)
         {
@@ -162,14 +187,14 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
                     last=next;
                     continue;
                 }
-                foreach(Bullet bull in myPats[last.CurrentPattern].BulletsBetween(pos,last.GetRelativeTime(Math.Max(t1,last.StartTime)),last.GetRelativeTime(next.StartTime)))
+                foreach(Bullet bull in myPats[last.CurrentPattern].BulletsBetween(pos,Math.Max(t1,last.StartTime),next.StartTime,last.GetRelativeOffset))
                 {
                     ans.AddLast(bull);
                 }
             }
             if (last.CurrentPattern >= 0)
             {
-                foreach (Bullet bull in myPats[last.CurrentPattern].BulletsBetween(pos, last.GetRelativeTime(Math.Max(t1, last.StartTime)), last.GetRelativeTime(t2)))
+                foreach (Bullet bull in myPats[last.CurrentPattern].BulletsBetween(pos, Math.Max(t1, last.StartTime), t2, last.GetRelativeOffset))
                 {
                     ans.AddLast(bull);
                 }

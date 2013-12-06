@@ -54,11 +54,9 @@ namespace BulletHell.Collections
 
         public bool Remove(T t)
         {
-            bool ans = Remove(evaluator(t), t);
-            if (ans) count--;
-            return ans;
+            return Remove(evaluator(t), t);
         }
-        private bool Remove(double d, T t)
+        private bool RemoveHelper(double d, T t)
         {
             if (layers == 0)
                 return vals.Remove(t);
@@ -83,6 +81,12 @@ namespace BulletHell.Collections
                 }
                 return node.Value.Remove(d, t);
             }
+        }
+        private bool Remove(double d, T t)
+        {
+            bool ans = RemoveHelper(d, t);
+            if (ans) count--;
+            return ans;
         }
 
         public void Add(T t)
@@ -518,7 +522,7 @@ namespace BulletHell.Collections
     {
         public static void Main()
         {
-            LayeredLinkedList<double> lll = new LayeredLinkedList<double>(0, Utils.Identity<double>);//,1000,100,10,1);
+            LayeredLinkedList<int> lll = new LayeredLinkedList<int>(0, x=>(double)x,1000,100,10,1);
 
             BulletHell.Time.Timer time = new BulletHell.Time.Timer();
             Random r = new Random();
@@ -530,8 +534,13 @@ namespace BulletHell.Collections
             long trillion = million * million;
             for (long i = 0; i < 20 * thous; i++)
             {
-                lll.Add(1000 * r.NextDouble());
+                int j = r.Next(10);
+                lll.Add(j);
+                lll.Remove(j);
+                //lll.Remove(r.Next(10));
+                //lll.Add(1000 * r.NextDouble());
             }
+            Console.WriteLine(lll.Count());
             Console.WriteLine(time.Time);
             //lll.Write();
             Console.WriteLine("-------------------------------------------------");

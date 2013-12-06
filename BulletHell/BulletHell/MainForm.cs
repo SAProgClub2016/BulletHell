@@ -267,6 +267,18 @@ namespace BulletHell
             keyMan.Repeat[Keys.Add] = 10;
             keyMan.OnPress[Keys.Subtract] = this.OnKeyMinus;
             keyMan.Repeat[Keys.Subtract] = 10;
+            keyMan.OnPress[Keys.Z] = this.OnFireKey;
+            keyMan.OnRelease[Keys.Z] = this.OnRelFireKey;
+        }
+
+        private void OnFireKey(KeyManager km, Keys key, bool repeat = false)
+        {
+            game.Events.Add(game.Character.Emitter.ChangePattern(game.CurrentTime, 0));
+        }
+
+        private void OnRelFireKey(KeyManager km, Keys key)
+        {
+            game.Events.Add(game.Character.Emitter.ChangePattern(game.CurrentTime, -1));
         }
 
         BulletHell.Time.Timer timer, frameTimer, eventTimer;

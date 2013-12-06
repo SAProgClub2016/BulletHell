@@ -10,8 +10,11 @@ Plans
 -Debug weird bullet rings. (again) - Done 4 December 2013
 -Complex BulletEmitters - Done 5 December 2013
 -User needs to be able to fire bullets - Done 5 December 2013
--User should be able to control when firing of bullets occurs
-  -BulletEmitter will need PatternChange events, not super difficult
+-User should be able to control when firing of bullets occurs - Done 5 December 2013
+  -BulletEmitter will need Pattern change events - Done 5 December 2013
+-------------------------------------------------------------------------------------
+With this I'd say the basic engine is more or less done.
+-------------------------------------------------------------------------------------
 -More complex Trajectories. - not exactly a checkbox
 -Complicated Entity lifetimes/paths
 -Levels
