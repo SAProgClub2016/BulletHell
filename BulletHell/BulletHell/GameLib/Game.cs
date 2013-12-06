@@ -111,9 +111,13 @@ namespace BulletHell.GameLib
                 //Console.WriteLine("Q {0}, {1}",curTimeRate);
             }
         }
+
+
         public void ResetTime()
         {
             gameTimer.Reset();
+            timeRateFunc = new PolyFunc<double, double>(curTimeRate);
+            timeFunc = timeRateFunc.FI;
         }
         public double Time
         {
@@ -127,6 +131,7 @@ namespace BulletHell.GameLib
                 if (t < rewindLimit)
                 {
                     CurrentTimeRate = 0;
+                    ResetTime();
                 }
                 foreach (Entity e in Entities)
                 {
