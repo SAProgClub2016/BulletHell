@@ -131,7 +131,7 @@ namespace BulletHell.GameLib
                 if (t < rewindLimit)
                 {
                     CurrentTimeRate = 0;
-                    ResetTime();
+                    ResetTime(); // this is a bug if rewindLimit is not zero. Hacky. Fix.
                 }
                 foreach (Entity e in Entities)
                 {

@@ -4,9 +4,9 @@
 
 Plans
 
--Debug ring of bullets. - Done 3 December 2013
+-Debug ring of bullets - Done 3 December 2013
 -Turn keypresses into GameEvents - Done 4 December 2013
--Actually use the rewinding vs. undo feature - Done 4 December 2013
+-Actually use the rewinding vs undo feature - Done 4 December 2013
 -Debug weird bullet rings. (again) - Done 4 December 2013
 -Complex BulletEmitters - Done 5 December 2013
 -User needs to be able to fire bullets - Done 5 December 2013
@@ -15,7 +15,8 @@ Plans
 -------------------------------------------------------------------------------------
 With this I'd say the basic engine is more or less done.
 -------------------------------------------------------------------------------------
--More complex Trajectories. - not exactly a checkbox
+-Fix rewind hack
+-More complex Trajectories - not exactly a checkbox
 -Complicated Entity lifetimes/paths
 -Levels
 -Read entities/levels in from files
