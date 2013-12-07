@@ -73,6 +73,7 @@
     <Compile Include="GameLib\EntityLib\BulletLib\Bullet.cs" />
     <Compile Include="GameLib\EntityLib\BulletLib\BulletEmitter.cs" />
     <Compile Include="GameLib\EntityLib\BulletLib\BulletStyle.cs" />
+    <Compile Include="GameLib\EntityLib\Enemy.cs" />
     <Compile Include="GameLib\EntityLib\EntityClass.cs" />
     <Compile Include="GameLib\EntityLib\EntitySpawner.cs" />
     <Compile Include="GameLib\EventLib\GameEvent.cs" />

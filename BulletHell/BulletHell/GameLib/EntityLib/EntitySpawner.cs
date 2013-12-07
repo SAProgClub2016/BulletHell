@@ -10,6 +10,8 @@ using BulletHell.Gfx;
 
 namespace BulletHell.GameLib.EntityLib
 {
+    public delegate Entity EntityBuilder(double ctime, Particle pos, Drawable dr, PhysicsShape ps, EntityClass ec, BulletEmitter e=null, GraphicsStyle g=null);
+
     public class EntityType
     {
         Trajectory traj;
@@ -18,6 +20,7 @@ namespace BulletHell.GameLib.EntityLib
         EntityClass myClass;
         Drawable draw;
         GraphicsStyle gs;
+        EntityBuilder builder;
 
         public Trajectory Trajectory
         {
@@ -49,8 +52,15 @@ namespace BulletHell.GameLib.EntityLib
             get { return gs; }
             set { gs = value; }
         }
+        public EntityBuilder Builder
+        {
+            get { return builder; }
+            set { builder = value; }
+        }
 
-        public EntityType(Trajectory t, Drawable draw, PhysicsShape physS, EntityClass pc, BulletEmitter e = null, GraphicsStyle g = null)
+        public static readonly EntityBuilder DefaultEntityBuilder = (t, p, d, s, c, e, g) => { return new Entity(t, p, d, s, c, e, g); };
+
+        public EntityType(Trajectory t, Drawable draw, PhysicsShape physS, EntityClass pc, BulletEmitter e = null, GraphicsStyle g = null,EntityBuilder b = null)
         {
             traj = t;
             this.draw = draw;
@@ -58,9 +68,10 @@ namespace BulletHell.GameLib.EntityLib
             this.myClass = pc;
             emitter=e;
             gs=g;
+            builder = b??DefaultEntityBuilder;
         }
-        public EntityType(Trajectory t, PhysicsShape physS, GraphicsStyle g, EntityClass pc, BulletEmitter e = null)
-            : this(t, physS.MakeDrawable(g), physS, pc, e, g)
+        public EntityType(Trajectory t, PhysicsShape physS, GraphicsStyle g, EntityClass pc, BulletEmitter e = null, EntityBuilder b =null)
+            : this(t, physS.MakeDrawable(g), physS, pc, e, g,b)
         {
         }
         public EntityType(EntityType orig)
@@ -70,12 +81,12 @@ namespace BulletHell.GameLib.EntityLib
 
         public Entity MakeEntity(double time, double x, double y)
         {
-            return new Entity(time,traj(time,x,y),draw,bounds,myClass,emitter,gs);
+            return builder(time,traj(time,x,y),draw,bounds,myClass,emitter,gs);
         }
 
         public Entity MakeEntity(double t, Particle pos)
         {
-            return new Entity(t, pos, draw,bounds, myClass,emitter,gs);
+            return builder(t, pos, draw,bounds, myClass,emitter,gs);
         }
 
         public EntityType ChangeEmitter(BulletEmitter e, bool clone = false)
@@ -118,6 +129,13 @@ namespace BulletHell.GameLib.EntityLib
             EntityType ans = this;
             if (clone) ans = new EntityType(this);
             ans.DrawStyle = sty;
+            return ans;
+        }
+        public EntityType ChangeEntityBuilder(EntityBuilder builder, bool clone = false)
+        {
+            EntityType ans = this;
+            if (clone) ans = new EntityType(this);
+            ans.Builder = builder;
             return ans;
         }
     }

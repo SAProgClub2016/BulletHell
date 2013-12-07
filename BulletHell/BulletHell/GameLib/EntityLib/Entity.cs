@@ -23,6 +23,8 @@ namespace BulletHell.GameLib.EntityLib
         public readonly double CreationTime;
         private double iTime=-1,dTime=-1;
 
+        //private Dictionary<Id,>
+
         private GameEvent creation, invisibility, destruction;
 
         private EntityClass pc;
