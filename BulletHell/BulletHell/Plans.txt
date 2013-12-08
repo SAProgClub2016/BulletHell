@@ -15,6 +15,8 @@ Plans
 -------------------------------------------------------------------------------------
 With this I'd say the basic engine is more or less done.
 -------------------------------------------------------------------------------------
+-Give enemies health/bullets damage - Done 7 December 2013
+-Integrate bullet generation into EntitySpawner framework
 -Fix rewind hack
 -More complex Trajectories - not exactly a checkbox
 -Complicated Entity lifetimes/paths

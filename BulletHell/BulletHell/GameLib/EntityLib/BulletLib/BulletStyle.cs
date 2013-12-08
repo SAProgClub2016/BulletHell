@@ -19,11 +19,11 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
             savedStyles = new Dictionary<string, BulletStyle>();
         }
 
-        public BulletStyle MakeStyle(string s, PhysicsShape p, GraphicsStyle sty, double damage = Bullet.DefaultDamage)
+        public BulletStyle MakeStyle(string s, PhysicsShape p, GraphicsStyle sty, int damage = Bullet.DefaultDamage)
         {
             BulletStyle ans = (t, path, pc) =>
                 {
-                    return new Bullet(t, path, p.MakeDrawable(sty), p, pc, null);
+                    return new Bullet(t, path, p.MakeDrawable(sty), p, pc, null,null,damage);
                 };
             savedStyles[s] = ans;
             return ans;
