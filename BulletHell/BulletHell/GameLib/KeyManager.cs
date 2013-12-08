@@ -57,9 +57,9 @@ namespace BulletHell.GameLib
 
     public class KeyManager
     {
-        public static readonly int NUMKEYS = 256;
-        public static readonly int NO_REPEAT = -1;
-        public static readonly int DEFAULT_REPEAT = 0;
+        public const int NUMKEYS = 256;
+        public const int NO_REPEAT = -1;
+        public const int DEFAULT_REPEAT = 0;
         private bool[] keyPressed;
         private int[] repeats;
         private Timer[] timers;

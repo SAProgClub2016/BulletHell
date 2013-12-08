@@ -75,7 +75,7 @@ namespace BulletHell.GameLib.EntityLib
         {
         }
         public EntityType(EntityType orig)
-            : this(orig.traj,orig.draw, orig.bounds, orig.myClass, orig.emitter, orig.gs)
+            : this(orig.traj,orig.draw, orig.bounds, orig.myClass, orig.emitter, orig.gs,orig.builder)
         {
         }
 
@@ -168,9 +168,9 @@ namespace BulletHell.GameLib.EntityLib
             return type.MakeEntity(cTime, p);
         }
 
-        public void MakeType(string name, Trajectory t, Drawable draw, PhysicsShape physS, EntityClass pc, BulletEmitter e = null, GraphicsStyle g = null)
+        public void MakeType(string name, Trajectory t, Drawable draw, PhysicsShape physS, EntityClass pc, BulletEmitter e = null, GraphicsStyle g = null, EntityBuilder b = null)
         {
-            this[name] = new EntityType(t, draw, physS, pc, e, g);
+            this[name] = new EntityType(t, draw, physS, pc, e, g, b);
         }
 
         public EntityType this[string name]

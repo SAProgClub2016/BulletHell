@@ -27,11 +27,11 @@ namespace BulletHell
             Console.WriteLine("{0}: {1}",name,TimeProcess(p));
         }
 
-        public static readonly int NUMTRIG = 2048;
+        public const int NUMTRIG = 2048;
         public static double[] Cosines,Sines;
-        public static readonly double TWOPI = 2*Math.PI;
-        public static readonly double CONVERSION = NUMTRIG/TWOPI;
-        public static readonly double TOLERANCE = 0.000001;
+        public const double TWOPI = 2*Math.PI;
+        public const double CONVERSION = NUMTRIG/TWOPI;
+        public const double TOLERANCE = 0.000001;
 
         static Utils()
         {

@@ -23,8 +23,6 @@ namespace BulletHell.GameLib.EntityLib
         public readonly double CreationTime;
         private double iTime=-1,dTime=-1;
 
-        //private Dictionary<Id,>
-
         private GameEvent creation, invisibility, destruction;
 
         private EntityClass pc;
@@ -65,7 +63,7 @@ namespace BulletHell.GameLib.EntityLib
             }
         }
 
-        private readonly double MIN_LIFE=0.01;
+        private const double MIN_LIFE=0.01;
 
         public double InvisibilityTime
         {
@@ -250,6 +248,12 @@ namespace BulletHell.GameLib.EntityLib
                     throw new InvalidOperationException();
                 return invisibility;
             }
+        }
+
+        public GameEvent Destroy (double t)
+        {
+            DestructionTime = t;
+            return Destruction;
         }
 
         public IEnumerable<GameEvent> LifetimeEvents

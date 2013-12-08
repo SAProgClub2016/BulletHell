@@ -10,7 +10,7 @@ namespace BulletHell.GameLib.EventLib
     public class GameEventManager
     {
         private double time;
-        private static readonly double TOLERANCE = 0.1;
+        private const double TOLERANCE = 0.1;
         private Game g;
         private LayeredLinkedList<GameEvent> events;
         private bool rewinding;

@@ -130,7 +130,7 @@ namespace BulletHell
             BulletEmitter em2 = new BulletEmitter(new BulletPattern(bEms2,enemyBullet));
             BulletEmitter em3 = new BulletEmitter(new BulletPattern(bEms3,enemyBullet));
 
-            entSpawn.MakeType("RedSpiral", null, o1, entEl, enemy, em);
+            entSpawn.MakeType("RedSpiral", null, o1, entEl, enemy, em,null,Enemy.MakeEnemy());
 
             e = entSpawn.Build("RedSpiral", 0, p1);
             e2 = entSpawn.Build("RedSpiral", 0, p2);
@@ -174,9 +174,11 @@ namespace BulletHell
 
         private GameEvent EnemyHit(Entity e1, Entity e2)
         {
-            e1.DestructionTime = game.CurrentTime;
-            e2.DestructionTime = game.CurrentTime;
-            return e1.Destruction > e2.Destruction;
+            Enemy e = (e1 as Enemy) ?? (e2 as Enemy);
+            Bullet b = (e1 as Bullet) ?? (e2 as Bullet);
+            e.Health -= b.Damage;
+            b.DestructionTime = game.CurrentTime;
+            return (e.Health<=0 ? (e.Destroy(game.CurrentTime) > b.Destruction) : b.Destruction);
         }
 
         private void InitializeRenderManager(RenderManager rman)
@@ -273,12 +275,14 @@ namespace BulletHell
 
         private void OnFireKey(KeyManager km, Keys key, bool repeat = false)
         {
-            game.Events.Add(game.Character.Emitter.ChangePattern(game.CurrentTime, 0));
+            if (game.CurrentTimeRate > Utils.TOLERANCE)
+                game.Events.Add(game.Character.Emitter.ChangePattern(game.CurrentTime, 0));
         }
 
         private void OnRelFireKey(KeyManager km, Keys key)
         {
-            game.Events.Add(game.Character.Emitter.ChangePattern(game.CurrentTime, -1));
+            if (game.CurrentTimeRate > Utils.TOLERANCE)
+                game.Events.Add(game.Character.Emitter.ChangePattern(game.CurrentTime, -1));
         }
 
         BulletHell.Time.Timer timer, frameTimer, eventTimer;
@@ -303,7 +307,7 @@ namespace BulletHell
             if (buff != null)
             {
                 Graphics g = buff.Graphics;
-                g.FillRectangle(Brushes.Black, this.ClientRectangle);
+                //g.FillRectangle(Brushes.Black, this.ClientRectangle);
                 game.Draw(g);
                 if (DisplayFrameRate)
                 {
@@ -338,14 +342,14 @@ namespace BulletHell
             if (game.Time >= game.MostRenderedTime)
             {
                 game.PhysicsManager.Collisions();
-                List<Entity> newBullets = new List<Entity>();
+                LinkedList<Entity> newBullets = new LinkedList<Entity>();
                 foreach (Entity o in game.BulletShooters)
                 {
                     if (o.Emitter == null)
                         continue;
                     foreach (Bullet b in o.Emitter.BulletsBetween(o.Position, oldTime, time))
                     {
-                        newBullets.Add(b);
+                        newBullets.AddLast(b);
                     }
                 }
                 foreach (Entity o in newBullets)
