@@ -225,7 +225,7 @@ namespace BulletHell.GameLib.EntityLib
                 this.Time = CreationTime;
         }
         public Entity(double cTime, Particle pos, PhysicsShape physS, GraphicsStyle g, EntityClass pc, BulletEmitter e = null)
-            : this(cTime, pos, physS.MakeDrawable(g), physS, pc, e, g)
+            : this(cTime, pos, physS.MakeDrawable(g), physS, pc, e, null)
         {
         }
 

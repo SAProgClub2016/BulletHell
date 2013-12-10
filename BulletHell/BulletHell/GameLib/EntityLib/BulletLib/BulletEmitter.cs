@@ -15,19 +15,26 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
         public double Warmup;
         public double Cooldown;
         public Trajectory[] BulletPaths;
-        public BulletStyle bSty;
+        public EntityType EntType;
 
-        public BulletEmission(double w, double c, BulletStyle sty, params Trajectory[] trajs)
-            : this(w,c,trajs,sty)
+        public BulletEmission(double w, double c, EntityType eType, params Trajectory[] trajs)
+            : this(w,c,trajs, eType)
         {
         }
 
-        public BulletEmission(double w, double c, Trajectory[] bulletTrajectory, BulletStyle sty)
+        public BulletEmission(double w, double c, Trajectory[] bulletTrajectory, EntityType eType)
         {
             this.Warmup = w;
             this.Cooldown = c;
             this.BulletPaths = bulletTrajectory;
-            this.bSty = sty;
+            this.EntType = eType;
+        }
+        public IEnumerable<Entity> MakeBullets(double t, double x, double y)
+        {
+            foreach(Trajectory j in BulletPaths)
+            {
+                yield return EntType.MakeEntity(t, j(t, x, y));
+            }
         }
     }
     public class BulletPattern
@@ -35,17 +42,9 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
 
         BulletEmission[] pattern;
         double cycleTime;
-        EntityClass pc;
 
-
-        public BulletPattern(EntityClass cls, params BulletEmission[] emissions)
-            : this(emissions,cls)
+        public BulletPattern(params BulletEmission[] ps)
         {
-        }
-        
-        public BulletPattern(BulletEmission[] ps, EntityClass bulletClass)
-        {
-            pc = bulletClass;
             pattern = ps;
             cycleTime = 0;
             foreach(BulletEmission b in pattern)
@@ -54,12 +53,12 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
             }
         }
 
-        public LinkedList<Bullet> BulletsBetween(Particle p, double t1, double t2, double offset=0)
+        public LinkedList<Entity> BulletsBetween(Particle p, double t1, double t2, double offset=0)
         {
             t1 += offset;
             t2 += offset;
             //Console.WriteLine("{0},{1}",t1,t2);
-            LinkedList<Bullet> ans = new LinkedList<Bullet>();
+            LinkedList<Entity> ans = new LinkedList<Entity>();
             double m = Math.Floor(t1 / cycleTime);
             //Console.WriteLine(m);
             //Console.WriteLine(cycleTime);
@@ -80,9 +79,9 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
                 double t = k - this[index - 1].Cooldown-offset;
                 Vector<double> x = p.Position(t); 
                 BulletEmission em = this[index - 1];
-                foreach (Trajectory j in em.BulletPaths)
+                foreach (Entity e in em.MakeBullets(t,x[0],x[1]))
                 {
-                    ans.AddLast(em.bSty(t,j(t,x[0],x[1]),pc));
+                    ans.AddLast(e);
                     //Console.WriteLine(k - this[index - 1].Cooldown);
                 }
             }
@@ -95,10 +94,10 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
                 {
                     double t = k - offset;
                     Vector<double> x = p.Position(t);
-                    foreach (Trajectory j in b.BulletPaths)
+                    foreach (Entity e in b.MakeBullets(t,x[0],x[1]))
                     {
                         //Console.WriteLine(k);
-                        ans.AddLast(b.bSty(t,j(t,x[0],x[1]),pc));
+                        ans.AddLast(e);
                     }
                 }
                 k += b.Cooldown;

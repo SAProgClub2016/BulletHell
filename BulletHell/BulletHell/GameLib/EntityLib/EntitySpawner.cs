@@ -71,7 +71,7 @@ namespace BulletHell.GameLib.EntityLib
             builder = b??DefaultEntityBuilder;
         }
         public EntityType(Trajectory t, PhysicsShape physS, GraphicsStyle g, EntityClass pc, BulletEmitter e = null, EntityBuilder b =null)
-            : this(t, physS.MakeDrawable(g), physS, pc, e, g,b)
+            : this(t, physS.MakeDrawable(g), physS, pc, e, null, b)
         {
         }
         public EntityType(EntityType orig)
@@ -86,7 +86,7 @@ namespace BulletHell.GameLib.EntityLib
 
         public Entity MakeEntity(double t, Particle pos)
         {
-            return builder(t, pos, draw,bounds, myClass,emitter,gs);
+            return builder(t, pos, draw, bounds, myClass, emitter, gs);
         }
 
         public EntityType ChangeEmitter(BulletEmitter e, bool clone = false)
@@ -109,6 +109,11 @@ namespace BulletHell.GameLib.EntityLib
             if (clone) ans = new EntityType(this);
             ans.Draw = ndraw;
             return ans;
+        }
+        public EntityType ChangeDrawPhysShape(GraphicsStyle s, bool clone = false, PhysicsShape p = null)
+        {
+            p = p ?? this.Shape;
+            return ChangeDraw(p.MakeDrawable(s), clone);
         }
         public EntityType ChangeShape(PhysicsShape sh, bool clone = false)
         {

@@ -29,8 +29,6 @@ namespace BulletHell
 
         Entity bg;
 
-        BulletStyleManager bsm;
-
         BufferedGraphics buff;
         Game game;
         bool DisplayFrameRate = true, DisplayTime = true;
@@ -54,8 +52,6 @@ namespace BulletHell
 
             bg = new Entity(0, boxC, bgbox, new GraphicsStyle(Brushes.Black), bgClass);
 
-            bsm = new BulletStyleManager();
-            InitializeBulletStyles();
 
             keyMan = new KeyManager();
 
@@ -63,10 +59,11 @@ namespace BulletHell
 
             int vx = 1, vx2 = 2;
             int vy = 2, vy2 = 4;
+            InitializeBulletEntities(entSpawn);
 
             Drawable mchar = DrawableFactory.MakeCircle(8, new GraphicsStyle(Brushes.Orange, Pens.Red));
 
-            game = new Game(new MainChar(mchar,bsm["MainChar"],ClientRectangle.Width/2,ClientRectangle.Height-20,40));
+            game = new Game(new MainChar(mchar,entSpawn["MainCharBullet"],ClientRectangle.Width/2,ClientRectangle.Height-20,40));
             InitializePhysicsManager(game.PhysicsManager);
             InitializeRenderManager(game.RenderManager);
 
@@ -96,7 +93,7 @@ namespace BulletHell
                 }
             }
             for (int i = 0; i < offsets; i++)
-                bEms[i] = new BulletEmission(cd, 0, arrs[i],bsm["OrangeRed_5"]);
+                bEms[i] = new BulletEmission(cd, 0, arrs[i],entSpawn["OrangeRed_5"]);
             // Same as above, but we're gonna change the shape
             for (int i = 0; i < offsets; i++)
                 arrs[i] = new Trajectory[perCirc];
@@ -108,7 +105,7 @@ namespace BulletHell
                 }
             }
             for (int i = 0; i < offsets; i++)
-                bEms2[i] = new BulletEmission(cd, 0, arrs[i],bsm["Azure_5"]);
+                bEms2[i] = new BulletEmission(cd, 0, arrs[i],entSpawn["Azure_5"]);
             // Same as above, but we're gonna change the shape again and the path
             BulletEmission[] bEms3 = new BulletEmission[offsets];
             for (int i = 0; i < offsets; i++)
@@ -121,14 +118,14 @@ namespace BulletHell
                 }
             }
             for (int i = 0; i < offsets; i++)
-                bEms3[i] = new BulletEmission(cd, 0, arrs[i], bsm["HotPink_5"]);
+                bEms3[i] = new BulletEmission(cd, 0, arrs[i], entSpawn["HotPink_5"]);
 
             EntityClass enemyBullet = new EntityClass("EnemyBullet","Bullet");
             EntityClass enemy = new EntityClass("Enemy","Character");
 
-            BulletEmitter em = new BulletEmitter(new BulletPattern(bEms,enemyBullet));
-            BulletEmitter em2 = new BulletEmitter(new BulletPattern(bEms2,enemyBullet));
-            BulletEmitter em3 = new BulletEmitter(new BulletPattern(bEms3,enemyBullet));
+            BulletEmitter em = new BulletEmitter(new BulletPattern(bEms));
+            BulletEmitter em2 = new BulletEmitter(new BulletPattern(bEms2));
+            BulletEmitter em3 = new BulletEmitter(new BulletPattern(bEms3));
 
             entSpawn.MakeType("RedSpiral", null, o1, entEl, enemy, em,null,Enemy.MakeEnemy());
 
@@ -238,14 +235,15 @@ namespace BulletHell
             return hitEvent > bullet.Destruction;
         }
 
-        private void InitializeBulletStyles()
+        private void InitializeBulletEntities(EntitySpawner spawner)
         {
             Ellipse bulletEl = new Ellipse(5);
+            EntityType bulletType = new EntityType(null,bulletEl,new GraphicsStyle(Brushes.OrangeRed),new EntityClass("EnemyBullet","Bullet"),null,Bullet.MakeBullet(20));
 
-            bsm.MakeStyle("OrangeRed_5", bulletEl, new GraphicsStyle(Brushes.OrangeRed));
-            bsm.MakeStyle("Azure_5", bulletEl, new GraphicsStyle(Brushes.Azure));
-            bsm.MakeStyle("HotPink_5", bulletEl, new GraphicsStyle(Brushes.HotPink));
-            bsm.MakeStyle("MainChar", bulletEl, new GraphicsStyle(Brushes.Violet));
+            spawner["OrangeRed_5"] = bulletType;
+            spawner["Azure_5"] = bulletType.ChangeDrawPhysShape(new GraphicsStyle(Brushes.Azure),true);
+            spawner["HotPink_5"] = bulletType.ChangeDrawPhysShape(new GraphicsStyle(Brushes.HotPink),true);
+            spawner["MainCharBullet"] = bulletType.ChangeDrawPhysShape(new GraphicsStyle(Brushes.Violet), true).ChangeClass(new EntityClass("MainCharBullet", "Bullet"));
         }
 
         private void InitializeKeyManager()
