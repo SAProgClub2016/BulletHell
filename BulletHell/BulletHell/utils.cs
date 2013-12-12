@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BulletHell.MathLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -193,6 +194,55 @@ namespace BulletHell
                 ans[i] = f(ts[i]);
             }
             return ans;
+        }
+        public static Pair<double> RandomPairInBox(this Random r, Pair<double> p1, Pair<double> sizes)
+        {
+            return new Pair<double>(sizes.x*r.NextDouble()+p1.x,sizes.y*r.NextDouble()+p1.y);
+        }
+        public static Pair<double> RandomPairOnSegment(this Random r, Pair<double> p1, Pair<double> p2)
+        {
+            double t = r.NextDouble();
+            double s = 1-t;
+            return new Pair<double>(t*p1.x+s*p2.x,t*p1.y+s*p2.y);
+        }
+        public static Pair<double> RandomPairInCircle(this Random r, Pair<double> p1, double ra)
+        {
+            double th = Utils.TWOPI*r.NextDouble();
+            double rad = ra*Math.Sqrt(r.NextDouble());
+
+            return new Pair<double>(p1.x+rad*Utils.FastCos(th),p1.y+rad*Utils.FastSin(th));
+        }
+        public static Vector<double> RandomVectorInBox(this Random r, Vector<double> v1, Vector<double> sizes)
+        {
+            return v1 + sizes.Map<double>(x => r.NextDouble() * x);
+        }
+        public static Vector<double> RandomUnitVector(this Random r, int dimension)
+        {
+            return r.RandomVectorOnNSphere(dimension, 1);
+        }
+        public static Vector<double> RandomVectorOnNSphere(this Random r, int dimension, double rad)
+        {
+            Vector<double> randNorm = Vector<double>.Fill(dimension, r, t => t.NextNormal());
+            double d = rad / randNorm.Length;
+            return d * randNorm;
+        }
+        public static Vector<double> RandomVectorInNSphere(this Random r, int dimension, double rad)
+        {
+            double d = dimension;
+            
+            double rrad = rad * Math.Pow(r.NextDouble(),1/d);
+            return r.RandomVectorOnNSphere(dimension,rrad);
+        }
+        public static Vector<double> RandomVectorInNSphere(this Random r, int dim, double rmin, double rmax)
+        {
+            double rminn = Math.Pow(rmin, dim);
+            double rmaxn = Math.Pow(rmax, dim);
+            double rad = Math.Pow((rmaxn-rminn)*r.NextDouble()+rminn,1/dim);
+            return r.RandomVectorOnNSphere(dim,rad);
+        }
+        public static double NextNormal(this Random r, double mu = 0, double sigma = 1)
+        {
+            return Math.Sqrt(-2 * Math.Log(r.NextDouble())) * Utils.FastCos(Utils.TWOPI * r.NextDouble());
         }
     }
 }

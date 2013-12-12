@@ -41,6 +41,17 @@ namespace BulletHell.MathLib
             : this(o.vec, offset, dim)
         {
         }
+
+        public static Vector<T> Fill<Q>(int dimension, Q q, Func<Q,T> f)
+        {
+            Vector<T> ans = new Vector<T>(dimension);
+            for (int i = 0; i < dimension; i++)
+            {
+                ans[i] = f(q);
+            }
+            return ans;
+        }
+
         public Vector<T> MakeDim(int dim)
         {
             Vector<T> ans = new Vector<T>(dim);
