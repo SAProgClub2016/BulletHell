@@ -76,6 +76,7 @@
     <Compile Include="GameLib\EntityLib\EntityClass.cs" />
     <Compile Include="GameLib\EntityLib\EntitySpawner.cs" />
     <Compile Include="GameLib\EntityLib\LifeCycle.cs" />
+    <Compile Include="GameLib\EntityLib\Pickup.cs" />
     <Compile Include="GameLib\EventLib\GameEvent.cs" />
     <Compile Include="GameLib\EventLib\GameEventManager.cs" />
     <Compile Include="GameLib\LevelLib\Level.cs" />
