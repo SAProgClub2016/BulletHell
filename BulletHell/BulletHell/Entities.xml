@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+entSpawn.MakeType("RedSpiral", null, o1, entEl, enemy, em,null,Enemy.MakeEnemy());
+-->
+<Game>
+  <PhysicsShape name="EnemyEllipse">
+    Ellipse(7)
+  </PhysicsShape>
+
+  <BulletEmitter name ="Spiral">
+    <BulletPattern name ="idk"/>
+  </BulletEmitter>
+
+  <Entity name ="RedSpiral">
+    <Class type="Enemy"/>
+    <Trajectory>null</Trajectory>
+    <Drawable type="shape">
+      <PhysicsShape name="EnemyEllipse"/>
+      <GraphicsStyle>
+        <Brush>
+          Green
+        </Brush>
+      </GraphicsStyle>
+    </Drawable>
+    <PhysicsShape name="EnemyEllipse"/>
+    <EntityClass>
+      <PhysicsClass>Enemy</PhysicsClass>
+      <RenderClass>Character</RenderClass>
+    </EntityClass>
+    <BulletEmitter name="Spiral"/>
+  </Entity>
+</Game>

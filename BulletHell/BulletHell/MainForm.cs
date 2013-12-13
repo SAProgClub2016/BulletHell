@@ -191,7 +191,7 @@ namespace BulletHell
             Bullet b = (e1 as Bullet) ?? (e2 as Bullet);
             e.Health -= b.Damage;
             b.DestructionTime = game.CurrentTime;
-            return (e.Health<=0 ? (e.Destroy(game.CurrentTime) > MakePickups(e) > b.Destruction) : b.Destruction);
+            return ((e.Health<=0 && Utils.IsZero(e.DestructionTime+1)) ? (e.Destroy(game.CurrentTime) > MakePickups(e) > b.Destruction) : b.Destruction);
         }
 
         private IEnumerable<Pickup> GeneratePickups(Enemy e)
