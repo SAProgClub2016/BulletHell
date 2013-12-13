@@ -167,6 +167,14 @@ namespace BulletHell
             pman.AddDisconnectHandler("Enemy", "Background", this.KillOffscreen);
             pman.AddDisconnectHandler("EnemyBullet", "Background", this.KillOffscreen);
             pman.AddDisconnectHandler("MainCharBullet", "Background", this.KillOffscreen);
+            pman.AddCollisionHandler("MainChar", "Pickup", this.PickUp);
+        }
+
+        private GameEvent PickUp(Entity e1, Entity e2)
+        {
+            Pickup p = (e1 as Pickup) ?? (e2 as Pickup);
+            double t = game.CurrentTime;
+            return p.Effect(game, t) > p.Destroy(t);
         }
 
         private GameEvent EnemyHit(Entity e1, Entity e2)
@@ -175,7 +183,20 @@ namespace BulletHell
             Bullet b = (e1 as Bullet) ?? (e2 as Bullet);
             e.Health -= b.Damage;
             b.DestructionTime = game.CurrentTime;
-            return (e.Health<=0 ? (e.Destroy(game.CurrentTime) > b.Destruction) : b.Destruction);
+            return (e.Health<=0 ? (e.Destroy(game.CurrentTime) > MakePickups(e) > b.Destruction) : b.Destruction);
+        }
+
+        private IEnumerable<Pickup> GeneratePickups(Enemy e)
+        {
+            yield break;
+        }
+
+        private GameEvent MakePickups(Enemy e)
+        {
+            GameEvent ans = null;
+            foreach (Pickup en in GeneratePickups(e))
+                ans = ans > en.Creation;
+            return ans;
         }
 
         private void InitializeRenderManager(RenderManager rman)

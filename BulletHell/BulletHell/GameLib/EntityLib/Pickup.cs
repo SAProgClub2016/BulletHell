@@ -56,5 +56,12 @@ namespace BulletHell.GameLib.EntityLib
         {
             effect = eff ?? Effects.NoEffect;
         }
+        public Effect Effect
+        {
+            get
+            {
+                return effect;
+            }
+        }
     }
 }

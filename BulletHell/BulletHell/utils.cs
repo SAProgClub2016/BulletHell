@@ -10,7 +10,7 @@ namespace BulletHell
 {
     public interface Value<T>
     {
-        public T Value { get; set; }
+        T Value { get; set; }
     }
 
     public class PropertyValue<S,T> : Value<T>
@@ -36,8 +36,8 @@ namespace BulletHell
     }
     public class LambdaValue<T> : Value<T>
     {
-        public delegate T Getter<T>();
-        public delegate void Setter<T>(T t);
+        public delegate S Getter<S>();
+        public delegate void Setter<S>(S t);
 
         Getter<T> g; Setter<T> s;
 
@@ -45,7 +45,18 @@ namespace BulletHell
         {
             g = get; s = set;
         }
-
+        public LambdaValue(Func<Nil,T> get, Setter<T> set)
+            : this(()=>get(Nil.N),set)
+        {
+        }
+        public LambdaValue(Getter<T> get, Func<T, Nil> set)
+            : this(get, (t) => { set(t); return; })
+        {
+        }
+        public LambdaValue(Func<Nil,T> get, Func<T,Nil> set)
+            : this(() => get(Nil.N), (t) => { set(t); return; })
+        {
+        }
 
         public T Value
         {
@@ -58,6 +69,11 @@ namespace BulletHell
                 s(value);
             }
         }
+    }
+
+    public struct Nil
+    {
+        public static readonly Nil N = new Nil();
     }
 
     public delegate void Process();
