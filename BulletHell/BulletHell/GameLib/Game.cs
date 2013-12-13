@@ -28,6 +28,18 @@ namespace BulletHell.GameLib
         private PhysicsManager pm;
         private GameEventManager events;
         private Gfx.RenderManager renderman;
+        private Random random;
+
+        public Random Random
+        {
+            get
+            {
+                if (random == null)
+                    random = new Random();
+                return random;
+            }
+            set { random = value; }
+        }
 
         public GameEventManager Events
         {
@@ -143,6 +155,7 @@ namespace BulletHell.GameLib
 
         public Game(MainChar m)
         {
+            random = new Random();
             pm = new PhysicsManager(this);
             renderman = new RenderManager();
             entities = //new AdvancedEntityManager(128,64,32,16,8,4,2,1,0.5);
