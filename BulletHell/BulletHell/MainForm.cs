@@ -60,6 +60,7 @@ namespace BulletHell
             int vx = 1, vx2 = 2;
             int vy = 2, vy2 = 4;
             InitializeBulletEntities(entSpawn);
+            InitializeSimpleEntities(entSpawn);
 
             Drawable mchar = DrawableFactory.MakeCircle(8, new GraphicsStyle(Brushes.Orange, Pens.Red));
 
@@ -160,14 +161,21 @@ namespace BulletHell
             buff = c.Allocate(CreateGraphics(), ClientRectangle);
         }
 
+        private void InitializeSimpleEntities(EntitySpawner entSpawn)
+        {
+            PhysicsShape moneyShape= new Ellipse(6);
+            entSpawn.MakeType("Money", (t, x, y) => TrajectoryFactory.SimpleAcc(new Pair<double>(0, 1), game.Random.RandomPairInBox(new Pair<double>(-5, -10), new Pair<double>(10, 10)))(t,x,y), moneyShape.MakeDrawable(new GraphicsStyle(Brushes.Gold)), moneyShape, new EntityClass("Pickup", "Pickup"), null, null, Pickup.MakePickup());
+        }
+
         private void InitializePhysicsManager(PhysicsManager pman)
         {
             pman.AddCollisionHandler("EnemyBullet", "MainChar", this.CharHit);
             pman.AddCollisionHandler("MainCharBullet", "Enemy", this.EnemyHit);
             pman.AddDisconnectHandler("Enemy", "Background", this.KillOffscreen);
             pman.AddDisconnectHandler("EnemyBullet", "Background", this.KillOffscreen);
+            pman.RegisterClassShape("MainCharWhole", "MainChar", new Ellipse(7));
             pman.AddDisconnectHandler("MainCharBullet", "Background", this.KillOffscreen);
-            pman.AddCollisionHandler("MainChar", "Pickup", this.PickUp);
+            pman.AddCollisionHandler("MainCharWhole", "Pickup", this.PickUp);
         }
 
         private GameEvent PickUp(Entity e1, Entity e2)
@@ -188,7 +196,16 @@ namespace BulletHell
 
         private IEnumerable<Pickup> GeneratePickups(Enemy e)
         {
-            yield break;
+            int val = e.Value;
+            int num = game.Random.Next(5, 8);
+            val /= num;
+            Vector<double> pos = e.Position.CurrentPosition;
+            for (int i = 0; i < num; i++)
+            {
+                Pickup p = entSpawn.Build<Pickup>("Money", e.Time, pos[0], pos[1]);
+                p.Effect = Effects.MakeQuantityChanger(new LambdaValue<int>(() => game.Money, (m) => game.Money = m), t => t + val);
+                yield return p;
+            }
         }
 
         private GameEvent MakePickups(Enemy e)
@@ -205,6 +222,7 @@ namespace BulletHell
             ids.AddLast("Background");
             ids.AddLast("Character");
             ids.AddLast("Bullet");
+            ids.AddLast("Pickup");
             rman.RenderOrder = ids;
         }
 

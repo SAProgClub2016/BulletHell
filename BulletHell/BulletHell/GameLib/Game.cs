@@ -30,6 +30,12 @@ namespace BulletHell.GameLib
         private Gfx.RenderManager renderman;
         private Random random;
 
+        private int moneys=0;
+        private int score=0;
+
+        public int Money { get { return moneys; } set { moneys = value; } }
+        public int Score { get { return score; } set { score = value; } }
+
         public Random Random
         {
             get

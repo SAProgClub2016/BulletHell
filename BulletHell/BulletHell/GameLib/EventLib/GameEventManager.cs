@@ -31,6 +31,8 @@ namespace BulletHell.GameLib.EventLib
 
         public void Add(GameEvent e)
         {
+            if (e == null)
+                return;
             if (e.State == GameEventState.Undone)
                 return;
             if (na1)

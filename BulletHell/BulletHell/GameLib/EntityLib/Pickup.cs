@@ -56,12 +56,11 @@ namespace BulletHell.GameLib.EntityLib
         {
             effect = eff ?? Effects.NoEffect;
         }
-        public Effect Effect
+        public Effect Effect { get { return effect; } set { effect = value; } }
+
+        public static EntityBuilder MakePickup(Effect eff = null)
         {
-            get
-            {
-                return effect;
-            }
+            return (t, p, d, s, c, e, g) => new Pickup(t, p, d, s, c, eff);
         }
     }
 }
