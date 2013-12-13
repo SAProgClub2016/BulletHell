@@ -1,11 +1,11 @@
 ﻿#define USING_EXPRESSIONS
 
+using BulletHell.MathLib.Function;
 using System;
-using System.Net;
-using System.Text;
 using System.Linq;
 using System.Linq.Expressions;
-using BulletHell.MathLib.Function;
+using System.Net;
+using System.Text;
 
 namespace BulletHell.MathLib
 {

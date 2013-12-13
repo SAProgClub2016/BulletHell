@@ -3,10 +3,63 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace BulletHell
 {
+    public interface Value<T>
+    {
+        public T Value { get; set; }
+    }
+
+    public class PropertyValue<S,T> : Value<T>
+    {
+        PropertyInfo prop;
+        S obj;
+        public PropertyValue(S s, string name)
+        {
+            obj = s;
+            prop = typeof(S).GetProperty(name, typeof(T));
+        }
+        public T Value
+        {
+            get
+            {
+                return (T)prop.GetValue(obj, null);
+            }
+            set
+            {
+                prop.SetValue(obj, value, null);
+            }
+        }
+    }
+    public class LambdaValue<T> : Value<T>
+    {
+        public delegate T Getter<T>();
+        public delegate void Setter<T>(T t);
+
+        Getter<T> g; Setter<T> s;
+
+        public LambdaValue(Getter<T> get, Setter<T> set)
+        {
+            g = get; s = set;
+        }
+
+
+        public T Value
+        {
+            get
+            {
+                return g();
+            }
+            set
+            {
+                s(value);
+            }
+        }
+    }
+
     public delegate void Process();
     public class Utils
     {

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using BulletHell.Gfx;
+using BulletHell.MathLib;
+using BulletHell.Physics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BulletHell.Gfx;
-using BulletHell.Physics;
-using BulletHell.MathLib;
 
 namespace BulletHell.GameLib
 {

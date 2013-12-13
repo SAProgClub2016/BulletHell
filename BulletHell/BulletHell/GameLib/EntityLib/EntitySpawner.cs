@@ -1,12 +1,11 @@
-﻿using System;
+﻿using BulletHell.GameLib.EntityLib.BulletLib;
+using BulletHell.Gfx;
+using BulletHell.Physics;
+using BulletHell.Physics.ShapeLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-using BulletHell.GameLib.EntityLib.BulletLib;
-using BulletHell.Physics;
-using BulletHell.Physics.ShapeLib;
-using BulletHell.Gfx;
 
 namespace BulletHell.GameLib.EntityLib
 {

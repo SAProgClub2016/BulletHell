@@ -18,29 +18,33 @@ namespace BulletHell.GameLib.EntityLib
         {
             get { return (g,t) => null; }
         }
-        public static Effect MakeQuantityChanger<T>(ref T val, T newVal)
+        public static Effect MakeQuantityChanger<T>(Value<T> val, T newVal)
         {
-            T oldVal = val;
-            return (g,t) =>
-                {
-                    new GameEvent(t,
-                        (game,state)=>
-                            {
-                                if(state==GameEventState.Undone||state==GameEventState.Rewound)
-                                    val = newVal;
-                            },
-                        (game,state)=>
-                            {
-                                if(state==GameEventState.Processed)
-                                    val = oldVal;
-                            },
-                        
-                        (game,state)=>
-                            {
-                                if(state==GameEventState.Undone||state==GameEventState.Rewound)
-                                    val = newVal;
-                            })
-                };
+            T oldVal = val.Value;
+            return (g, t) =>
+            {
+                return new GameEvent(t,
+                    (game, state) =>
+                    {
+                        if (state == GameEventState.Undone || state == GameEventState.Rewound)
+                            val.Value = newVal;
+                    },
+                    (game, state) =>
+                    {
+                        if (state == GameEventState.Processed)
+                            val.Value = oldVal;
+                    },
+
+                    (game, state) =>
+                    {
+                        if (state == GameEventState.Processed)
+                            val.Value = newVal;
+                    });
+            };
+        }
+        public static Effect MakeQuantityChanger<T>(Value<T> val, Func<T,T> transform)
+        {
+            return MakeQuantityChanger<T>(val, transform(val.Value));
         }
     }
 
@@ -50,6 +54,7 @@ namespace BulletHell.GameLib.EntityLib
         public Pickup(double cTime, Particle pos, Drawable d, PhysicsShape physS, EntityClass pc, Effect eff)
             : base(cTime, pos, d, physS, pc, null, null)
         {
+            effect = eff ?? Effects.NoEffect;
         }
     }
 }
