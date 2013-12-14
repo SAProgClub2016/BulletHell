@@ -15,11 +15,7 @@ namespace BulletHell.GameLib
 
         public Id(string s)
         {
-            if (forw.ContainsKey(s))
-            {
-                id = forw[s];
-            }
-            else
+            if (!forw.TryGetValue(s, out id))
             {
                 id = curid++;
                 forw[s] = id;
