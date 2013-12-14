@@ -118,6 +118,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Timer.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="XMLLib\XMLEntityTypeParser.cs" />
+    <Compile Include="XMLLib\XMLGraphicsStyleParser.cs" />
     <Compile Include="XMLLib\XMLParser.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
