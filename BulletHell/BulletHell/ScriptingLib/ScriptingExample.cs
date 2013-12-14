@@ -1,4 +1,6 @@
-﻿
+﻿// from http://stackoverflow.com/questions/137933/what-is-the-best-scripting-language-to-embed-in-a-c-sharp-desktop-application
+
+
 using System;
 using System.Windows.Forms;
 using System.Reflection;
