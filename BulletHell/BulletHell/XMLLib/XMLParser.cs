@@ -58,7 +58,6 @@ namespace BulletHell.XMLLib
         GameXMLParser<BulletEmitter> emitter;
         GameXMLParser<PhysicsShape> shaps;
         GameXMLParser<GraphicsStyle> styles;
-        GameXMLParser<Brush> 
 
         public XMLParser()
         {
@@ -104,6 +103,28 @@ namespace BulletHell.XMLLib
         public EntityBuilder ParseEntityBuilder(XElement @class)
         {
             throw new NotImplementedException();
+        }
+
+        private Dictionary<string, Brush> brushes;
+        private Dictionary<string, Pen> pens;
+
+        public Brush BrushFromStringColor(string s)
+        {
+            Brush ans = null;
+            if (brushes.TryGetValue(s, out ans))
+                return ans;
+            ans = new SolidBrush(Color.FromName(s));
+            brushes[s] = ans;
+            return ans;
+        }
+        public Pen PenFromStringColor(string s)
+        {
+            Pen ans = null;
+            if (pens.TryGetValue(s, out ans))
+                return ans;
+            ans = new Pen(Color.FromName(s));
+            pens[s] = ans;
+            return ans;
         }
     }
 }

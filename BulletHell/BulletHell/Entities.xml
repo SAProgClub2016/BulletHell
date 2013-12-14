@@ -18,9 +18,7 @@ entSpawn.MakeType("RedSpiral", null, o1, entEl, enemy, em,null,Enemy.MakeEnemy()
     <Drawable type="shape">
       <PhysicsShape name="EnemyEllipse"/>
       <GraphicsStyle>
-        <Brush>
-          Green
-        </Brush>
+        <Brush>Green</Brush>
       </GraphicsStyle>
     </Drawable>
     <PhysicsShape name="EnemyEllipse"/>

@@ -5,6 +5,7 @@ using BulletHell.Gfx;
 using BulletHell.Physics.ShapeLib;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -18,7 +19,24 @@ namespace BulletHell.XMLLib
         }
         protected override GraphicsStyle ParseNew(XElement el)
         {
+            Brush b = null;
+            Pen p = null;
 
+            XElement brush = el.Element("Brush");
+            if (brush != null)
+            {
+                string col = brush.Value.Trim();
+                b = Parent.BrushFromStringColor(col);
+            }
+
+            XElement pen = el.Element("Pen");
+            if (pen != null)
+            {
+                string col = pen.Value.Trim();
+                p = Parent.PenFromStringColor(col);
+            }
+
+            return new GraphicsStyle(b, p);
         }
     }
 }
