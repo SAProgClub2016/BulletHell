@@ -88,9 +88,10 @@ namespace BulletHell.Physics
         {
             Id id = e.PhysicsClass;
             Add(id, e);
-            if (specialTypes.ContainsKey(id))
+            LinkedList<Id> val = null;
+            if (specialTypes.TryGetValue(id, out val))
             {
-                foreach (Id i in specialTypes[id])
+                foreach (Id i in val)
                 {
                     Add(i, e);
                 }
@@ -126,9 +127,10 @@ namespace BulletHell.Physics
         {
             Id id = e.PhysicsClass;
             Remove(id, e);
-            if (specialTypes.ContainsKey(id))
+            LinkedList<Id> val = null;
+            if (specialTypes.TryGetValue(id, out val))
             {
-                foreach (Id i in specialTypes[id])
+                foreach (Id i in val)
                 {
                     Remove(i, e);
                 }
@@ -192,9 +194,10 @@ namespace BulletHell.Physics
 
         private IEnumerable<Tuple<Entity,PhysicsShape>> MakeEntityShapeTuple(Id id)
         {
-            if (spTypesBack.ContainsKey(id))
+            PhysicsShape ps;
+            if (spTypeShapes.TryGetValue(id, out ps))
             {
-                return PairEntitiesWithShape(ents[id],spTypeShapes[id]);
+                return PairEntitiesWithShape(ents[id],ps);
             }
             return PairEntitiesWithOwnShape(ents[id]);
         }
@@ -218,9 +221,10 @@ namespace BulletHell.Physics
         {
             Id id = e.PhysicsClass;
             RemovePermanently(id, e);
-            if (specialTypes.ContainsKey(id))
+            LinkedList<Id> val = null;
+            if (specialTypes.TryGetValue(id, out val))
             {
-                foreach (Id i in specialTypes[id])
+                foreach (Id i in val)
                 {
                     RemovePermanently(i, e);
                 }
@@ -243,11 +247,12 @@ namespace BulletHell.Physics
 
         internal void RegisterClassShape(Id newClass, Id oldClass, PhysicsShape classShape)
         {
-            if (specialTypes.ContainsKey(oldClass))
-                specialTypes[oldClass].AddLast(newClass);
+            LinkedList<Id> ids = null;
+            if (specialTypes.TryGetValue(oldClass, out ids))
+                ids.AddLast(newClass);
             else
             {
-                LinkedList<Id> ids = new LinkedList<Id>();
+                ids = new LinkedList<Id>();
                 ids.AddLast(newClass);
                 specialTypes[oldClass] = ids;
             }

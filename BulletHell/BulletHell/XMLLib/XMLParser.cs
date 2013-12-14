@@ -36,11 +36,12 @@ namespace BulletHell.XMLLib
             {
                 n = (string)name;
             }
-            if(n!=null && namedT.ContainsKey(n))
+            T ans;
+            if(n!=null && namedT.TryGetValue(n, out ans))
             {
-                return namedT[n];
+                return ans;
             }
-            T ans = ParseNew(el);
+            ans = ParseNew(el);
             if (n != null)
                 namedT[n] = ans;
             return ans;

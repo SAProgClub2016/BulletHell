@@ -29,9 +29,9 @@ namespace BulletHell.Collections
         {
             get
             {
-                if (ContainsKey(s))
-                    return base[s];
-                return defVal;
+                T ans = defVal;
+                TryGetValue(s, out ans);
+                return ans;
             }
             set
             {

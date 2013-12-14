@@ -21,42 +21,43 @@ namespace BulletHell.Gfx
         }
         public void Add(Entity e)
         {
-            //Console.WriteLine(e.RenderClass);
-            if(ents.ContainsKey(e.RenderClass))
+            LookupLinkedListSet<Entity> es = null;
+            if(ents.TryGetValue(e.RenderClass, out es))
             {
-                ents[e.RenderClass].Add(e);
+                es.Add(e);
             }
             else
             {
-                LookupLinkedListSet<Entity> lls = new LookupLinkedListSet<Entity>();
-                lls.Add(e);
-                ents[e.RenderClass] = lls;
+                es = new LookupLinkedListSet<Entity>();
+                es.Add(e);
+                ents[e.RenderClass] = es;
             }
         }
         public void Remove(Entity e)
         {
-            if(ents.ContainsKey(e.RenderClass))
+            LookupLinkedListSet<Entity> es = null;
+            if (ents.TryGetValue(e.RenderClass, out es))
             {
-                ents[e.RenderClass].Remove(e);
+                es.Remove(e);
             }
             else
             {
-                LookupLinkedListSet<Entity> lls = new LookupLinkedListSet<Entity>();
-                ents[e.RenderClass] = lls;
+                es = new LookupLinkedListSet<Entity>();
+                ents[e.RenderClass] = es;
             }
         }
 
         public void RemovePermanently(Entity e)
         {
-
-            if (ents.ContainsKey(e.RenderClass))
+            LookupLinkedListSet<Entity> es = null;
+            if (ents.TryGetValue(e.RenderClass, out es))
             {
-                ents[e.RenderClass].RemovePermanently(e);
+                es.RemovePermanently(e);
             }
             else
             {
-                LookupLinkedListSet<Entity> lls = new LookupLinkedListSet<Entity>();
-                ents[e.RenderClass] = lls;
+                es = new LookupLinkedListSet<Entity>();
+                ents[e.RenderClass] = es;
             }
         }
 
@@ -64,9 +65,10 @@ namespace BulletHell.Gfx
         {
             foreach(Id i in RenderOrder)
             {
-                if(ents.ContainsKey(i))
+                LookupLinkedListSet<Entity> es = null;
+                if (ents.TryGetValue(i,out es))
                 {
-                    foreach (Entity e in ents[i])
+                    foreach (Entity e in es)
                         yield return e;
                 }
             }
@@ -76,9 +78,10 @@ namespace BulletHell.Gfx
         {
             foreach (Id i in RenderOrder)
             {
-                if (ents.ContainsKey(i))
+                LookupLinkedListSet<Entity> es = null;
+                if (ents.TryGetValue(i, out es))
                 {
-                    foreach (Entity e in ents[i])
+                    foreach (Entity e in es)
                         yield return e;
                 }
             }

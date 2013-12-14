@@ -19,20 +19,14 @@ namespace BulletHell.Collections
 
         public void Add(T t)
         {
-            if(dict.ContainsKey(t))
+            LinkedListNode<T> node = null;
+            if(!dict.TryGetValue(t, out node))
             {
-                LinkedListNode<T> refnode = dict[t];
-                if (refnode.List == null)
-                {
-                    ll.AddLast(refnode);
-                }
-            }
-            else
-            {
-                LinkedListNode<T> node = new LinkedListNode<T>(t);
+                node = new LinkedListNode<T>(t);
                 dict[t] = node;
-                ll.AddLast(node);
             }
+            if (node.List == null)
+                ll.AddLast(node);
         }
 
         public bool Contains(T t)
@@ -65,9 +59,9 @@ namespace BulletHell.Collections
 
         public void RemovePermanently(T t)
         {
-            if(dict.ContainsKey(t))
+            LinkedListNode<T> lln = null;
+            if(dict.TryGetValue(t, out lln))
             {
-                LinkedListNode<T> lln = dict[t];
                 if (lln.List != null)
                     ll.Remove(lln);
                 dict.Remove(t);
