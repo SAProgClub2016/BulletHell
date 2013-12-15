@@ -55,6 +55,7 @@ namespace BulletHell.XMLLib
             if (shape != null)
                 shap = Parent.ParsePhysicsShape(shape);
 
+
             return new EntityType(traj, d, shap, ec, em, gs, buil);
         }
     }

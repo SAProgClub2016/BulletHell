@@ -33,9 +33,9 @@ namespace BulletHell.GameLib.EntityLib
             Health = health;
         }
 
-        public static EntityBuilder MakeEnemy(int h = DefaultHealth)
+        public static EntityBuilder MakeEnemy(int h = DefaultHealth, int v = DefaultValue)
         {
-            return (t, p, d, s, c, e, g) => new Enemy(t, p, d, s, c, e, g, h);
+            return (t, p, d, s, c, e, g) => new Enemy(t, p, d, s, c, e, g, h, v);
         }
     }
 }

@@ -29,8 +29,9 @@ namespace BulletHell.Collections
         {
             get
             {
-                T ans = defVal;
-                TryGetValue(s, out ans);
+                T ans;
+                if(!TryGetValue(s, out ans))
+                    ans = defVal;
                 return ans;
             }
             set

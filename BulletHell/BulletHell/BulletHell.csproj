@@ -119,9 +119,11 @@
     <Compile Include="ScriptingLib\ScriptingExample.cs" />
     <Compile Include="Timer.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="XMLLib\XMLBuilderParser.cs" />
     <Compile Include="XMLLib\XMLEntityTypeParser.cs" />
     <Compile Include="XMLLib\XMLGraphicsStyleParser.cs" />
     <Compile Include="XMLLib\XMLParser.cs" />
+    <Compile Include="XMLLib\XMLPhysicsShapeParser.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -167,7 +169,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Entities.xml" />
+    <Content Include="Entities.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="OldPlans.txt" />
     <Content Include="Plans.txt" />
   </ItemGroup>

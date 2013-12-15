@@ -1,22 +1,21 @@
-﻿using System;
+﻿using BulletHell.GameLib;
+using BulletHell.GameLib.EntityLib;
+using BulletHell.GameLib.EntityLib.BulletLib;
+using BulletHell.Gfx;
+using BulletHell.Physics.ShapeLib;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using BulletHell.GameLib;
-using BulletHell.GameLib.EntityLib;
-using BulletHell.Physics.ShapeLib;
-using BulletHell.Gfx;
-using BulletHell.GameLib.EntityLib.BulletLib;
-using System.Drawing;
 
 namespace BulletHell.XMLLib
 {
     public abstract class GameXMLParser<T>
     {
         Dictionary<string, T> namedT;
-        Dictionary<string, Func<double[], T>> TBuilders;
         XMLParser parent;
 
         public XMLParser Parent { get { return parent; } }
@@ -25,7 +24,17 @@ namespace BulletHell.XMLLib
         {
             parent = par;
             namedT = new Dictionary<string, T>();
-            TBuilders = new Dictionary<string, Func<double[], T>>();
+        }
+
+        public bool ParseValue<S>(XElement el, string childName, Func<XElement,S> parser, ref S ans)
+        {
+            XElement ansel = el.Element(childName);
+            if (ansel == null)
+            {
+                return false;
+            }
+            ans = parser(ansel);
+            return true;
         }
 
         public T Parse(XElement el)
@@ -63,6 +72,8 @@ namespace BulletHell.XMLLib
         {
             entType = new XMLEntityTypeParser(this);
             styles = new XMLGraphicsStyleParser(this);
+            shaps = new XMLPhysicsShapeParser(this);
+            entBuild = new XMLBuilderParser(this);
         }
 
 
