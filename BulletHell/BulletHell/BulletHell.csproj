@@ -70,6 +70,12 @@
     </Compile>
     <Compile Include="Collections\LookupLinkedListSet.cs" />
     <Compile Include="Collections\SimpleLinkedList.cs" />
+    <Compile Include="Editor\EditorWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editor\EditorWindow.Designer.cs">
+      <DependentUpon>EditorWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="GameLib\EntityLib\BulletLib\Bullet.cs" />
     <Compile Include="GameLib\EntityLib\BulletLib\BulletEmitter.cs" />
     <Compile Include="GameLib\EntityLib\Enemy.cs" />
@@ -124,6 +130,9 @@
     <Compile Include="XMLLib\XMLGraphicsStyleParser.cs" />
     <Compile Include="XMLLib\XMLParser.cs" />
     <Compile Include="XMLLib\XMLPhysicsShapeParser.cs" />
+    <EmbeddedResource Include="Editor\EditorWindow.resx">
+      <DependentUpon>EditorWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
