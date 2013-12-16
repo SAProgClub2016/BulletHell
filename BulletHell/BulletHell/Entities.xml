@@ -7,10 +7,43 @@ entSpawn.MakeType("RedSpiral", null, o1, entEl, enemy, em,null,Enemy.MakeEnemy()
   <PhysicsShape name="EnemyEllipse" type ="Ellipse">
     <radius>7</radius>
   </PhysicsShape>
-
-  <BulletEmitter name ="Spiral">
-    <BulletPattern name ="idk"/>
-  </BulletEmitter>
+<!--
+Trajectory[][] arrs = new Trajectory[offsets][];
+for (int i = 0; i < offsets; i++)
+    arrs[i] = new Trajectory[perCirc];
+for (int i = 0; i < perCirc; i++)
+{
+    for (int j = 0; j < offsets; j++)
+    {
+        arrs[j][i] = TrajectoryFactory.AngleMagVel((i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 10);
+    }
+}
+-->
+  
+  <BulletEmitter name ="Spiral"><script>
+    <var name="offsets" type="int"></var>
+    <var name="perCirc" type="int"></var>
+    <foreach var="int x" in="1..perCirc">
+      <yield>
+        <BulletPattern><script>
+          <foreach var="int y" in="1..offsets">
+            <yield>
+              <Trajectory>
+                <Velocity>
+                  <angle>
+                    <script>
+                      <yield>((x-1)*offsets+y)*(FULL/offsets/perCirc)+DOWN</yield>
+                    </script>
+                  </angle>
+                  <magnitude>10</magnitude>
+                </Velocity>
+              </Trajectory>
+            </yield>
+          </foreach>
+        </script></BulletPattern>
+      </yield>
+    </foreach>
+  </script></BulletEmitter>
 
   <Entity name ="RedSpiral">
     <Class type="Enemy"/>

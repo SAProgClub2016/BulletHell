@@ -26,6 +26,18 @@ namespace BulletHell.XMLLib
             namedT = new Dictionary<string, T>();
         }
 
+        public bool ParseDouble(XElement el, string childName, ref double ans)
+        {
+            return ParseValue(el, childName, x => (double)x, ref ans);
+        }
+        public bool ParseInt(XElement el, string childName, ref int ans)
+        {
+            return ParseValue(el, childName, x => (int)x, ref ans);
+        }
+        public bool ParseString(XElement el, string childName, ref string ans)
+        {
+            return ParseValue(el, childName, x => (string)x, ref ans);
+        }
         public bool ParseValue<S>(XElement el, string childName, Func<XElement,S> parser, ref S ans)
         {
             XElement ansel = el.Element(childName);
@@ -74,6 +86,7 @@ namespace BulletHell.XMLLib
             styles = new XMLGraphicsStyleParser(this);
             shaps = new XMLPhysicsShapeParser(this);
             entBuild = new XMLBuilderParser(this);
+
         }
 
 
