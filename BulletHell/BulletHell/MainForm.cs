@@ -28,6 +28,7 @@ namespace BulletHell
         Entity e, e2;
 
         Entity bg;
+        Entity bgneg;
 
         BufferedGraphics buff;
         Game game;
@@ -45,13 +46,14 @@ namespace BulletHell
             double border = 40;
 
             Particle boxC = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2, (double)ClientRectangle.Height / 2));
-            Particle boxR = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2+border, (double)ClientRectangle.Height / 2+border)); 
+            Particle boxR = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2+border, (double)ClientRectangle.Height / 2+border));
             Box bgbox = new Box(boxR);
+            PartialBox boxNeg = new PartialBox(boxR, new Vector<bool>(true, false),new Vector<bool>(true, true);
 
             EntityClass bgClass = new EntityClass("Background");
 
             bg = new Entity(0, boxC, bgbox, new GraphicsStyle(Brushes.Black), bgClass);
-
+            bgneg = new Entity(0, boxC, DrawableFactory.MakeNull(), boxNeg, new EntityClass("BackgroundNegative", "Null"), null);
 
             keyMan = new KeyManager();
 
@@ -173,6 +175,7 @@ namespace BulletHell
             pman.AddCollisionHandler("MainCharBullet", "Enemy", this.EnemyHit);
             pman.AddDisconnectHandler("Enemy", "Background", this.KillOffscreen);
             pman.AddDisconnectHandler("EnemyBullet", "Background", this.KillOffscreen);
+            pman.AddDisconnectHandler("Pickup", "BackgroundNegative", this.KillOffscreen);
             pman.RegisterClassShape("MainCharWhole", "MainChar", new Ellipse(7));
             pman.AddDisconnectHandler("MainCharBullet", "Background", this.KillOffscreen);
             pman.AddCollisionHandler("MainCharWhole", "Pickup", this.PickUp);
@@ -230,6 +233,22 @@ namespace BulletHell
         {
             Entity e;
             if (e1 == bg)
+                e = e2;
+            else
+                e = e1;
+            if (e.InvisibilityTime > -0.5)
+                return null;
+            if (game.CurrentTime > e.CreationTime)
+            {
+                e.InvisibilityTime = game.CurrentTime;
+                return e.Invisibility;
+            }
+            return null;
+        }
+        private GameEvent KillOffscreenNeg(Entity e1, Entity e2)
+        {
+            Entity e;
+            if (e1 == bgneg)
                 e = e2;
             else
                 e = e1;
