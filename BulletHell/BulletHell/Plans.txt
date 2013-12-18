@@ -19,6 +19,7 @@ With this I'd say the basic engine is more or less done.
 -Integrate bullet generation into EntitySpawner framework - Done 8 December 2013
 -Games should have Randoms - Done 12 December 2013
 -Drops/score
+-Fix BoundingBox hack in PartialBox/PartialBox's meet methods
 -Fix rewind hack
 -More complex Trajectories - not exactly a checkbox
 -Complicated Entity lifetimes/paths

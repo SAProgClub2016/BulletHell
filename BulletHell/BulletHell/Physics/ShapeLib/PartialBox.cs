@@ -35,9 +35,10 @@ namespace BulletHell.Physics.ShapeLib
             Vector<double> mcp = pos.CurrentPosition;
             Vector<double> diff = cp - mcp;
             Vector<double> rp = r.CurrentPosition;
+            diff.Map(Math.Abs,diff);
             for (int i = 0; i < pos.Dimension; i++)
             {
-                if (Math.Abs(diff[i]) > Math.Abs(rp[i]))
+                if ((firstBounded[i] && -rp[i] > diff[i]) || (secondBounded[i] && rp[i] < diff[i]))
                     return false;
             }
             return true;
@@ -49,10 +50,14 @@ namespace BulletHell.Physics.ShapeLib
             {
                 return ContainsPoint(p, oPos);
             }
+            if(o.GetType() == typeof(PartialBox))
+            {
+
+            }
             if (o.GetType() == typeof(Box))
             {
                 Box oth = o as Box;
-                return new Box(r + oth.r).ContainsPoint(p, oPos);
+                return new PartialBox(r + oth.Radius,firstBounded,secondBounded).ContainsPoint(p, oPos);
             }
             if (o.GetType() == typeof(Ellipse))
             {
@@ -88,7 +93,7 @@ namespace BulletHell.Physics.ShapeLib
 
         public override Box BoundingBox
         {
-            get { return this; }
+            get { return null; } // OH GODS THAT'S BAD
         }
 
         protected override void UpdateTime()
