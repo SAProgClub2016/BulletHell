@@ -48,7 +48,7 @@ namespace BulletHell
             Particle boxC = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2, (double)ClientRectangle.Height / 2));
             Particle boxR = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2+border, (double)ClientRectangle.Height / 2+border));
             Box bgbox = new Box(boxR);
-            PartialBox boxNeg = new PartialBox(boxR, new Vector<bool>(true, false),new Vector<bool>(true, true);
+            PartialBox boxNeg = new PartialBox(boxR, new Vector<bool>(true, false),new Vector<bool>(true, true));
 
             EntityClass bgClass = new EntityClass("Background");
 

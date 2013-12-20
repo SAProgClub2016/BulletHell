@@ -52,7 +52,8 @@ namespace BulletHell.Physics.ShapeLib
             }
             if(o.GetType() == typeof(PartialBox))
             {
-
+                PartialBox pb = o as PartialBox;
+                return new PartialBox(r+pb.Radius, firstBounded.Map((x,y)=>x||y,pb.secondBounded), secondBounded.Map((x,y)=>x||y,pb.firstBounded)).ContainsPoint(p, oPos);
             }
             if (o.GetType() == typeof(Box))
             {

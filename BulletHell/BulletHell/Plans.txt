@@ -18,8 +18,11 @@ With this I'd say the basic engine is more or less done.
 -Give enemies health/bullets damage - Done 7 December 2013
 -Integrate bullet generation into EntitySpawner framework - Done 8 December 2013
 -Games should have Randoms - Done 12 December 2013
--Drops/score
--Fix BoundingBox hack in PartialBox/PartialBox's meet methods
+-Drops - Done 14 December 2013
+-Make Game's mutators generate GameEvents automagically. Perhaps create separate method to prevent breakage of existing code
+-Score
+-PartialBox's meet methods
+-Fix BoundingBox hack in PartialBox
 -Fix rewind hack
 -More complex Trajectories - not exactly a checkbox
 -Complicated Entity lifetimes/paths
