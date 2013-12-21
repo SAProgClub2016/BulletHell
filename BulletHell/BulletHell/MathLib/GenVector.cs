@@ -116,6 +116,19 @@ namespace BulletHell.MathLib
             }
             return res;
         }
+        public Vector<T> MultiplyE(Vector<T> o, Vector<T> res = default(Vector<T>))
+        {
+            MakeOrValidate(ref res, this.Dimension);
+            for (int i = 0; i < this.Dimension; i++)
+            {
+#if(USING_EXPRESSIONS)
+                res[i] = Operations<T>.Mul(o[i], this[i]);
+#else
+                res[i] = (dynamic)d*this[i];
+#endif
+            }
+            return res;
+        }
         public Vector<T> Add(Vector<T> v2, Vector<T> res = default(Vector<T>))
         {
             MakeOrValidate(ref res, this.Dimension);
