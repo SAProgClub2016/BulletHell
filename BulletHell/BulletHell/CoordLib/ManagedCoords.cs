@@ -14,5 +14,7 @@ namespace BulletHell.CoordLib
         {
             aspect = new Vector<int>(rat);
         }
+
+
     }
 }

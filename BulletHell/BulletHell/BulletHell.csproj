@@ -70,11 +70,25 @@
     </Compile>
     <Compile Include="Collections\LookupLinkedListSet.cs" />
     <Compile Include="Collections\SimpleLinkedList.cs" />
+    <Compile Include="CoordLib\Coords.cs" />
+    <Compile Include="CoordLib\ManagedCoords.cs" />
     <Compile Include="Editor\EditorWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Editor\EditorWindow.Designer.cs">
       <DependentUpon>EditorWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editor\LevelEditorPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editor\LevelEditorPanel.Designer.cs">
+      <DependentUpon>LevelEditorPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editor\LevelViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editor\LevelViewer.Designer.cs">
+      <DependentUpon>LevelViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="GameLib\EntityLib\BulletLib\Bullet.cs" />
     <Compile Include="GameLib\EntityLib\BulletLib\BulletEmitter.cs" />
@@ -134,6 +148,12 @@
     <EmbeddedResource Include="Editor\EditorWindow.resx">
       <DependentUpon>EditorWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Editor\LevelEditorPanel.resx">
+      <DependentUpon>LevelEditorPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editor\LevelViewer.resx">
+      <DependentUpon>LevelViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -185,6 +205,7 @@
     <Content Include="OldPlans.txt" />
     <Content Include="Plans.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
