@@ -166,6 +166,7 @@ namespace BulletHell
 
 
             game += bg;
+            game += bgneg;
             game = game + e + e2 + e3 + e4 + e5;
 
             entSpawn["WhiteSpiral"] = entSpawn["RedSpiral"].ChangeEmitter(em2, true);
@@ -185,7 +186,7 @@ namespace BulletHell
 
         private void HandleResize()
         {
-            Console.WriteLine("({0},{1})", ClientRectangle.Width, ClientRectangle.Height);
+            //Console.WriteLine("({0},{1})", ClientRectangle.Width, ClientRectangle.Height);
             this.m[false, 0] = ClientRectangle.Width;
             newbuff = bgcon.Allocate(CreateGraphics(), ClientRectangle);
         }
@@ -203,9 +204,24 @@ namespace BulletHell
             pman.AddDisconnectHandler("Enemy", "Background", this.KillOffscreen);
             pman.AddDisconnectHandler("EnemyBullet", "Background", this.KillOffscreen);
             pman.AddDisconnectHandler("Pickup", "BackgroundNegative", this.KillOffscreen);
+            //pman.AddCollisionHandler("Pickup", "BackgroundNegative", this.PrintQ);
             pman.RegisterClassShape("MainCharWhole", "MainChar", new Ellipse(7));
             pman.AddDisconnectHandler("MainCharBullet", "Background", this.KillOffscreen);
             pman.AddCollisionHandler("MainCharWhole", "Pickup", this.PickUp);
+        }
+
+        private GameEvent PrintQ(Entity e1, Entity e2)
+        {
+            Console.WriteLine("Q");
+            return null;
+        }
+
+
+
+        private GameEvent KillOffscreenPickup(Entity e1, Entity e2)
+        {
+            //PrintQ();
+            return KillOffscreen(e1, e2);
         }
 
         private GameEvent PickUp(Entity e1, Entity e2)
@@ -259,7 +275,7 @@ namespace BulletHell
         private GameEvent KillOffscreen(Entity e1, Entity e2)
         {
             Entity e;
-            if (e1 == bg)
+            if (e1 == bg || e1 == bgneg)
                 e = e2;
             else
                 e = e1;
