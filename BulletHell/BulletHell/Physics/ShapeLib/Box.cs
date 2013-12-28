@@ -20,9 +20,9 @@ namespace BulletHell.Physics.ShapeLib
         }
 
 
-        protected override void Draw(Particle p, Graphics g, GraphicsStyle sty = null)
+        protected override void Draw(Particle p, Graphics g, CoordTransform f = null, GraphicsStyle sty = null)
         {
-            myDraw(p, g, sty);
+            myDraw(p, g, f, sty);
         }
 
         protected override bool containsPoint(Particle pos, Particle p)

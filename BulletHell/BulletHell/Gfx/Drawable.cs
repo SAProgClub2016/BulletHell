@@ -8,18 +8,31 @@ using BulletHell.MathLib;
 
 namespace BulletHell.Gfx
 {
-    public delegate void Drawable(Particle p, Graphics g, GraphicsStyle sty = null);
+    public delegate Vector<double> CoordTransform(Vector<double> v);
+    public delegate void Drawable(Particle p, Graphics g, CoordTransform f = null, GraphicsStyle sty = null);
+
+
     public static class DrawableFactory
     {
+        public static Drawable ManageCoordTransform(Drawable d)
+        {
+            return (p, g, f, sty) =>
+            {
+                f = f ?? Utils.Identity<Vector<double>>;
+                d(p, g, f, sty);
+            };
+        }
         public static Drawable MakeEllipse(Particle rad, GraphicsStyle def = null)
         {
             def = def ?? GraphicsStyle.DEFAULT;
-            return (Particle p, Graphics g, GraphicsStyle sty) =>
+            return ManageCoordTransform((Particle p, Graphics g, CoordTransform f, GraphicsStyle sty) =>
             {
                 sty = sty ?? def;
                 rad.Time = p.Time;
-                Vector<double> ul = p.CurrentPosition - rad.CurrentPosition;
-                Vector<double> lw = 2 * rad.CurrentPosition;
+                Vector<double> radp = f(rad.CurrentPosition);
+                Vector<double> pp = f(p.CurrentPosition);
+                Vector<double> ul = pp - radp;
+                Vector<double> lw = 2 * radp;
                 Vector<int> uli = ul.Map(x => (int)x);
                 Vector<int> lwi = lw.Map(x => (int)x);
                 Rectangle r = new Rectangle(uli[0], uli[1], lwi[0], lwi[1]);
@@ -27,7 +40,7 @@ namespace BulletHell.Gfx
                     g.FillEllipse(sty.Brush, r);
                 if (sty.Pen != null)
                     g.DrawEllipse(sty.Pen, r);
-            };
+            });
         }
         public static Drawable MakeCircle(double rad, GraphicsStyle def = null)
         {
@@ -35,12 +48,14 @@ namespace BulletHell.Gfx
         }
         public static Drawable MakeCenteredRectangle(Particle whr, GraphicsStyle def)
         {
-            return (Particle p, Graphics g, GraphicsStyle sty) =>
+            return ManageCoordTransform((Particle p, Graphics g, CoordTransform f, GraphicsStyle sty) =>
             {
                 sty = sty ?? def;
                 whr.Time = p.Time;
-                Vector<double> ul = p.CurrentPosition - whr.CurrentPosition;
-                Vector<double> lw = 2 * whr.CurrentPosition;
+                Vector<double> whrp = f(whr.CurrentPosition);
+                Vector<double> pp = f(p.CurrentPosition);
+                Vector<double> ul = pp-whrp;
+                Vector<double> lw = 2 * whrp;
                 Vector<int> uli = ul.Map(x => (int)x);
                 Vector<int> lwi = lw.Map(x => (int)x);
                 Rectangle r = new Rectangle(uli[0], uli[1], lwi[0], lwi[1]);
@@ -48,28 +63,28 @@ namespace BulletHell.Gfx
                     g.FillRectangle(sty.Brush, r);
                 if (sty.Pen != null)
                     g.DrawRectangle(sty.Pen, r);
-            };
+            });
         }
         public static Drawable MakeNull()
         {
-            return (p, g, sty) => { };
+            return (p, g, f, sty) => { };
         }
         public static Drawable MakeNullTo(Drawable d, double t)
         {
-            return (p, g, sty) =>
+            return (p, g, f, sty) =>
             {
                 if (p.Time > t)
                 {
-                    d(p, g, sty);
+                    d(p, g, f, sty);
                 }
             };
         }
         public static Drawable ChangeDefStyles(Drawable d, GraphicsStyle s)
         {
-            return (p, g, sty) =>
+            return (p, g, f, sty) =>
             {
                 sty = sty ?? s;
-                d(p, g, sty);
+                d(p, g, f, sty);
             };
         }
     }

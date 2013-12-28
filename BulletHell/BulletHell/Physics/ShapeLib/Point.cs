@@ -22,9 +22,9 @@ namespace BulletHell.Physics.ShapeLib
             dimension = d;
         }
 
-        protected override void Draw(Particle p, Graphics g, GraphicsStyle sty = null)
+        protected override void Draw(Particle p, Graphics g, CoordTransform f = null, GraphicsStyle sty = null)
         {
-            pointShape(p, g, sty);
+            pointShape(p, g, f, sty);
         }
 
 

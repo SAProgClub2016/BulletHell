@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
@@ -556,6 +557,31 @@ namespace BulletHell
                 while (timer.Time < 10)
                     Thread.Yield();
             }
+        }
+        protected override void WndProc(ref Message m)
+        {
+            if(m.Msg == 0x214)
+            {
+                // Keep the window square
+                RECT rc = (RECT)Marshal.PtrToStructure(m.LParam, typeof(RECT));
+                int w = rc.Right - rc.Left;
+                int h = rc.Bottom - rc.Top;
+                int z = 9 * w > 16 * h ? 9 * w : 16 * h;
+                rc.Bottom = rc.Top + z/16;
+                rc.Right = rc.Left + z/9;
+                Marshal.StructureToPtr(rc, m.LParam, false);
+                m.Result = (IntPtr)1;
+                return;
+            }
+            base.WndProc(ref m);
+        }
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
         }
     }
 }

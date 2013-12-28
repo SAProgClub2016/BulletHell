@@ -24,11 +24,11 @@ namespace BulletHell.Physics.ShapeLib
             time = 0;
 
         }
-        protected abstract void Draw(Particle p, Graphics g, GraphicsStyle sty = null);
+        protected abstract void Draw(Particle p, Graphics g, CoordTransform f, GraphicsStyle sty = null);
 
         public Drawable MakeDrawable(GraphicsStyle defSty = null)
         {
-            return (p, g, sty) => Draw(p, g, sty ?? defSty);
+            return (p, g, f, sty) => Draw(p, g, f, sty ?? defSty);
         }
 
         public bool ContainsPoint(Particle p)
