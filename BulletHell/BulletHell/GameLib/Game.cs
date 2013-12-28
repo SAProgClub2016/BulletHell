@@ -28,6 +28,7 @@ namespace BulletHell.GameLib
         private PhysicsManager pm;
         private GameEventManager events;
         private Gfx.RenderManager renderman;
+        private CoordTransform curTrans = null;
         private Random random;
 
         private int moneys=0;
@@ -204,7 +205,7 @@ namespace BulletHell.GameLib
             foreach (Entity e in RenderManager)
             {
                 entCount++;
-                e.Draw(e.Position, g);
+                e.Draw(e.Position, g, CurrentTransform);
             }
         }
         public IEnumerable<Entity> Entities
@@ -262,5 +263,7 @@ namespace BulletHell.GameLib
                 return renderman;
             }
         }
+
+        public CoordTransform CurrentTransform { get { return this.curTrans; } set { this.curTrans = value; } }
     }
 }

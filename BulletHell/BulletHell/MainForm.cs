@@ -18,6 +18,8 @@ using BulletHell.GameLib.EntityLib;
 using BulletHell.GameLib.EntityLib.BulletLib;
 using BulletHell.GameLib.EventLib;
 using BulletHell.Physics.ShapeLib;
+using BulletHell.CoordLib;
+using System.Drawing.Drawing2D;
 
 namespace BulletHell
 {
@@ -31,15 +33,29 @@ namespace BulletHell
         Entity bg;
         Entity bgneg;
 
-        BufferedGraphics buff;
+        BufferedGraphics buff, newbuff;
+        BufferedGraphicsContext bgcon;
         Game game;
         bool DisplayFrameRate = true, DisplayTime = true;
         private DefaultValueDictionary<Entity, bool> hitby;
         EntitySpawner entSpawn;
 
+        ManagedCoords m;
+
         public MainForm()
         {
             InitializeComponent();
+
+            SetClientSizeCore(1280, 720);
+
+            oldWidth = this.Width;
+            oldHeight = this.Height;
+
+            m = new ManagedCoords(16, 9);
+
+            m[true, 0] = 1280;
+            m[false, 0] = 1280;
+
             entSpawn = new EntitySpawner();
 
             hitby = new DefaultValueDictionary<Entity, bool>(false);
@@ -68,6 +84,9 @@ namespace BulletHell
             Drawable mchar = DrawableFactory.MakeCircle(8, new GraphicsStyle(Brushes.Orange, Pens.Red));
 
             game = new Game(new MainChar(mchar,entSpawn["MainCharBullet"],ClientRectangle.Width/2,ClientRectangle.Height-20,40));
+
+            game.CurrentTransform = m.Transform;
+
             InitializePhysicsManager(game.PhysicsManager);
             InitializeRenderManager(game.RenderManager);
 
@@ -160,8 +179,15 @@ namespace BulletHell
             Entity e7 = entSpawn.Build("PinkWaves",0, r);
             game += e7;
             game.ResetTime();
-            BufferedGraphicsContext c = BufferedGraphicsManager.Current;
-            buff = c.Allocate(CreateGraphics(), ClientRectangle);
+            bgcon = BufferedGraphicsManager.Current;
+            HandleResize();
+        }
+
+        private void HandleResize()
+        {
+            Console.WriteLine("({0},{1})", ClientRectangle.Width, ClientRectangle.Height);
+            this.m[false, 0] = ClientRectangle.Width;
+            newbuff = bgcon.Allocate(CreateGraphics(), ClientRectangle);
         }
 
         private void InitializeSimpleEntities(EntitySpawner entSpawn)
@@ -318,6 +344,7 @@ namespace BulletHell
             keyMan.OnPress[Keys.T] = this.OnKeyT;
             keyMan.OnPress[Keys.P] = this.OnKeyP;
             keyMan.OnPress[Keys.F] = this.OnKeyF;
+            keyMan.OnPress[Keys.R] = this.OnKeyR;
             keyMan.OnPress[Keys.Oemplus] = this.OnKeyPlus;
             keyMan.Repeat[Keys.Oemplus] = 10;
             keyMan.OnPress[Keys.OemMinus] = this.OnKeyMinus;
@@ -361,9 +388,15 @@ namespace BulletHell
         }
         private void RenderScene()
         {
+            if (newbuff != null)
+            {
+                buff = newbuff;
+                newbuff = null;
+            }
             if (buff != null)
             {
                 Graphics g = buff.Graphics;
+                g.SmoothingMode = SmoothingMode.AntiAlias;
                 //g.FillRectangle(Brushes.Black, this.ClientRectangle);
                 game.Draw(g);
                 if (DisplayFrameRate)
@@ -504,6 +537,10 @@ namespace BulletHell
         }
         private void OnKeyF(KeyManager km, Keys key, bool repeat)
         {
+            FullScreen = !FullScreen;
+        }
+        private void OnKeyR(KeyManager km, Keys key, bool repeat)
+        {
             DisplayFrameRate = !DisplayFrameRate;
         }
         private void OnKeyP(KeyManager km, Keys key, bool repeat)
@@ -558,19 +595,35 @@ namespace BulletHell
                     Thread.Yield();
             }
         }
+
+        private int oldWidth,oldHeight;
+
         protected override void WndProc(ref Message m)
         {
             if(m.Msg == 0x214)
             {
-                // Keep the window square
+                int wb = this.Width - ClientRectangle.Width;
+                int hb = this.Height - ClientRectangle.Height;
+
                 RECT rc = (RECT)Marshal.PtrToStructure(m.LParam, typeof(RECT));
-                int w = rc.Right - rc.Left;
-                int h = rc.Bottom - rc.Top;
-                int z = 9 * w > 16 * h ? 9 * w : 16 * h;
-                rc.Bottom = rc.Top + z/16;
-                rc.Right = rc.Left + z/9;
+                int w = rc.Right - rc.Left - wb;
+                int h = rc.Bottom - rc.Top - hb;
+                int z=0;
+                if (oldWidth == w)
+                    z = 16 * h;
+                else if (oldHeight == h)
+                    z = w * 9;
+                else
+                    z = 9 * w > 16 * h ? 9 * w : 16 * h;
+                w = z / 9;
+                h = z / 16;
+                rc.Bottom = rc.Top + h + hb;
+                rc.Right = rc.Left + w + wb;
                 Marshal.StructureToPtr(rc, m.LParam, false);
                 m.Result = (IntPtr)1;
+                oldWidth = w;
+                oldHeight = h;
+                HandleResize();
                 return;
             }
             base.WndProc(ref m);
@@ -582,6 +635,35 @@ namespace BulletHell
             public int Top;
             public int Right;
             public int Bottom;
+        }
+
+        private bool fullscreen;
+        public bool FullScreen
+        {
+            get
+            {
+                return fullscreen;
+            }
+            set
+            {
+                if (fullscreen == value)
+                    return;
+                fullscreen = value;
+                if(fullscreen)
+                {
+                    this.TopMost = true;
+                    this.FormBorderStyle = FormBorderStyle.None;
+                    this.WindowState = FormWindowState.Maximized;
+                }
+                else
+                {
+                    this.WindowState = FormWindowState.Normal;
+                    this.FormBorderStyle = FormBorderStyle.Sizable;
+                    this.TopMost = false;
+                    this.SetClientSizeCore(1280, 720);
+                }
+                HandleResize();
+            }
         }
     }
 }

@@ -155,6 +155,7 @@ namespace BulletHell.GameLib.EntityLib
             Console.WriteLine("Create: {0}", pos.CurrentPosition);
 #endif
             g.EntityManager.Add(this);
+            Time = g.Time;
         }
         public void RewindCreate(Game g, GameEventState oldstate)
         {
