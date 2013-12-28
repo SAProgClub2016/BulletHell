@@ -11,7 +11,14 @@ namespace BulletHell.CoordLib
         int dim;
         Vector<double> scaling;
         Vector<double> counterScale;
-        
+
+        public int Dimension
+        {
+            get
+            {
+                return dim;
+            }
+        }
 
         public Coords(double x, double y, params double[] scale)
         {
