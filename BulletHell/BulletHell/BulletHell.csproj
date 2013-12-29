@@ -90,6 +90,7 @@
     <Compile Include="Editor\LevelViewer.Designer.cs">
       <DependentUpon>LevelViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameLib\EntityLib\Background.cs" />
     <Compile Include="GameLib\EntityLib\BulletLib\Bullet.cs" />
     <Compile Include="GameLib\EntityLib\BulletLib\BulletEmitter.cs" />
     <Compile Include="GameLib\EntityLib\Enemy.cs" />

@@ -10,6 +10,7 @@ using BulletHell.Physics;
 using BulletHell.GameLib.EntityLib;
 using BulletHell.GameLib.EventLib;
 using BulletHell.Gfx;
+using BulletHell.GameLib.LevelLib;
 
 namespace BulletHell.GameLib
 {
@@ -27,7 +28,7 @@ namespace BulletHell.GameLib
         private MainChar mainChar;
         private PhysicsManager pm;
         private GameEventManager events;
-        private Gfx.RenderManager renderman;
+        private RenderManager renderman;
         private CoordTransform curTrans = null;
         private Random random;
 
@@ -131,13 +132,13 @@ namespace BulletHell.GameLib
             }
         }
 
-
         public void ResetTime()
         {
             gameTimer.Reset();
             timeRateFunc = new PolyFunc<double, double>(curTimeRate);
             timeFunc = timeRateFunc.FI;
         }
+
         public double Time
         {
             get
@@ -160,7 +161,7 @@ namespace BulletHell.GameLib
             }
         }
 
-        public Game(MainChar m)
+        public Game(MainChar m, Background bg)
         {
             random = new Random();
             pm = new PhysicsManager(this);
@@ -265,5 +266,11 @@ namespace BulletHell.GameLib
         }
 
         public CoordTransform CurrentTransform { get { return this.curTrans; } set { this.curTrans = value; } }
+
+        public static Game LoadFromLevel(MainChar m, Level l)
+        {
+            Game ans = new Game(m);
+            
+        }
     }
 }
