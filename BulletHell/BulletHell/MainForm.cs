@@ -20,9 +20,48 @@ using BulletHell.GameLib.EventLib;
 using BulletHell.Physics.ShapeLib;
 using BulletHell.CoordLib;
 using System.Drawing.Drawing2D;
+using BulletHell.GameLib.LevelLib;
 
 namespace BulletHell
 {
+    public class MainFormLevel : Level
+    {
+        public MainFormLevel()
+        {
+        }
+
+        public double Width
+        {
+            get { return 1280; }
+        }
+
+        public double Height
+        {
+            get { return 720; }
+        }
+
+        public IEnumerable<Id> RenderOrder
+        {
+            get
+            {
+                LinkedList<Id> ids = new LinkedList<Id>();
+                ids.AddLast("Character");
+                ids.AddLast("Bullet");
+                ids.AddLast("Pickup");
+                return ids;
+            }
+        }
+
+        public IEnumerator<Entity> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+    }
     public partial class MainForm : Form
     {
         KeyManager keyMan;
@@ -30,8 +69,8 @@ namespace BulletHell
         Drawable o1;
         Entity e, e2;
 
-        Entity bg;
-        Entity bgneg;
+        Background bg;
+        PartialBox boxNeg;
 
         BufferedGraphics buff, newbuff;
         BufferedGraphicsContext bgcon;
@@ -65,12 +104,11 @@ namespace BulletHell
             Particle boxC = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2, (double)ClientRectangle.Height / 2));
             Particle boxR = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2+border, (double)ClientRectangle.Height / 2+border));
             Box bgbox = new Box(boxR);
-            PartialBox boxNeg = new PartialBox(boxR, new Vector<bool>(true, false),new Vector<bool>(true, true));
-
+            
             EntityClass bgClass = new EntityClass("Background");
 
-            bg = new Entity(0, boxC, bgbox, new GraphicsStyle(Brushes.Black), bgClass);
-            bgneg = new Entity(0, boxC, DrawableFactory.MakeNull(), boxNeg, new EntityClass("BackgroundNegative", "Null"), null);
+            bg = new Background(1280,720,border,Color.Black);
+            boxNeg = new PartialBox(bg.Shape.BoundingBox, new Vector<bool>(true, false),new Vector<bool>(true, true));
 
             keyMan = new KeyManager();
 
@@ -83,7 +121,8 @@ namespace BulletHell
 
             Drawable mchar = DrawableFactory.MakeCircle(8, new GraphicsStyle(Brushes.Orange, Pens.Red));
 
-            game = new Game(new MainChar(mchar,entSpawn["MainCharBullet"],ClientRectangle.Width/2,ClientRectangle.Height-20,40));
+            game = new Game(new MainChar(mchar,entSpawn["MainCharBullet"],ClientRectangle.Width/2,ClientRectangle.Height-20,40),
+                            bg);
 
             game.CurrentTransform = m.Transform;
 
@@ -118,15 +157,7 @@ namespace BulletHell
             for (int i = 0; i < offsets; i++)
                 bEms[i] = new BulletEmission(cd, 0, arrs[i],entSpawn["OrangeRed_5"]);
             // Same as above, but we're gonna change the shape
-            for (int i = 0; i < offsets; i++)
-                arrs[i] = new Trajectory[perCirc];
-            for (int i = 0; i < perCirc; i++)
-            {
-                for (int j = 0; j < offsets; j++)
-                {
-                    arrs[j][i] = TrajectoryFactory.AngleMagVel((i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 10);
-                }
-            }
+            // no need to regenerate the spiral
             for (int i = 0; i < offsets; i++)
                 bEms2[i] = new BulletEmission(cd, 0, arrs[i],entSpawn["Azure_5"]);
             // Same as above, but we're gonna change the shape again and the path
@@ -166,7 +197,6 @@ namespace BulletHell
 
 
             game += bg;
-            game += bgneg;
             game = game + e + e2 + e3 + e4 + e5;
 
             entSpawn["WhiteSpiral"] = entSpawn["RedSpiral"].ChangeEmitter(em2, true);
@@ -203,6 +233,7 @@ namespace BulletHell
             pman.AddCollisionHandler("MainCharBullet", "Enemy", this.EnemyHit);
             pman.AddDisconnectHandler("Enemy", "Background", this.KillOffscreen);
             pman.AddDisconnectHandler("EnemyBullet", "Background", this.KillOffscreen);
+            pman.RegisterClassShape("BackgroundNegative", "Background", this.boxNeg);
             pman.AddDisconnectHandler("Pickup", "BackgroundNegative", this.KillOffscreen);
             //pman.AddCollisionHandler("Pickup", "BackgroundNegative", this.PrintQ);
             pman.RegisterClassShape("MainCharWhole", "MainChar", new Ellipse(7));
@@ -275,23 +306,7 @@ namespace BulletHell
         private GameEvent KillOffscreen(Entity e1, Entity e2)
         {
             Entity e;
-            if (e1 == bg || e1 == bgneg)
-                e = e2;
-            else
-                e = e1;
-            if (e.InvisibilityTime > -0.5)
-                return null;
-            if (game.CurrentTime > e.CreationTime)
-            {
-                e.InvisibilityTime = game.CurrentTime;
-                return e.Invisibility;
-            }
-            return null;
-        }
-        private GameEvent KillOffscreenNeg(Entity e1, Entity e2)
-        {
-            Entity e;
-            if (e1 == bgneg)
+            if (e1 == bg)
                 e = e2;
             else
                 e = e1;

@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using BulletHell.GameLib.LevelLib;
 using BulletHell.GameLib;
+using BulletHell.GameLib.EntityLib;
 
 namespace BulletHell.Editor
 {
@@ -20,7 +21,7 @@ namespace BulletHell.Editor
         {
             InitializeComponent();
             viewing = l;
-            g = Game.LoadFromLevel(null, l);
+            g = Game.LoadFromLevel(null, new Background(1280,720,40,Color.Black), l);
         }
 
         private void LevelViewer_Load(object sender, EventArgs e)

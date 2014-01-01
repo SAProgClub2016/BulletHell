@@ -21,6 +21,10 @@ namespace BulletHell.Physics.ShapeLib
             this.firstBounded = firstBounded; this.secondBounded = secondBounded;
         }
 
+        public PartialBox(Box box, Vector<bool> firstBounded, Vector<bool> secondBounded) : this(box.Radius,firstBounded,secondBounded)
+        {
+        }
+
 
         protected override void Draw(Particle p, Graphics g, CoordTransform f = null, GraphicsStyle sty = null)
         {

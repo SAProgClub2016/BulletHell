@@ -32,11 +32,16 @@ namespace BulletHell.GameLib
         private CoordTransform curTrans = null;
         private Random random;
 
+        private double width, height;
+
         private int moneys=0;
         private int score=0;
 
         public int Money { get { return moneys; } set { moneys = value; } }
         public int Score { get { return score; } set { score = value; } }
+
+        public double Width { get { return width; } }
+        public double Height { get { return height; } }
 
         public Random Random
         {
@@ -176,6 +181,7 @@ namespace BulletHell.GameLib
             timeRateFunc = new PolyFunc<double,double>(curTimeRate);
             timeFunc = timeRateFunc.FI;
             Add(m);
+            Add(bg);
         }
 
         public void Add(Entity e)
@@ -267,10 +273,25 @@ namespace BulletHell.GameLib
 
         public CoordTransform CurrentTransform { get { return this.curTrans; } set { this.curTrans = value; } }
 
-        public static Game LoadFromLevel(MainChar m, Level l)
+        public static Game LoadFromLevel(MainChar m, Background bg, Level l)
         {
-            Game ans = new Game(m);
-            
+            Game ans = new Game(m, bg);
+            ans.RenderManager.RenderOrder.AddFirst("Background");
+            foreach(Id id in l.RenderOrder)
+            {
+                ans.RenderManager.RenderOrder.AddLast(id);
+            }
+
+            ans.width = l.Width;
+            ans.height = l.Height;
+
+            foreach(Entity e in l)
+            {
+                ans.Add(e);
+            }
+
+
+            return ans;
         }
     }
 }
