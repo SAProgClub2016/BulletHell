@@ -24,44 +24,7 @@ using BulletHell.GameLib.LevelLib;
 
 namespace BulletHell
 {
-    public class MainFormLevel : Level
-    {
-        public MainFormLevel()
-        {
-        }
-
-        public double Width
-        {
-            get { return 1280; }
-        }
-
-        public double Height
-        {
-            get { return 720; }
-        }
-
-        public IEnumerable<Id> RenderOrder
-        {
-            get
-            {
-                LinkedList<Id> ids = new LinkedList<Id>();
-                ids.AddLast("Character");
-                ids.AddLast("Bullet");
-                ids.AddLast("Pickup");
-                return ids;
-            }
-        }
-
-        public IEnumerator<Entity> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-    }
+    
     public partial class MainForm : Form
     {
         KeyManager keyMan;
@@ -694,6 +657,36 @@ namespace BulletHell
                     this.SetClientSizeCore(1280, 720);
                 }
                 HandleResize();
+            }
+        }
+    }
+
+    public class MainFormLevel : List<Entity>, Level
+    {
+        public MainFormLevel()
+        {
+
+        }
+
+        public double Width
+        {
+            get { return 1280; }
+        }
+
+        public double Height
+        {
+            get { return 720; }
+        }
+
+        public IEnumerable<Id> RenderOrder
+        {
+            get
+            {
+                LinkedList<Id> ids = new LinkedList<Id>();
+                ids.AddLast("Character");
+                ids.AddLast("Bullet");
+                ids.AddLast("Pickup");
+                return ids;
             }
         }
     }
