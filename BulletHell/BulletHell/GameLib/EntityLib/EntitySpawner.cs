@@ -143,47 +143,69 @@ namespace BulletHell.GameLib.EntityLib
             return ans;
         }
     }
+    
+    public delegate void EntityConsumer(Entity e);
+
     public class EntitySpawner
     {
+
+        private Dictionary<object, EntityConsumer> targets;
         private Dictionary<string, EntityType> namedTypes;
 
         public EntitySpawner()
         {
+            targets = new Dictionary<object, EntityConsumer>();
             namedTypes = new Dictionary<string, EntityType>();
+        }
+
+        public void AddTarget(object o, EntityConsumer e)
+        {
+            targets.Add(o, e);
+        }
+        public void RemoveTarget(object o)
+        {
+            targets.Remove(o);
         }
 
         public Entity Build(string name, double cTime, double x, double y)
         {
-            return Build(namedTypes[name], cTime, x, y);
+            return Dispatch(Build(namedTypes[name], cTime, x, y));
         }
         public Entity Build(EntityType type, double cTime, double x, double y)
         {
-            return type.MakeEntity(cTime, x, y);
+            return Dispatch(type.MakeEntity(cTime, x, y));
         }
         public Entity Build(string name, double cTime, Particle p)
         {
-            return Build(namedTypes[name], cTime, p);
+            return Dispatch(Build(namedTypes[name], cTime, p));
         }
         public Entity Build(EntityType type, double cTime, Particle p)
         {
-            return type.MakeEntity(cTime, p);
+            return Dispatch(type.MakeEntity(cTime, p));
         }
 
         public T Build<T>(string name, double cTime, double x, double y) where T : Entity
         {
-            return Build(namedTypes[name], cTime, x, y) as T;
+            return Dispatch(Build(namedTypes[name], cTime, x, y) as T);
         }
         public T Build<T>(EntityType type, double cTime, double x, double y) where T : Entity
         {
-            return type.MakeEntity(cTime, x, y) as T;
+            return Dispatch(type.MakeEntity(cTime, x, y) as T);
         }
         public T Build<T>(string name, double cTime, Particle p) where T : Entity
         {
-            return Build(namedTypes[name], cTime, p) as T;
+            return Dispatch(Build(namedTypes[name], cTime, p) as T);
         }
         public T Build<T>(EntityType type, double cTime, Particle p) where T : Entity
         {
-            return type.MakeEntity(cTime, p) as T;
+            return Dispatch(type.MakeEntity(cTime, p) as T);
+        }
+
+        public T Dispatch<T>(T t) where T : Entity
+        {
+            foreach (EntityConsumer ec in targets.Values)
+                ec(t);
+            return t;
         }
 
         public void MakeType(string name, Trajectory t, Drawable draw, PhysicsShape physS, EntityClass pc, BulletEmitter e = null, GraphicsStyle g = null, EntityBuilder b = null)

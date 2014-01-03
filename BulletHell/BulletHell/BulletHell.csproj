@@ -139,6 +139,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptingLib\ScriptingExample.cs" />
+    <Compile Include="TestLevels\TestLevel.cs" />
     <Compile Include="Timer.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="XMLLib\XMLBuilderParser.cs" />

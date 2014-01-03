@@ -21,26 +21,24 @@ using BulletHell.Physics.ShapeLib;
 using BulletHell.CoordLib;
 using System.Drawing.Drawing2D;
 using BulletHell.GameLib.LevelLib;
+using BulletHell.TestLevels;
 
 namespace BulletHell
 {
-    
+
     public partial class MainForm : Form
     {
         KeyManager keyMan;
-
-        Drawable o1;
-        Entity e, e2;
 
         Background bg;
         PartialBox boxNeg;
 
         BufferedGraphics buff, newbuff;
         BufferedGraphicsContext bgcon;
+
         Game game;
         bool DisplayFrameRate = true, DisplayTime = true;
         private DefaultValueDictionary<Entity, bool> hitby;
-        EntitySpawner entSpawn;
 
         ManagedCoords m;
 
@@ -53,125 +51,46 @@ namespace BulletHell
             oldWidth = this.Width;
             oldHeight = this.Height;
 
+            TestLevel t = new TestLevel();
+
             m = new ManagedCoords(16, 9);
 
             m[true, 0] = 1280;
             m[false, 0] = 1280;
-
-            entSpawn = new EntitySpawner();
 
             hitby = new DefaultValueDictionary<Entity, bool>(false);
 
             double border = 40;
 
             Particle boxC = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2, (double)ClientRectangle.Height / 2));
-            Particle boxR = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2+border, (double)ClientRectangle.Height / 2+border));
+            Particle boxR = (Particle)(new Vector<double>((double)ClientRectangle.Width / 2 + border, (double)ClientRectangle.Height / 2 + border));
             Box bgbox = new Box(boxR);
-            
+
             EntityClass bgClass = new EntityClass("Background");
 
-            bg = new Background(1280,720,border,Color.Black);
-            boxNeg = new PartialBox(bg.Shape.BoundingBox, new Vector<bool>(true, false),new Vector<bool>(true, true));
+            bg = new Background(1280, 720, border, Color.Black);
+            boxNeg = new PartialBox(bg.Shape.BoundingBox, new Vector<bool>(true, false), new Vector<bool>(true, true));
 
             keyMan = new KeyManager();
 
             InitializeKeyManager();
 
-            int vx = 1, vx2 = 2;
-            int vy = 2, vy2 = 4;
-            InitializeBulletEntities(entSpawn);
-            InitializeSimpleEntities(entSpawn);
 
             Drawable mchar = DrawableFactory.MakeCircle(8, new GraphicsStyle(Brushes.Orange, Pens.Red));
 
-            game = new Game(new MainChar(mchar,entSpawn["MainCharBullet"],ClientRectangle.Width/2,ClientRectangle.Height-20,40),
-                            bg);
+            EntityType mcb = new EntityType(null, new Ellipse(5), new GraphicsStyle(Brushes.Violet), new EntityClass("MainCharBullet", "Bullet"), null, Bullet.MakeBullet());
+
+            MainChar mc = new MainChar(mchar, mcb, ClientRectangle.Width / 2, ClientRectangle.Height - 20, 40);
+
+            game = Game.LoadFromLevel(mc, bg, t);
 
             game.CurrentTransform = m.Transform;
 
             InitializePhysicsManager(game.PhysicsManager);
             InitializeRenderManager(game.RenderManager);
 
-            Particle p1 = new Particle(x => vx * x, y => vy * y);
-            Particle p2 = new Particle(Utils.MakeClosure<double,double,double>(ClientRectangle.Width,(w,x) => w - vx2 * x), y => vy2 * y);
-
-            Particle q = new Particle(t => 7 * t + 10 * Utils.FastCos(t), t => 3 * t + 10 * Utils.FastSin(t));
-
-            Ellipse entEl = new Ellipse(7);
-            o1 = entEl.MakeDrawable(new GraphicsStyle(Brushes.Green));
-
-            double FULL = 2 * Math.PI;
-            double cd = 1;
-            int perCirc = 12;
-            int offsets = 6;
-            BulletEmission[] bEms = new BulletEmission[offsets], bEms2 = new BulletEmission[offsets];
-            double DOWN = Math.PI / 2;
-            // Makes the spiral pattern with bullets of shape o2
-            Trajectory[][] arrs = new Trajectory[offsets][];
-            for (int i = 0; i < offsets; i++)
-                arrs[i] = new Trajectory[perCirc];
-            for (int i = 0; i < perCirc; i++)
-            {
-                for (int j = 0; j < offsets; j++)
-                {
-                    arrs[j][i] = TrajectoryFactory.AngleMagVel((i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 10);
-                }
-            }
-            for (int i = 0; i < offsets; i++)
-                bEms[i] = new BulletEmission(cd, 0, arrs[i],entSpawn["OrangeRed_5"]);
-            // Same as above, but we're gonna change the shape
-            // no need to regenerate the spiral
-            for (int i = 0; i < offsets; i++)
-                bEms2[i] = new BulletEmission(cd, 0, arrs[i],entSpawn["Azure_5"]);
-            // Same as above, but we're gonna change the shape again and the path
-            BulletEmission[] bEms3 = new BulletEmission[offsets];
-            for (int i = 0; i < offsets; i++)
-                arrs[i] = new Trajectory[perCirc];
-            for (int i = 0; i < perCirc; i++)
-            {
-                for (int j = 0; j < offsets; j++)
-                {
-                    arrs[j][i] = TrajectoryFactory.SpinningLinearAMVel((i * offsets + j) * (FULL / offsets / perCirc) + DOWN, 7/*3*/, 0.5, 20);
-                }
-            }
-            for (int i = 0; i < offsets; i++)
-                bEms3[i] = new BulletEmission(cd, 0, arrs[i], entSpawn["HotPink_5"]);
-
-            EntityClass enemyBullet = new EntityClass("EnemyBullet","Bullet");
-            EntityClass enemy = new EntityClass("Enemy","Character");
-
-            BulletEmitter em = new BulletEmitter(new BulletPattern(bEms));
-            BulletEmitter em2 = new BulletEmitter(new BulletPattern(bEms2));
-            BulletEmitter em3 = new BulletEmitter(new BulletPattern(bEms3));
-
-            entSpawn.MakeType("RedSpiral", null, o1, entEl, enemy, em,null,Enemy.MakeEnemy());
-
-            e = entSpawn.Build("RedSpiral", 0, p1);
-            e2 = entSpawn.Build("RedSpiral", 0, p2);
-
-            Particle p3 = new Particle(x => 0.5 * x + 500, y => 3 * y);
-            Entity e3  = entSpawn.Build("RedSpiral", 0, p3);
-
-            Particle p4 = new Particle(x => -0.25 * x + 300, y => 3.5 * y);
-            Entity e4 = entSpawn.Build("RedSpiral", 0, p4);
-
-            Particle p5 = new Particle(x => -0.4 * x + 800, y => 2 * y);
-            Entity e5 = entSpawn.Build("RedSpiral", 0, p5);
 
 
-            game += bg;
-            game = game + e + e2 + e3 + e4 + e5;
-
-            entSpawn["WhiteSpiral"] = entSpawn["RedSpiral"].ChangeEmitter(em2, true);
-            entSpawn["PinkWaves"] = entSpawn["RedSpiral"].ChangeEmitter(em3, true);
-            //entSpawn.MakeType("WhiteSpinningSpiral",null, o1, entEl, enemy, em2);
-
-            Entity e6 = entSpawn.Build("WhiteSpiral", 0, q);
-            game += e6;
-
-            Particle r = new Particle(Utils.MakeClosure<double,double,double>((double)ClientRectangle.Width/3, (w,t)=>w+3*t), t=>5*t);
-            Entity e7 = entSpawn.Build("PinkWaves",0, r);
-            game += e7;
             game.ResetTime();
             bgcon = BufferedGraphicsManager.Current;
             HandleResize();
@@ -184,11 +103,6 @@ namespace BulletHell
             newbuff = bgcon.Allocate(CreateGraphics(), ClientRectangle);
         }
 
-        private void InitializeSimpleEntities(EntitySpawner entSpawn)
-        {
-            PhysicsShape moneyShape= new Ellipse(6);
-            entSpawn.MakeType("Money", (t, x, y) => TrajectoryFactory.SimpleAcc(new Pair<double>(0, 1), game.Random.RandomPairInBox(new Pair<double>(-5, -10), new Pair<double>(10, 10)))(t,x,y), moneyShape.MakeDrawable(new GraphicsStyle(Brushes.Gold)), moneyShape, new EntityClass("Pickup", "Pickup"), null, null, Pickup.MakePickup());
-        }
 
         private void InitializePhysicsManager(PhysicsManager pman)
         {
@@ -231,27 +145,14 @@ namespace BulletHell
             Bullet b = (e1 as Bullet) ?? (e2 as Bullet);
             e.Health -= b.Damage;
             b.DestructionTime = game.CurrentTime;
-            return ((e.Health<=0 && Utils.IsZero(e.DestructionTime+1)) ? (e.Destroy(game.CurrentTime) > MakePickups(e) > b.Destruction) : b.Destruction);
+            return ((e.Health <= 0 && Utils.IsZero(e.DestructionTime + 1)) ? (e.Destroy(game.CurrentTime) > MakePickups(e) > b.Destruction) : b.Destruction);
         }
 
-        private IEnumerable<Pickup> GeneratePickups(Enemy e)
-        {
-            int val = e.Value;
-            int num = game.Random.Next(5, 8);
-            val /= num;
-            Vector<double> pos = e.Position.CurrentPosition;
-            for (int i = 0; i < num; i++)
-            {
-                Pickup p = entSpawn.Build<Pickup>("Money", e.Time, pos[0], pos[1]);
-                p.Effect = Effects.MakeQuantityChanger(new LambdaValue<int>(() => game.Money, (m) => game.Money = m), t => t + val);
-                yield return p;
-            }
-        }
 
         private GameEvent MakePickups(Enemy e)
         {
             GameEvent ans = null;
-            foreach (Pickup en in GeneratePickups(e))
+            foreach (Pickup en in e.Drop(game))
                 ans = ans > en.Creation;
             return ans;
         }
@@ -314,16 +215,7 @@ namespace BulletHell
             return hitEvent > bullet.Destruction;
         }
 
-        private void InitializeBulletEntities(EntitySpawner spawner)
-        {
-            Ellipse bulletEl = new Ellipse(5);
-            EntityType bulletType = new EntityType(null,bulletEl,new GraphicsStyle(Brushes.OrangeRed),new EntityClass("EnemyBullet","Bullet"),null,Bullet.MakeBullet(20));
 
-            spawner["OrangeRed_5"] = bulletType;
-            spawner["Azure_5"] = bulletType.ChangeDrawPhysShape(new GraphicsStyle(Brushes.Azure),true);
-            spawner["HotPink_5"] = bulletType.ChangeDrawPhysShape(new GraphicsStyle(Brushes.HotPink),true);
-            spawner["MainCharBullet"] = bulletType.ChangeDrawPhysShape(new GraphicsStyle(Brushes.Violet), true).ChangeClass(new EntityClass("MainCharBullet", "Bullet"));
-        }
 
         private void InitializeKeyManager()
         {
@@ -412,7 +304,7 @@ namespace BulletHell
                 }
                 g.FillRectangle(Brushes.Black, new Rectangle(18, 178, 300, 28));
                 g.DrawString(string.Format("Hits: {0}", totalhits), new Font("Arial", 12), Brushes.White, 20, 180);
-                if(this.Created)
+                if (this.Created)
                     buff.Render();
             }
         }
@@ -422,7 +314,7 @@ namespace BulletHell
             double time = game.CurrentTime;
 
             game.Time = time;
-            
+
             if (game.Time >= game.MostRenderedTime)
             {
                 game.PhysicsManager.Collisions();
@@ -463,12 +355,14 @@ namespace BulletHell
             if (game.CurrentTimeRate > Utils.TOLERANCE)
             {
                 game.Events.Add(new GameEvent(game.CurrentTime,
-                    (g,state) => {
-                        if(state == GameEventState.Unprocessed)
+                    (g, state) =>
+                    {
+                        if (state == GameEventState.Unprocessed)
                             game.Character.XComp = ComputeXVel();
                     },
                     GameEvent.DoNothing,
-                    (g,state) => {
+                    (g, state) =>
+                    {
 
                     }
                     ));
@@ -590,11 +484,11 @@ namespace BulletHell
             }
         }
 
-        private int oldWidth,oldHeight;
+        private int oldWidth, oldHeight;
 
         protected override void WndProc(ref Message m)
         {
-            if(m.Msg == 0x214)
+            if (m.Msg == 0x214)
             {
                 int wb = this.Width - ClientRectangle.Width;
                 int hb = this.Height - ClientRectangle.Height;
@@ -602,7 +496,7 @@ namespace BulletHell
                 RECT rc = (RECT)Marshal.PtrToStructure(m.LParam, typeof(RECT));
                 int w = rc.Right - rc.Left - wb;
                 int h = rc.Bottom - rc.Top - hb;
-                int z=0;
+                int z = 0;
                 if (oldWidth == w)
                     z = 16 * h;
                 else if (oldHeight == h)
@@ -643,7 +537,7 @@ namespace BulletHell
                 if (fullscreen == value)
                     return;
                 fullscreen = value;
-                if(fullscreen)
+                if (fullscreen)
                 {
                     this.TopMost = true;
                     this.FormBorderStyle = FormBorderStyle.None;
@@ -657,36 +551,6 @@ namespace BulletHell
                     this.SetClientSizeCore(1280, 720);
                 }
                 HandleResize();
-            }
-        }
-    }
-
-    public class MainFormLevel : List<Entity>, Level
-    {
-        public MainFormLevel()
-        {
-
-        }
-
-        public double Width
-        {
-            get { return 1280; }
-        }
-
-        public double Height
-        {
-            get { return 720; }
-        }
-
-        public IEnumerable<Id> RenderOrder
-        {
-            get
-            {
-                LinkedList<Id> ids = new LinkedList<Id>();
-                ids.AddLast("Character");
-                ids.AddLast("Bullet");
-                ids.AddLast("Pickup");
-                return ids;
             }
         }
     }

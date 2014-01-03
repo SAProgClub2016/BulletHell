@@ -35,7 +35,7 @@ namespace BulletHell.XMLLib
                 int v = Enemy.DefaultValue;
                 ParseValue(el, "value", x => (int)x, ref v);
 
-                return Enemy.MakeEnemy(h,v);
+                return Enemy.MakeEnemy(null, h, v);
             }
             if (type == "bullet")
             {
