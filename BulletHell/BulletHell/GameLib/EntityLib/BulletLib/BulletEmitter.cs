@@ -10,7 +10,7 @@ using System.Text;
 
 namespace BulletHell.GameLib.EntityLib.BulletLib
 {
-    public struct BulletEmission
+    public class BulletEmission
     {
         public double Warmup;
         public double Cooldown;
@@ -29,12 +29,27 @@ namespace BulletHell.GameLib.EntityLib.BulletLib
             this.BulletPaths = bulletTrajectory;
             this.EntType = eType;
         }
+
+        public BulletEmission(BulletEmission e)
+        {
+            Warmup = e.Warmup;
+            Cooldown = e.Cooldown;
+            BulletPaths = new Trajectory[e.BulletPaths.Length];
+            for (int i = 0; i < BulletPaths.Length; i++)
+                BulletPaths[i] = e.BulletPaths[i];
+            EntType = e.EntType;
+        }
+
         public IEnumerable<Entity> MakeBullets(double t, double x, double y)
         {
             foreach(Trajectory j in BulletPaths)
             {
                 yield return EntType.MakeEntity(t, j(t, x, y));
             }
+        }
+        public BulletEmission Clone()
+        {
+            return new BulletEmission(this);
         }
     }
     public class BulletPattern
