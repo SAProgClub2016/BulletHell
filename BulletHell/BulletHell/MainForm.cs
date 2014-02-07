@@ -23,6 +23,7 @@ namespace BulletHell
     public partial class MainForm : Form
     {
         KeyManager keyMan;
+        Keys key = new Keys();
 
         Drawable o1;
         Entity e, e2;
@@ -216,24 +217,32 @@ namespace BulletHell
             }
             if (hitby[bullet])
                 return null;
-            GameEvent hitEvent = new GameEvent(e1.Time,
-                (g, st) =>
-                {
-                    totalhits++;
-                    hitby[bullet] = true;
-                },
-                (g, st) =>
-                {
-                    totalhits--;
-                },
-                (g, st) =>
-                {
-                    if (st == GameEventState.Processed)
+            if (keyMan[Keys.Tab])
+            {
+            }
+            else
+            {
+                GameEvent hitEvent = new GameEvent(e1.Time,
+                    (g, st) =>
+                    {
+                        totalhits++;
+                        hitby[bullet] = true;
+                    },
+                    (g, st) =>
+                    {
                         totalhits--;
-                    hitby[bullet] = false;
-                });
-            bullet.DestructionTime = e1.Time;
-            return hitEvent > bullet.Destruction;
+                    },
+                    (g, st) =>
+                    {
+                        if (st == GameEventState.Processed)
+                            totalhits--;
+                        hitby[bullet] = false;
+                    });
+
+                bullet.DestructionTime = e1.Time;
+                return hitEvent > bullet.Destruction;
+            }
+            return null;
         }
 
         private void InitializeBulletStyles()
@@ -496,6 +505,11 @@ namespace BulletHell
                 while (timer.Time < 10)
                     Thread.Yield();
             }
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
